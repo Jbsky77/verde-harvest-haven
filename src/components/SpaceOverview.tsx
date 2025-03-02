@@ -1,3 +1,4 @@
+
 import { useCultivation } from "@/context/CultivationContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PlantState } from "@/types";
@@ -214,7 +215,13 @@ const SpaceOverview = ({ showAllSpaces = false }: SpaceOverviewProps) => {
                     radius={[0, 4, 4, 0]} 
                     barSize={20}
                   >
-                    <LabelList dataKey="count" position="right" formatter={(value) => value} />
+                    <LabelList 
+                      dataKey="count" 
+                      position="insideRight" 
+                      fill="white" 
+                      fontWeight="bold" 
+                      formatter={(value) => value} 
+                    />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
