@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Settings, RefreshCw, BarChart, Save } from "lucide-react";
@@ -25,8 +24,8 @@ const SettingsButtons = () => {
     getPlantById
   } = useCultivation();
   
-  const [ec, setEc] = React.useState<string>("1.2");
-  const [ph, setPh] = React.useState<string>("6.0");
+  const [ec, setEc] = React.useState<string>("1.20");
+  const [ph, setPh] = React.useState<string>("6.00");
 
   const handleUpdateParameters = () => {
     if (!selectedPlantIds.length && !selectedSpaceId) {
@@ -59,7 +58,7 @@ const SettingsButtons = () => {
       
       toast({
         title: "Paramètres mis à jour",
-        description: `EC: ${ecValue}, pH: ${phValue} appliqués à ${selectedPlantIds.length} plantes`,
+        description: `EC: ${ecValue.toFixed(2)}, pH: ${phValue.toFixed(2)} appliqués à ${selectedPlantIds.length} plantes`,
         variant: "default",
       });
     }
@@ -76,16 +75,16 @@ const SettingsButtons = () => {
     if (selectedPlantIds.length === 1) {
       const plant = getPlantById(selectedPlantIds[0]);
       if (plant) {
-        setEc(plant.ec.toString());
-        setPh(plant.ph.toString());
+        setEc(plant.ec.toFixed(2));
+        setPh(plant.ph.toFixed(2));
         toast({
           title: "Paramètres actualisés",
-          description: `Paramètres chargés depuis la plante sélectionnée (EC: ${plant.ec}, pH: ${plant.ph})`,
+          description: `Paramètres chargés depuis la plante sélectionnée (EC: ${plant.ec.toFixed(2)}, pH: ${plant.ph.toFixed(2)})`,
         });
       }
     } else {
-      setEc("1.2");
-      setPh("6.0");
+      setEc("1.20");
+      setPh("6.00");
       toast({
         title: "Paramètres réinitialisés",
         description: "Les valeurs par défaut ont été restaurées",
@@ -104,9 +103,9 @@ const SettingsButtons = () => {
           <Input
             id="ec-value"
             type="number"
-            step="0.1"
-            min="0.1"
-            max="3.0"
+            step="0.01"
+            min="0.10"
+            max="3.00"
             value={ec}
             onChange={(e) => setEc(e.target.value)}
           />
@@ -117,9 +116,9 @@ const SettingsButtons = () => {
           <Input
             id="ph-value"
             type="number"
-            step="0.1"
-            min="5.0"
-            max="7.0"
+            step="0.01"
+            min="5.00"
+            max="7.00"
             value={ph}
             onChange={(e) => setPh(e.target.value)}
           />

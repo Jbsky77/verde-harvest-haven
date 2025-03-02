@@ -124,13 +124,13 @@ const PlantDetails = ({ plant, onUpdate }: PlantDetailsProps) => {
         <div>
           <div className="flex justify-between items-center mb-2">
             <Label htmlFor="ec">EC</Label>
-            <span className="text-sm font-medium">{formState.ec.toFixed(1)}</span>
+            <span className="text-sm font-medium">{formState.ec.toFixed(2)}</span>
           </div>
           <Slider
             id="ec"
             min={0.5}
             max={2.5}
-            step={0.1}
+            step={0.01}
             value={[formState.ec]}
             onValueChange={(values) => handleChange("ec", values[0])}
           />
@@ -139,13 +139,13 @@ const PlantDetails = ({ plant, onUpdate }: PlantDetailsProps) => {
         <div>
           <div className="flex justify-between items-center mb-2">
             <Label htmlFor="ph">pH</Label>
-            <span className="text-sm font-medium">{formState.ph.toFixed(1)}</span>
+            <span className="text-sm font-medium">{formState.ph.toFixed(2)}</span>
           </div>
           <Slider
             id="ph"
             min={5.0}
             max={7.0}
-            step={0.1}
+            step={0.01}
             value={[formState.ph]}
             onValueChange={(values) => handleChange("ph", values[0])}
           />

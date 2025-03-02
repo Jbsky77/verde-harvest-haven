@@ -85,8 +85,8 @@ const PlantsList = ({ space }: PlantsListProps) => {
                   {stateLabels[plant.state]}
                 </Badge>
               </TableCell>
-              <TableCell>{plant.ec.toFixed(1)}</TableCell>
-              <TableCell>{plant.ph.toFixed(1)}</TableCell>
+              <TableCell>{plant.ec.toFixed(2)}</TableCell>
+              <TableCell>{plant.ph.toFixed(2)}</TableCell>
               <TableCell className="text-right">
                 <Button 
                   variant="ghost" 
