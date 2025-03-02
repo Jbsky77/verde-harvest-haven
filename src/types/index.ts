@@ -1,8 +1,10 @@
+
 export type PlantVariety = {
   id: string;
   name: string;
   color: string;
   germinationTime?: number; // en jours
+  growthTime?: number; // en jours
   floweringTime?: number; // en jours
 };
 

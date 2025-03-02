@@ -46,11 +46,11 @@ type CultivationContextType = {
 const CultivationContext = createContext<CultivationContextType | undefined>(undefined);
 
 const initialVarieties: PlantVariety[] = [
-  { id: "var1", name: "CBD Kush", color: "#9b87f5", germinationTime: 5, floweringTime: 60 },
-  { id: "var2", name: "Charlotte's Web", color: "#7E69AB", germinationTime: 4, floweringTime: 65 },
-  { id: "var3", name: "ACDC", color: "#6E59A5", germinationTime: 6, floweringTime: 70 },
-  { id: "var4", name: "Harlequin", color: "#D6BCFA", germinationTime: 5, floweringTime: 55 },
-  { id: "var5", name: "Cannatonic", color: "#E5DEFF", germinationTime: 4, floweringTime: 63 },
+  { id: "var1", name: "CBD Kush", color: "#9b87f5", germinationTime: 5, growthTime: 25, floweringTime: 60 },
+  { id: "var2", name: "Charlotte's Web", color: "#7E69AB", germinationTime: 4, growthTime: 30, floweringTime: 65 },
+  { id: "var3", name: "ACDC", color: "#6E59A5", germinationTime: 6, growthTime: 28, floweringTime: 70 },
+  { id: "var4", name: "Harlequin", color: "#D6BCFA", germinationTime: 5, growthTime: 22, floweringTime: 55 },
+  { id: "var5", name: "Cannatonic", color: "#E5DEFF", germinationTime: 4, growthTime: 26, floweringTime: 63 },
 ];
 
 const initialFertilizers: Fertilizer[] = [
@@ -344,6 +344,7 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
       ...variety,
       id: `var-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       germinationTime: variety.germinationTime ? Number(variety.germinationTime) : undefined,
+      growthTime: variety.growthTime ? Number(variety.growthTime) : undefined,
       floweringTime: variety.floweringTime ? Number(variety.floweringTime) : undefined
     };
     
@@ -359,6 +360,7 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
     const varietyToUpdate = {
       ...updatedVariety,
       germinationTime: updatedVariety.germinationTime ? Number(updatedVariety.germinationTime) : undefined,
+      growthTime: updatedVariety.growthTime ? Number(updatedVariety.growthTime) : undefined,
       floweringTime: updatedVariety.floweringTime ? Number(updatedVariety.floweringTime) : undefined
     };
     
@@ -436,11 +438,11 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
     if (!plant) return null;
     
     const variety = plant.variety;
-    if (!variety.germinationTime) return null;
+    if (!variety.germinationTime || !variety.growthTime) return null;
     
     const germStartDate = new Date(currentSession.startDate);
     const floweringDate = new Date(germStartDate);
-    floweringDate.setDate(floweringDate.getDate() + variety.germinationTime);
+    floweringDate.setDate(floweringDate.getDate() + variety.germinationTime + variety.growthTime);
     
     return floweringDate;
   };
@@ -452,11 +454,11 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
     if (!plant) return null;
     
     const variety = plant.variety;
-    if (!variety.germinationTime || !variety.floweringTime) return null;
+    if (!variety.germinationTime || !variety.growthTime || !variety.floweringTime) return null;
     
     const germStartDate = new Date(currentSession.startDate);
     const harvestDate = new Date(germStartDate);
-    harvestDate.setDate(harvestDate.getDate() + variety.germinationTime + variety.floweringTime);
+    harvestDate.setDate(harvestDate.getDate() + variety.germinationTime + variety.growthTime + variety.floweringTime);
     
     return harvestDate;
   };

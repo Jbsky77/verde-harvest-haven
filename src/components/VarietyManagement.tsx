@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useCultivation } from "@/context/CultivationContext";
@@ -31,6 +30,7 @@ const VarietyManagement = () => {
   const [newVarietyName, setNewVarietyName] = useState("");
   const [newVarietyColor, setNewVarietyColor] = useState("#9b87f5");
   const [newVarietyGerminationTime, setNewVarietyGerminationTime] = useState<number | undefined>(undefined);
+  const [newVarietyGrowthTime, setNewVarietyGrowthTime] = useState<number | undefined>(undefined);
   const [newVarietyFloweringTime, setNewVarietyFloweringTime] = useState<number | undefined>(undefined);
   const [sessionName, setSessionName] = useState("");
   const [sessionStartDate, setSessionStartDate] = useState(new Date().toISOString().substring(0, 10));
@@ -40,6 +40,7 @@ const VarietyManagement = () => {
     setNewVarietyName("");
     setNewVarietyColor("#9b87f5");
     setNewVarietyGerminationTime(undefined);
+    setNewVarietyGrowthTime(undefined);
     setNewVarietyFloweringTime(undefined);
     setIsDialogOpen(true);
   };
@@ -49,6 +50,7 @@ const VarietyManagement = () => {
     setNewVarietyName(variety.name);
     setNewVarietyColor(variety.color);
     setNewVarietyGerminationTime(variety.germinationTime);
+    setNewVarietyGrowthTime(variety.growthTime);
     setNewVarietyFloweringTime(variety.floweringTime);
     setIsDialogOpen(true);
   };
@@ -70,12 +72,12 @@ const VarietyManagement = () => {
     }
 
     if (editingVariety) {
-      // Update existing variety
       updateVariety({
         ...editingVariety,
         name: newVarietyName,
         color: newVarietyColor,
         germinationTime: newVarietyGerminationTime,
+        growthTime: newVarietyGrowthTime,
         floweringTime: newVarietyFloweringTime,
       });
       
@@ -85,11 +87,11 @@ const VarietyManagement = () => {
         variant: "default",
       });
     } else {
-      // Create new variety
       addVariety({
         name: newVarietyName,
         color: newVarietyColor,
         germinationTime: newVarietyGerminationTime,
+        growthTime: newVarietyGrowthTime,
         floweringTime: newVarietyFloweringTime,
       });
       
@@ -169,6 +171,7 @@ const VarietyManagement = () => {
             <TableHead>Couleur</TableHead>
             <TableHead>Nom</TableHead>
             <TableHead className="text-right">Germination (jours)</TableHead>
+            <TableHead className="text-right">Croissance (jours)</TableHead>
             <TableHead className="text-right">Floraison (jours)</TableHead>
             <TableHead className="w-20">Actions</TableHead>
           </TableRow>
@@ -184,6 +187,7 @@ const VarietyManagement = () => {
               </TableCell>
               <TableCell>{variety.name}</TableCell>
               <TableCell className="text-right">{variety.germinationTime || "-"}</TableCell>
+              <TableCell className="text-right">{variety.growthTime || "-"}</TableCell>
               <TableCell className="text-right">{variety.floweringTime || "-"}</TableCell>
               <TableCell>
                 <div className="flex items-center gap-2">
@@ -208,7 +212,6 @@ const VarietyManagement = () => {
         </TableBody>
       </Table>
       
-      {/* Dialogue pour la gestion des variétés */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
           <DialogHeader>
@@ -258,6 +261,18 @@ const VarietyManagement = () => {
             </div>
             
             <div className="space-y-2">
+              <Label htmlFor="growthTime">Temps de croissance (jours)</Label>
+              <Input
+                id="growthTime"
+                type="number"
+                min="1"
+                value={newVarietyGrowthTime || ""}
+                onChange={(e) => setNewVarietyGrowthTime(e.target.value ? Number(e.target.value) : undefined)}
+                placeholder="Ex: 30"
+              />
+            </div>
+            
+            <div className="space-y-2">
               <Label htmlFor="floweringTime">Temps de floraison (jours)</Label>
               <Input
                 id="floweringTime"
@@ -284,7 +299,6 @@ const VarietyManagement = () => {
         </DialogContent>
       </Dialog>
       
-      {/* Dialogue pour la création d'une session */}
       <Dialog open={isSessionDialogOpen} onOpenChange={setIsSessionDialogOpen}>
         <DialogContent>
           <DialogHeader>
