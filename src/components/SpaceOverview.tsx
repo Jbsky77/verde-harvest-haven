@@ -7,10 +7,37 @@ import PlantGrid from "@/components/PlantGrid";
 import PlantsList from "@/components/PlantsList";
 import { BarChart, PieChart, Bar, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
-const SpaceOverview = () => {
-  const { selectedSpaceId, getSpaceById } = useCultivation();
+interface SpaceOverviewProps {
+  showAllSpaces?: boolean;
+}
+
+const SpaceOverview = ({ showAllSpaces = false }: SpaceOverviewProps) => {
+  const { selectedSpaceId, getSpaceById, spaces } = useCultivation();
   
-  if (!selectedSpaceId) {
+  // Function to get all plants across spaces
+  const getAllPlants = () => {
+    return spaces.flatMap(space => space.plants);
+  };
+  
+  // Get plants and space data based on selection
+  const getSpaceData = () => {
+    if (showAllSpaces) {
+      const allPlants = getAllPlants();
+      return {
+        name: "Tous les espaces",
+        plants: allPlants,
+        rows: spaces.reduce((sum, space) => sum + space.rows, 0),
+        plantsPerRow: Math.round(allPlants.length / spaces.reduce((sum, space) => sum + space.rows, 0)) || 0
+      };
+    } else if (selectedSpaceId) {
+      return getSpaceById(selectedSpaceId);
+    }
+    return null;
+  };
+  
+  const spaceData = getSpaceData();
+  
+  if (!spaceData) {
     return (
       <div className="flex items-center justify-center h-full p-8">
         <Card className="w-full max-w-md text-center p-8 bg-gradient-to-br from-gray-50 to-gray-100">
@@ -25,25 +52,8 @@ const SpaceOverview = () => {
     );
   }
   
-  const space = getSpaceById(selectedSpaceId);
-  
-  if (!space) {
-    return (
-      <div className="flex items-center justify-center h-full p-8">
-        <Card className="w-full max-w-md text-center p-8">
-          <CardHeader>
-            <CardTitle>Espace non trouvé</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">L'espace sélectionné n'existe pas ou a été supprimé</p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-  
   // Count plants by state
-  const plantsByState = space.plants.reduce((acc, plant) => {
+  const plantsByState = spaceData.plants.reduce((acc, plant) => {
     acc[plant.state] = (acc[plant.state] || 0) + 1;
     return acc;
   }, {} as Record<PlantState, number>);
@@ -71,27 +81,34 @@ const SpaceOverview = () => {
   }));
   
   // Average EC and pH data
-  const averageEC = space.plants.reduce((sum, plant) => sum + plant.ec, 0) / space.plants.length;
-  const averagePH = space.plants.reduce((sum, plant) => sum + plant.ph, 0) / space.plants.length;
+  const averageEC = spaceData.plants.reduce((sum, plant) => sum + plant.ec, 0) / spaceData.plants.length;
+  const averagePH = spaceData.plants.reduce((sum, plant) => sum + plant.ph, 0) / spaceData.plants.length;
   
   // Data for varieties distribution
-  const varietiesData = space.plants.reduce((acc, plant) => {
+  const varietiesData = spaceData.plants.reduce((acc, plant) => {
     const variety = plant.variety.name;
     acc[variety] = (acc[variety] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
   
-  const varietyDistributionData = Object.entries(varietiesData).map(([name, count]) => ({
-    name,
-    count
-  }));
+  const varietyDistributionData = Object.entries(varietiesData)
+    .map(([name, count]) => ({
+      name,
+      count
+    }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 7); // Limit to top 7 varieties for readability
   
   return (
     <div className="p-6 animate-fade-in bg-gradient-to-b from-gray-50 to-white">
       <div className="mb-6 pb-4 border-b">
-        <h2 className="text-3xl font-bold text-gray-800">{space.name}</h2>
+        <h2 className="text-3xl font-bold text-gray-800">
+          {showAllSpaces ? "Tous les espaces" : spaceData.name}
+          {showAllSpaces && <span className="text-sm font-normal text-gray-500 ml-2">({spaces.length} espaces)</span>}
+        </h2>
         <p className="text-muted-foreground mt-1">
-          {space.plants.length} plantes • {space.rows} rangées 
+          {spaceData.plants.length} plantes
+          {!showAllSpaces && ` • ${spaceData.rows} rangées`}
         </p>
       </div>
       
@@ -137,7 +154,7 @@ const SpaceOverview = () => {
               <span className="h-3 w-3 rounded-full bg-[#06b6d4]"></span>
               Moyennes EC & pH
             </CardTitle>
-            <CardDescription>Valeurs moyennes pour cet espace</CardDescription>
+            <CardDescription>Valeurs moyennes{showAllSpaces ? " globales" : " pour cet espace"}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-52">
@@ -176,7 +193,7 @@ const SpaceOverview = () => {
               <span className="h-3 w-3 rounded-full bg-[#f43f5e]"></span>
               Distribution des variétés
             </CardTitle>
-            <CardDescription>Nombre de plantes par variété</CardDescription>
+            <CardDescription>Top variétés{showAllSpaces ? " tous espaces confondus" : ""}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-52">
@@ -208,40 +225,59 @@ const SpaceOverview = () => {
         </Card>
       </div>
       
-      <Tabs defaultValue="grid" className="w-full">
-        <TabsList className="mb-4 bg-gray-100 p-1">
-          <TabsTrigger value="grid" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Grille</TabsTrigger>
-          <TabsTrigger value="list" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Liste</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="grid" className="mt-0">
+      {!showAllSpaces && (
+        <Tabs defaultValue="grid" className="w-full">
+          <TabsList className="mb-4 bg-gray-100 p-1">
+            <TabsTrigger value="grid" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Grille</TabsTrigger>
+            <TabsTrigger value="list" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Liste</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="grid" className="mt-0">
+            <Card className="shadow-sm">
+              <CardHeader className="bg-gray-50 border-b pb-4">
+                <CardTitle>Vue en grille</CardTitle>
+                <CardDescription>
+                  {spaceData.rows} lignes de {spaceData.plantsPerRow} plantes
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-4">
+                <PlantGrid space={spaceData} />
+              </CardContent>
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="list" className="mt-0">
+            <Card className="shadow-sm">
+              <CardHeader className="bg-gray-50 border-b pb-4">
+                <CardTitle>Liste des plantes</CardTitle>
+                <CardDescription>
+                  {spaceData.plants.length} plantes au total
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-4">
+                <PlantsList space={spaceData} />
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      )}
+      
+      {showAllSpaces && (
+        <div className="mt-6">
           <Card className="shadow-sm">
             <CardHeader className="bg-gray-50 border-b pb-4">
-              <CardTitle>Vue en grille</CardTitle>
+              <CardTitle>Vue d'ensemble</CardTitle>
               <CardDescription>
-                {space.rows} lignes de {space.plantsPerRow} plantes
+                Sélectionnez un espace spécifique pour voir sa grille et sa liste de plantes
               </CardDescription>
             </CardHeader>
-            <CardContent className="p-4">
-              <PlantGrid space={space} />
+            <CardContent className="p-6 text-center text-gray-500">
+              <p>En mode "Tous les espaces", seules les statistiques globales sont affichées.</p>
+              <p className="mt-2">Pour accéder à la grille ou à la liste des plantes, veuillez désactiver l'option "Afficher tous les espaces" ou sélectionner un espace spécifique.</p>
             </CardContent>
           </Card>
-        </TabsContent>
-        
-        <TabsContent value="list" className="mt-0">
-          <Card className="shadow-sm">
-            <CardHeader className="bg-gray-50 border-b pb-4">
-              <CardTitle>Liste des plantes</CardTitle>
-              <CardDescription>
-                {space.plants.length} plantes au total
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="p-4">
-              <PlantsList space={space} />
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+        </div>
+      )}
     </div>
   );
 };

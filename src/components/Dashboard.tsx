@@ -6,14 +6,28 @@ import VarietyButtons from "@/components/VarietyButtons";
 import SettingsButtons from "@/components/SettingsButtons";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useState } from "react";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 const Dashboard = () => {
   const isMobile = useIsMobile();
+  const [showAllSpaces, setShowAllSpaces] = useState(false);
   
   return (
     <div className="flex flex-col md:flex-row h-full">
       <div className="flex-1 overflow-auto pb-16">
-        <SpaceOverview />
+        <div className="px-6 pt-6 flex justify-end">
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="show-all-spaces"
+              checked={showAllSpaces}
+              onCheckedChange={setShowAllSpaces}
+            />
+            <Label htmlFor="show-all-spaces">Afficher tous les espaces</Label>
+          </div>
+        </div>
+        <SpaceOverview showAllSpaces={showAllSpaces} />
       </div>
       
       <div className={`${isMobile ? 'w-full' : 'w-96'} bg-gray-50 border-l p-4 lg:p-6 flex-shrink-0 max-h-screen overflow-y-auto`}>
