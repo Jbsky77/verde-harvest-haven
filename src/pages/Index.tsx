@@ -1,11 +1,20 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import AppHeader from "@/components/AppHeader";
+import SideNavigation from "@/components/SideNavigation";
+import Dashboard from "@/components/Dashboard";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const Index = () => {
+  const isMobile = useIsMobile();
+  
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
+    <div className="min-h-screen flex flex-col bg-gray-50 overflow-hidden">
+      <AppHeader />
+      <div className="flex flex-1 mt-16">
+        <SideNavigation />
+        <main className={`flex-1 ${isMobile ? "w-full" : "ml-14 md:ml-56"} transition-all duration-300 ease-in-out`}>
+          <Dashboard />
+        </main>
       </div>
     </div>
   );
