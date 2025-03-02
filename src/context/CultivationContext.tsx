@@ -17,6 +17,7 @@ type CultivationContextType = {
   alerts: Alert[];
   selectedSpaceId: number | null;
   selectedPlantIds: string[];
+  sessions: CultivationSession[];
   currentSession: CultivationSession | null;
   setSelectedSpaceId: (id: number | null) => void;
   setSelectedPlantIds: (ids: string[]) => void;
@@ -40,8 +41,12 @@ type CultivationContextType = {
   addVariety: (variety: Omit<PlantVariety, 'id'>) => void;
   updateVariety: (variety: PlantVariety) => void;
   deleteVariety: (id: string) => void;
-  startCultivationSession: (name: string, startDate: Date, selectedVarieties?: string[]) => void;
-  endCultivationSession: () => void;
+  startCultivationSession: (name: string, startDate: Date, selectedVarieties?: string[]) => string;
+  endCultivationSession: (sessionId: string) => void;
+  setCurrentSession: (sessionId: string | null) => void;
+  getSessionById: (id: string) => CultivationSession | undefined;
+  deleteSession: (id: string) => void;
+  updateSession: (session: CultivationSession) => void;
   getEstimatedFloweringDate: (plantId: string) => Date | null;
   getEstimatedHarvestDate: (plantId: string) => Date | null;
   getEstimatedHarvestDateForVariety: (varietyId: string) => Date | null;
@@ -115,7 +120,8 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
   const [fertilizers, setFertilizers] = useState<Fertilizer[]>(initialFertilizers);
   const [selectedSpaceId, setSelectedSpaceId] = useState<number | null>(1);
   const [selectedPlantIds, setSelectedPlantIds] = useState<string[]>([]);
-  const [currentSession, setCurrentSession] = useState<CultivationSession | null>(null);
+  const [sessions, setSessions] = useState<CultivationSession[]>([]);
+  const [currentSession, setCurrentSessionState] = useState<CultivationSession | null>(null);
 
   const getPlantById = (id: string): Plant | undefined => {
     for (const space of spaces) {
@@ -420,45 +426,119 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  const startCultivationSession = (name: string, startDate: Date, selectedVarieties?: string[]) => {
+  const startCultivationSession = (name: string, startDate: Date, selectedVarieties?: string[]): string => {
+    const sessionId = `session-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
     const newSession: CultivationSession = {
-      id: `session-${Date.now()}`,
+      id: sessionId,
       name,
       startDate,
       isActive: true,
       selectedVarieties
     };
     
-    setCurrentSession(newSession);
+    setSessions(prev => [...prev, newSession]);
+    
+    if (sessions.length === 0) {
+      setCurrentSessionState(newSession);
+    }
     
     addAlert({
       type: "success",
-      message: `Nouvelle session de culture "${name}" démarrée avec succès`
+      message: `Nouvelle session de culture "${name}" créée avec succès`
+    });
+
+    return sessionId;
+  };
+
+  const setCurrentSession = (sessionId: string | null) => {
+    if (sessionId === null) {
+      setCurrentSessionState(null);
+      return;
+    }
+    
+    const session = sessions.find(s => s.id === sessionId);
+    if (session) {
+      setCurrentSessionState(session);
+      addAlert({
+        type: "info",
+        message: `Session active: "${session.name}"`
+      });
+    } else {
+      addAlert({
+        type: "warning",
+        message: `Session avec l'ID ${sessionId} non trouvée`
+      });
+    }
+  };
+
+  const getSessionById = (id: string): CultivationSession | undefined => {
+    return sessions.find(s => s.id === id);
+  };
+
+  const updateSession = (updatedSession: CultivationSession) => {
+    setSessions(prev => prev.map(s => 
+      s.id === updatedSession.id ? updatedSession : s
+    ));
+    
+    if (currentSession && currentSession.id === updatedSession.id) {
+      setCurrentSessionState(updatedSession);
+    }
+    
+    addAlert({
+      type: "info",
+      message: `Session "${updatedSession.name}" mise à jour avec succès`
     });
   };
 
-  const endCultivationSession = () => {
-    if (!currentSession) {
+  const deleteSession = (id: string) => {
+    const session = getSessionById(id);
+    if (!session) return;
+    
+    setSessions(prev => prev.filter(s => s.id !== id));
+    
+    if (currentSession && currentSession.id === id) {
+      const firstActiveSession = sessions.find(s => s.id !== id && s.isActive);
+      setCurrentSessionState(firstActiveSession || null);
+    }
+    
+    addAlert({
+      type: "info",
+      message: `Session "${session.name}" supprimée avec succès`
+    });
+  };
+
+  const endCultivationSession = (sessionId: string) => {
+    const session = getSessionById(sessionId);
+    if (!session) {
       addAlert({
         type: "warning",
-        message: "Aucune session en cours à annuler"
+        message: "Session non trouvée"
       });
       return;
     }
     
-    setCurrentSession(prev => {
-      if (!prev) return null;
-      
-      return {
-        ...prev,
-        isActive: false,
-        endDate: new Date()
-      };
-    });
+    if (!session.isActive) {
+      addAlert({
+        type: "warning",
+        message: `La session "${session.name}" est déjà terminée`
+      });
+      return;
+    }
+    
+    setSessions(prev => prev.map(s => 
+      s.id === sessionId ? { ...s, isActive: false, endDate: new Date() } : s
+    ));
+    
+    if (currentSession && currentSession.id === sessionId) {
+      setCurrentSessionState(prev => {
+        if (!prev) return null;
+        return { ...prev, isActive: false, endDate: new Date() };
+      });
+    }
     
     addAlert({
       type: "info",
-      message: `Session de culture "${currentSession.name}" terminée`
+      message: `Session de culture "${session.name}" terminée`
     });
   };
 
@@ -544,6 +624,7 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
         alerts,
         selectedSpaceId,
         selectedPlantIds,
+        sessions,
         currentSession,
         setSelectedSpaceId,
         setSelectedPlantIds,
@@ -569,6 +650,10 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
         deleteVariety,
         startCultivationSession,
         endCultivationSession,
+        setCurrentSession,
+        getSessionById,
+        deleteSession,
+        updateSession,
         getEstimatedFloweringDate,
         getEstimatedHarvestDate,
         getEstimatedHarvestDateForVariety,

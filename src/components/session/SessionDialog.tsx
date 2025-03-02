@@ -20,12 +20,25 @@ interface SessionDialogProps {
     startDate: Date;
     selectedVarieties?: string[];
   } | null;
+  onSessionCreated?: (sessionId: string) => void;
 }
 
-const SessionDialog = ({ open, onOpenChange, isEditing = false, currentSession = null }: SessionDialogProps) => {
+const SessionDialog = ({ 
+  open, 
+  onOpenChange, 
+  isEditing = false, 
+  currentSession = null,
+  onSessionCreated 
+}: SessionDialogProps) => {
   const [sessionName, setSessionName] = useState("");
   const [sessionDateText, setSessionDateText] = useState("");
-  const { startCultivationSession, varieties, endCultivationSession } = useCultivation();
+  const { 
+    startCultivationSession, 
+    updateSession,
+    varieties, 
+    endCultivationSession, 
+    setCurrentSession 
+  } = useCultivation();
   const [selectedVarieties, setSelectedVarieties] = useState<string[]>([]);
   const [dateError, setDateError] = useState<string | null>(null);
   const { toast } = useToast();
@@ -61,22 +74,34 @@ const SessionDialog = ({ open, onOpenChange, isEditing = false, currentSession =
       }
       
       if (isEditing && currentSession) {
-        // For editing, end the current session and start a new one
-        endCultivationSession();
-        startCultivationSession(sessionName, sessionStartDate, selectedVarieties);
+        // Pour l'édition, mettre à jour la session existante
+        updateSession({
+          id: currentSession.id,
+          name: sessionName,
+          startDate: sessionStartDate,
+          isActive: true,
+          selectedVarieties
+        });
+        
         toast({
           title: "Session modifiée",
           description: `La session "${sessionName}" a été mise à jour avec succès.`,
           variant: "default",
         });
       } else {
-        // For new session
-        startCultivationSession(sessionName, sessionStartDate, selectedVarieties);
+        // Pour une nouvelle session
+        const sessionId = startCultivationSession(sessionName, sessionStartDate, selectedVarieties);
+        
         toast({
           title: "Session créée",
-          description: `La session "${sessionName}" a été démarrée avec succès.`,
+          description: `La session "${sessionName}" a été créée avec succès.`,
           variant: "default",
         });
+        
+        // Callback pour informer le parent de la création de la session
+        if (onSessionCreated) {
+          onSessionCreated(sessionId);
+        }
       }
       
       onOpenChange(false);
@@ -122,7 +147,7 @@ const SessionDialog = ({ open, onOpenChange, isEditing = false, currentSession =
           <DialogTitle>
             {isEditing 
               ? `Modifier la session "${currentSession?.name}"`
-              : "Démarrer une nouvelle session de culture"}
+              : "Créer une nouvelle session de culture"}
           </DialogTitle>
         </DialogHeader>
         <div className="py-4">
@@ -214,7 +239,7 @@ const SessionDialog = ({ open, onOpenChange, isEditing = false, currentSession =
             onClick={handleSaveSession} 
             disabled={!sessionName.trim() || !sessionDateText || selectedVarieties.length === 0}
           >
-            {isEditing ? "Enregistrer les modifications" : "Démarrer la session"}
+            {isEditing ? "Enregistrer les modifications" : "Créer la session"}
           </Button>
         </DialogFooter>
       </DialogContent>
