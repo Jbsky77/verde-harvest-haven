@@ -149,8 +149,8 @@ const PlantGrid = ({ space }: PlantGridProps) => {
         </CardHeader>
         <CardContent className="p-4">
           <ScrollArea className="h-48 w-full">
-            <div className="flex flex-col items-center">
-              <div className="flex flex-wrap gap-1 max-w-full" style={{ width: "143px" }}>
+            <div className="flex items-center justify-center">
+              <div className="flex flex-col gap-1">
                 {allPlants.map(plant => (
                   <PlantCell 
                     key={plant.id} 
