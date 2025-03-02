@@ -9,6 +9,7 @@ import PlantDetails from "@/components/PlantDetails";
 import { cn } from "@/lib/utils";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 type PlantCellProps = {
   plant: Plant;
@@ -139,45 +140,59 @@ const PlantGrid = ({ space }: PlantGridProps) => {
 
       <Card className="shadow-sm">
         <CardHeader className="py-3 px-4 bg-accent/30">
-          <CardTitle className="text-base font-medium">Vue en grille (Espace {space.id})</CardTitle>
+          <CardTitle className="text-base font-medium">Liste des plantes (Espace {space.id})</CardTitle>
         </CardHeader>
         <CardContent className="p-4">
-          <ScrollArea className="h-[500px] w-full">
-            <div className="flex overflow-x-auto pb-4">
-              {(() => {
-                const rowNumbers = [1, 2, 3, 4];
-                const colNumbers = Array.from({ length: 143 }, (_, i) => i + 1);
-                
-                // Créer un tableau de cellules verticales pour chaque colonne
-                return colNumbers.map(colNum => {
-                  return (
-                    <div key={`col-${colNum}`} className="flex flex-col gap-1 mr-1">
-                      <div className="text-xs font-medium text-muted-foreground text-center mb-1">
-                        {colNum}
+          <ScrollArea className="h-[500px]">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Ligne</TableHead>
+                  <TableHead>Colonne</TableHead>
+                  <TableHead>Variété</TableHead>
+                  <TableHead>État</TableHead>
+                  <TableHead>EC</TableHead>
+                  <TableHead>pH</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {space.plants.map((plant) => (
+                  <TableRow key={plant.id}>
+                    <TableCell>{plant.position.row}</TableCell>
+                    <TableCell>{plant.position.column}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center">
+                        <div 
+                          className="w-3 h-3 rounded-full mr-2" 
+                          style={{ backgroundColor: plant.variety.color }}
+                        />
+                        {plant.variety.name}
                       </div>
-                      {rowNumbers.map(rowNum => {
-                        const plant = space.plants.find(
-                          p => p.position.column === colNum && p.position.row === rowNum
-                        );
-                        
-                        return plant ? (
-                          <PlantCell 
-                            key={`plant-${rowNum}-${colNum}`} 
-                            plant={plant} 
-                            onClick={handlePlantClick} 
-                          />
-                        ) : (
-                          <div 
-                            key={`empty-${rowNum}-${colNum}`} 
-                            className="w-5 h-5 border border-dashed border-gray-200 rounded-sm"
-                          />
-                        );
-                      })}
-                    </div>
-                  );
-                });
-              })()}
-            </div>
+                    </TableCell>
+                    <TableCell>
+                      <span className={cn(
+                        "px-2 py-1 rounded-full text-xs",
+                        stateBackgroundColors[plant.state]
+                      )}>
+                        {plant.state}
+                      </span>
+                    </TableCell>
+                    <TableCell>{plant.ec}</TableCell>
+                    <TableCell>{plant.ph}</TableCell>
+                    <TableCell>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        onClick={() => handlePlantClick(plant)}
+                      >
+                        Détails
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </ScrollArea>
         </CardContent>
       </Card>
