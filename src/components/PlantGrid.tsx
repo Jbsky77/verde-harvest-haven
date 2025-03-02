@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { CultivationSpace, Plant, PlantState } from "@/types";
 import { useCultivation } from "@/context/CultivationContext";
@@ -7,6 +8,7 @@ import { Leaf, Filter, ArrowLeft, ArrowRight } from "lucide-react";
 import PlantDetails from "@/components/PlantDetails";
 import { cn } from "@/lib/utils";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 type PlantCellProps = {
   plant: Plant;
@@ -35,7 +37,7 @@ const PlantCell = ({ plant, onClick }: PlantCellProps) => {
   return (
     <button
       className={cn(
-        "w-8 h-8 border rounded-sm transition-all hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary/40",
+        "w-5 h-5 border rounded-sm transition-all hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary/40",
         stateBorderColors[state],
         stateBackgroundColors[state]
       )}
@@ -146,15 +148,19 @@ const PlantGrid = ({ space }: PlantGridProps) => {
           <CardTitle className="text-base font-medium">Vue en grille ({totalPlants} plantes)</CardTitle>
         </CardHeader>
         <CardContent className="p-4">
-          <div className="flex flex-wrap gap-1.5">
-            {allPlants.map(plant => (
-              <PlantCell 
-                key={plant.id} 
-                plant={plant} 
-                onClick={handlePlantClick} 
-              />
-            ))}
-          </div>
+          <ScrollArea className="h-48 w-full">
+            <div className="flex flex-col items-center">
+              <div className="flex flex-wrap gap-1 max-w-full" style={{ width: "143px" }}>
+                {allPlants.map(plant => (
+                  <PlantCell 
+                    key={plant.id} 
+                    plant={plant} 
+                    onClick={handlePlantClick} 
+                  />
+                ))}
+              </div>
+            </div>
+          </ScrollArea>
         </CardContent>
       </Card>
       
