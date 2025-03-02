@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,14 +20,7 @@ import {
 import { Label } from "@/components/ui/label";
 import FertilizerManagementDialog from "./FertilizerManagementDialog";
 import { FertilizerType } from "@/types";
-
-const FertilizerTypeLabels: Record<FertilizerType, string> = {
-  base: "Base",
-  growth: "Croissance",
-  bloom: "Floraison",
-  booster: "Booster",
-  custom: "Personnalisé"
-};
+import { FertilizerTypeLabels } from "./fertilizer/FertilizerForm";
 
 const FertilizerManagement = () => {
   const { fertilizers, selectedPlantIds, getPlantById, updatePlantBatch } = useCultivation();
@@ -57,8 +49,6 @@ const FertilizerManagement = () => {
     const fertilizer = fertilizers.find(f => f.id === selectedFertilizerId);
     if (!fertilizer) return;
 
-    // Mise à jour des plantes sélectionnées (simulation)
-    // Dans un cas réel, on pourrait ajouter un champ fertilizers à Plant
     const updatedPlants = selectedPlantIds.map(id => {
       const plant = getPlantById(id);
       if (!plant) return null;
