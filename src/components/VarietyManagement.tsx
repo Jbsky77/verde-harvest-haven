@@ -19,11 +19,19 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Edit, Trash2, Plus, Calendar } from "lucide-react";
+import { Edit, Trash2, Plus, Calendar, X } from "lucide-react";
 import { PlantVariety } from "@/types";
 
 const VarietyManagement = () => {
-  const { varieties, addVariety, updateVariety, deleteVariety, currentSession, startCultivationSession } = useCultivation();
+  const { 
+    varieties, 
+    addVariety, 
+    updateVariety, 
+    deleteVariety, 
+    currentSession, 
+    startCultivationSession,
+    endCultivationSession
+  } = useCultivation();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSessionDialogOpen, setIsSessionDialogOpen] = useState(false);
   const [editingVariety, setEditingVariety] = useState<PlantVariety | null>(null);
@@ -138,15 +146,40 @@ const VarietyManagement = () => {
     }
   };
 
+  const handleEndSession = () => {
+    if (confirm("Êtes-vous sûr de vouloir terminer la session de culture en cours ?")) {
+      endCultivationSession();
+      
+      toast({
+        title: "Session terminée",
+        description: "La session de culture a été terminée avec succès",
+        variant: "default",
+      });
+    }
+  };
+
   return (
     <>
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-medium">Gestion des variétés</h2>
         <div className="flex gap-2">
-          <Button onClick={openSessionDialog} variant="outline">
-            <Calendar className="mr-2 h-4 w-4" />
-            {currentSession ? "Changer de session" : "Nouvelle session"}
-          </Button>
+          {currentSession ? (
+            <>
+              <Button onClick={openSessionDialog} variant="outline">
+                <Calendar className="mr-2 h-4 w-4" />
+                Changer de session
+              </Button>
+              <Button onClick={handleEndSession} variant="destructive">
+                <X className="mr-2 h-4 w-4" />
+                Terminer la session
+              </Button>
+            </>
+          ) : (
+            <Button onClick={openSessionDialog} variant="outline">
+              <Calendar className="mr-2 h-4 w-4" />
+              Nouvelle session
+            </Button>
+          )}
           <Button onClick={openCreateDialog}>
             <Plus className="mr-2 h-4 w-4" />
             Nouvelle variété
@@ -162,6 +195,11 @@ const VarietyManagement = () => {
           <p className="text-green-700 text-sm">
             Date de départ: {new Date(currentSession.startDate).toLocaleDateString()}
           </p>
+          {currentSession.endDate && (
+            <p className="text-green-700 text-sm">
+              Session terminée le: {new Date(currentSession.endDate).toLocaleDateString()}
+            </p>
+          )}
         </div>
       )}
       

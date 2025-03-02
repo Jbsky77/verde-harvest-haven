@@ -6,6 +6,7 @@ type CultivationSession = {
   name: string;
   startDate: Date;
   isActive: boolean;
+  endDate?: Date;
 };
 
 type CultivationContextType = {
@@ -39,6 +40,7 @@ type CultivationContextType = {
   updateVariety: (variety: PlantVariety) => void;
   deleteVariety: (id: string) => void;
   startCultivationSession: (name: string, startDate: Date) => void;
+  endCultivationSession: () => void;
   getEstimatedFloweringDate: (plantId: string) => Date | null;
   getEstimatedHarvestDate: (plantId: string) => Date | null;
 };
@@ -218,7 +220,7 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
           plant.id === plantId 
             ? { ...plant, ph, lastUpdated: new Date() } 
             : plant
-        )
+        ))
       }))
     );
 
@@ -377,7 +379,7 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
           plant.variety.id === varietyToUpdate.id
             ? { ...plant, variety: varietyToUpdate }
             : plant
-        )
+        ))
       }))
     );
     
@@ -428,6 +430,31 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
     addAlert({
       type: "success",
       message: `Nouvelle session de culture "${name}" démarrée avec succès`
+    });
+  };
+
+  const endCultivationSession = () => {
+    if (!currentSession) {
+      addAlert({
+        type: "warning",
+        message: "Aucune session en cours à annuler"
+      });
+      return;
+    }
+    
+    setCurrentSession(prev => {
+      if (!prev) return null;
+      
+      return {
+        ...prev,
+        isActive: false,
+        endDate: new Date()
+      };
+    });
+    
+    addAlert({
+      type: "info",
+      message: `Session de culture "${currentSession.name}" terminée`
     });
   };
 
@@ -503,6 +530,7 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
         updateVariety,
         deleteVariety,
         startCultivationSession,
+        endCultivationSession,
         getEstimatedFloweringDate,
         getEstimatedHarvestDate,
       }}
