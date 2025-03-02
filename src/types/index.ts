@@ -1,8 +1,9 @@
-
 export type PlantVariety = {
   id: string;
   name: string;
   color: string;
+  germinationTime?: number; // en jours
+  floweringTime?: number; // en jours
 };
 
 export type PlantState = 
@@ -57,4 +58,3 @@ export type Alert = {
   spaceId?: number;
   plantId?: string;
 };
-

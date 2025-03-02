@@ -20,20 +20,27 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Edit, Trash2, Plus } from "lucide-react";
+import { Edit, Trash2, Plus, Calendar } from "lucide-react";
 import { PlantVariety } from "@/types";
 
 const VarietyManagement = () => {
-  const { varieties, addVariety, updateVariety, deleteVariety } = useCultivation();
+  const { varieties, addVariety, updateVariety, deleteVariety, currentSession, startCultivationSession } = useCultivation();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isSessionDialogOpen, setIsSessionDialogOpen] = useState(false);
   const [editingVariety, setEditingVariety] = useState<PlantVariety | null>(null);
   const [newVarietyName, setNewVarietyName] = useState("");
   const [newVarietyColor, setNewVarietyColor] = useState("#9b87f5");
+  const [newVarietyGerminationTime, setNewVarietyGerminationTime] = useState<number | undefined>(undefined);
+  const [newVarietyFloweringTime, setNewVarietyFloweringTime] = useState<number | undefined>(undefined);
+  const [sessionName, setSessionName] = useState("");
+  const [sessionStartDate, setSessionStartDate] = useState(new Date().toISOString().substring(0, 10));
 
   const openCreateDialog = () => {
     setEditingVariety(null);
     setNewVarietyName("");
     setNewVarietyColor("#9b87f5");
+    setNewVarietyGerminationTime(undefined);
+    setNewVarietyFloweringTime(undefined);
     setIsDialogOpen(true);
   };
 
@@ -41,7 +48,15 @@ const VarietyManagement = () => {
     setEditingVariety(variety);
     setNewVarietyName(variety.name);
     setNewVarietyColor(variety.color);
+    setNewVarietyGerminationTime(variety.germinationTime);
+    setNewVarietyFloweringTime(variety.floweringTime);
     setIsDialogOpen(true);
+  };
+
+  const openSessionDialog = () => {
+    setSessionName(`Session ${new Date().toLocaleDateString()}`);
+    setSessionStartDate(new Date().toISOString().substring(0, 10));
+    setIsSessionDialogOpen(true);
   };
 
   const handleSaveVariety = () => {
@@ -60,6 +75,8 @@ const VarietyManagement = () => {
         ...editingVariety,
         name: newVarietyName,
         color: newVarietyColor,
+        germinationTime: newVarietyGerminationTime,
+        floweringTime: newVarietyFloweringTime,
       });
       
       toast({
@@ -72,6 +89,8 @@ const VarietyManagement = () => {
       addVariety({
         name: newVarietyName,
         color: newVarietyColor,
+        germinationTime: newVarietyGerminationTime,
+        floweringTime: newVarietyFloweringTime,
       });
       
       toast({
@@ -82,6 +101,27 @@ const VarietyManagement = () => {
     }
     
     setIsDialogOpen(false);
+  };
+
+  const handleStartSession = () => {
+    if (!sessionName.trim()) {
+      toast({
+        title: "Nom requis",
+        description: "Veuillez entrer un nom pour la session de culture",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    startCultivationSession(sessionName, new Date(sessionStartDate));
+    
+    toast({
+      title: "Session démarrée",
+      description: `La session "${sessionName}" a été démarrée avec succès`,
+      variant: "default",
+    });
+    
+    setIsSessionDialogOpen(false);
   };
 
   const handleDeleteVariety = (id: string, name: string) => {
@@ -100,17 +140,36 @@ const VarietyManagement = () => {
     <>
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-medium">Gestion des variétés</h2>
-        <Button onClick={openCreateDialog}>
-          <Plus className="mr-2 h-4 w-4" />
-          Nouvelle variété
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={openSessionDialog} variant="outline">
+            <Calendar className="mr-2 h-4 w-4" />
+            {currentSession ? "Changer de session" : "Nouvelle session"}
+          </Button>
+          <Button onClick={openCreateDialog}>
+            <Plus className="mr-2 h-4 w-4" />
+            Nouvelle variété
+          </Button>
+        </div>
       </div>
+      
+      {currentSession && (
+        <div className="p-4 bg-green-50 rounded-md mb-4 border border-green-200">
+          <h3 className="font-medium text-green-800">
+            Session en cours: {currentSession.name}
+          </h3>
+          <p className="text-green-700 text-sm">
+            Date de départ: {new Date(currentSession.startDate).toLocaleDateString()}
+          </p>
+        </div>
+      )}
       
       <Table>
         <TableHeader>
           <TableRow>
             <TableHead>Couleur</TableHead>
             <TableHead>Nom</TableHead>
+            <TableHead className="text-right">Germination (jours)</TableHead>
+            <TableHead className="text-right">Floraison (jours)</TableHead>
             <TableHead className="w-20">Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -124,6 +183,8 @@ const VarietyManagement = () => {
                 />
               </TableCell>
               <TableCell>{variety.name}</TableCell>
+              <TableCell className="text-right">{variety.germinationTime || "-"}</TableCell>
+              <TableCell className="text-right">{variety.floweringTime || "-"}</TableCell>
               <TableCell>
                 <div className="flex items-center gap-2">
                   <Button 
@@ -147,6 +208,7 @@ const VarietyManagement = () => {
         </TableBody>
       </Table>
       
+      {/* Dialogue pour la gestion des variétés */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
           <DialogHeader>
@@ -182,6 +244,30 @@ const VarietyManagement = () => {
                 />
               </div>
             </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="germinationTime">Temps de germination (jours)</Label>
+              <Input
+                id="germinationTime"
+                type="number"
+                min="1"
+                value={newVarietyGerminationTime || ""}
+                onChange={(e) => setNewVarietyGerminationTime(e.target.value ? Number(e.target.value) : undefined)}
+                placeholder="Ex: 5"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="floweringTime">Temps de floraison (jours)</Label>
+              <Input
+                id="floweringTime"
+                type="number"
+                min="1"
+                value={newVarietyFloweringTime || ""}
+                onChange={(e) => setNewVarietyFloweringTime(e.target.value ? Number(e.target.value) : undefined)}
+                placeholder="Ex: 60"
+              />
+            </div>
           </div>
           
           <DialogFooter>
@@ -193,6 +279,51 @@ const VarietyManagement = () => {
             </Button>
             <Button onClick={handleSaveVariety}>
               {editingVariety ? "Mettre à jour" : "Créer"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Dialogue pour la création d'une session */}
+      <Dialog open={isSessionDialogOpen} onOpenChange={setIsSessionDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              Nouvelle session de culture
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="sessionName">Nom de la session</Label>
+              <Input
+                id="sessionName"
+                value={sessionName}
+                onChange={(e) => setSessionName(e.target.value)}
+                placeholder="Nom de la session"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="startDate">Date de départ (germination)</Label>
+              <Input
+                id="startDate"
+                type="date"
+                value={sessionStartDate}
+                onChange={(e) => setSessionStartDate(e.target.value)}
+              />
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => setIsSessionDialogOpen(false)}
+            >
+              Annuler
+            </Button>
+            <Button onClick={handleStartSession}>
+              Démarrer la session
             </Button>
           </DialogFooter>
         </DialogContent>

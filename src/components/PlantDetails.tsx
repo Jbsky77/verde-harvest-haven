@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useCultivation } from "@/context/CultivationContext";
 import { Slider } from "@/components/ui/slider";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 
 type PlantDetailsProps = {
   plant: Plant;
@@ -22,7 +24,7 @@ const stateOptions: { value: PlantState; label: string }[] = [
 ];
 
 const PlantDetails = ({ plant, onUpdate }: PlantDetailsProps) => {
-  const { varieties } = useCultivation();
+  const { varieties, getEstimatedFloweringDate, getEstimatedHarvestDate } = useCultivation();
   const [formState, setFormState] = useState<Plant>(plant);
   
   const handleChange = (field: keyof Plant, value: any) => {
@@ -47,6 +49,14 @@ const PlantDetails = ({ plant, onUpdate }: PlantDetailsProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onUpdate(formState);
+  };
+  
+  const floweringDate = getEstimatedFloweringDate(plant.id);
+  const harvestDate = getEstimatedHarvestDate(plant.id);
+  
+  const formatDate = (date: Date | null) => {
+    if (!date) return "Non disponible";
+    return format(date, "PPP", { locale: fr });
   };
   
   return (
@@ -158,6 +168,18 @@ const PlantDetails = ({ plant, onUpdate }: PlantDetailsProps) => {
             value={formState.notes || ""}
             onChange={(e) => handleChange("notes", e.target.value)}
           />
+        </div>
+        
+        {/* Dates estimées */}
+        <div className="grid grid-cols-2 gap-4 pt-2">
+          <div>
+            <Label className="text-sm text-muted-foreground">Floraison estimée</Label>
+            <p className="text-sm font-medium">{formatDate(floweringDate)}</p>
+          </div>
+          <div>
+            <Label className="text-sm text-muted-foreground">Récolte estimée</Label>
+            <p className="text-sm font-medium">{formatDate(harvestDate)}</p>
+          </div>
         </div>
       </div>
       

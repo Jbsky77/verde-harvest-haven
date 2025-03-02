@@ -1,6 +1,13 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { Plant, PlantVariety, CultivationSpace, Alert, PlantState, Fertilizer } from '@/types';
 
+type CultivationSession = {
+  id: string;
+  name: string;
+  startDate: Date;
+  isActive: boolean;
+};
+
 type CultivationContextType = {
   spaces: CultivationSpace[];
   varieties: PlantVariety[];
@@ -8,6 +15,7 @@ type CultivationContextType = {
   alerts: Alert[];
   selectedSpaceId: number | null;
   selectedPlantIds: string[];
+  currentSession: CultivationSession | null;
   setSelectedSpaceId: (id: number | null) => void;
   setSelectedPlantIds: (ids: string[]) => void;
   getPlantById: (id: string) => Plant | undefined;
@@ -30,20 +38,21 @@ type CultivationContextType = {
   addVariety: (variety: Omit<PlantVariety, 'id'>) => void;
   updateVariety: (variety: PlantVariety) => void;
   deleteVariety: (id: string) => void;
+  startCultivationSession: (name: string, startDate: Date) => void;
+  getEstimatedFloweringDate: (plantId: string) => Date | null;
+  getEstimatedHarvestDate: (plantId: string) => Date | null;
 };
 
 const CultivationContext = createContext<CultivationContextType | undefined>(undefined);
 
-// Sample varieties
 const initialVarieties: PlantVariety[] = [
-  { id: "var1", name: "CBD Kush", color: "#9b87f5" },
-  { id: "var2", name: "Charlotte's Web", color: "#7E69AB" },
-  { id: "var3", name: "ACDC", color: "#6E59A5" },
-  { id: "var4", name: "Harlequin", color: "#D6BCFA" },
-  { id: "var5", name: "Cannatonic", color: "#E5DEFF" },
+  { id: "var1", name: "CBD Kush", color: "#9b87f5", germinationTime: 5, floweringTime: 60 },
+  { id: "var2", name: "Charlotte's Web", color: "#7E69AB", germinationTime: 4, floweringTime: 65 },
+  { id: "var3", name: "ACDC", color: "#6E59A5", germinationTime: 6, floweringTime: 70 },
+  { id: "var4", name: "Harlequin", color: "#D6BCFA", germinationTime: 5, floweringTime: 55 },
+  { id: "var5", name: "Cannatonic", color: "#E5DEFF", germinationTime: 4, floweringTime: 63 },
 ];
 
-// Initial fertilizers
 const initialFertilizers: Fertilizer[] = [
   { id: "fert1", name: "Nutrient de base", type: "base", unitType: "ml/L", recommendedDosage: 1.5, color: "#9b87f5" },
   { id: "fert2", name: "Nutrient de croissance", type: "growth", unitType: "ml/L", recommendedDosage: 2.0, color: "#4CAF50" },
@@ -52,7 +61,6 @@ const initialFertilizers: Fertilizer[] = [
   { id: "fert5", name: "Stimulateur racinaire", type: "custom", unitType: "ml/L", recommendedDosage: 0.5, color: "#6ECFF6", isCustom: true, createdAt: new Date() },
 ];
 
-// Helper function to create a plant
 const createPlant = (spaceId: number, row: number, col: number, varietyId: string): Plant => {
   const variety = initialVarieties.find(v => v.id === varietyId) || initialVarieties[0];
   return {
@@ -70,7 +78,6 @@ const createPlant = (spaceId: number, row: number, col: number, varietyId: strin
   };
 };
 
-// Create initial spaces with plants
 const generateInitialSpaces = (): CultivationSpace[] => {
   const spaces: CultivationSpace[] = [];
   
@@ -79,7 +86,6 @@ const generateInitialSpaces = (): CultivationSpace[] => {
     
     for (let row = 1; row <= 4; row++) {
       for (let col = 1; col <= 143; col++) {
-        // Distribute varieties evenly across plants
         const varietyId = initialVarieties[Math.floor(Math.random() * initialVarieties.length)].id;
         plants.push(createPlant(spaceId, row, col, varietyId));
       }
@@ -104,6 +110,7 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
   const [fertilizers, setFertilizers] = useState<Fertilizer[]>(initialFertilizers);
   const [selectedSpaceId, setSelectedSpaceId] = useState<number | null>(1);
   const [selectedPlantIds, setSelectedPlantIds] = useState<string[]>([]);
+  const [currentSession, setCurrentSession] = useState<CultivationSession | null>(null);
 
   const getPlantById = (id: string): Plant | undefined => {
     for (const space of spaces) {
@@ -190,7 +197,6 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
       }))
     );
 
-    // Create alert if EC is out of range
     if (ec < 0.8 || ec > 1.6) {
       const plant = getPlantById(plantId);
       if (plant) {
@@ -216,7 +222,6 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
       }))
     );
 
-    // Create alert if pH is out of range
     if (ph < 5.5 || ph > 6.5) {
       const plant = getPlantById(plantId);
       if (plant) {
@@ -289,7 +294,6 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
     setAlerts([]);
   };
 
-  // New functions for fertilizer management
   const addFertilizer = (fertilizer: Omit<Fertilizer, 'id' | 'createdAt' | 'color'> & { color: string }) => {
     const newFertilizer: Fertilizer = {
       ...fertilizer,
@@ -335,11 +339,12 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
     return fertilizers.find(f => f.id === id);
   };
 
-  // New functions for variety management
   const addVariety = (variety: Omit<PlantVariety, 'id'>) => {
     const newVariety: PlantVariety = {
       ...variety,
       id: `var-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      germinationTime: variety.germinationTime ? Number(variety.germinationTime) : undefined,
+      floweringTime: variety.floweringTime ? Number(variety.floweringTime) : undefined
     };
     
     setVarieties(prev => [...prev, newVariety]);
@@ -351,19 +356,24 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const updateVariety = (updatedVariety: PlantVariety) => {
+    const varietyToUpdate = {
+      ...updatedVariety,
+      germinationTime: updatedVariety.germinationTime ? Number(updatedVariety.germinationTime) : undefined,
+      floweringTime: updatedVariety.floweringTime ? Number(updatedVariety.floweringTime) : undefined
+    };
+    
     setVarieties(prev => 
       prev.map(variety => 
-        variety.id === updatedVariety.id ? updatedVariety : variety
+        variety.id === varietyToUpdate.id ? varietyToUpdate : variety
       )
     );
     
-    // Update any plants that use this variety
     setSpaces(prevSpaces =>
       prevSpaces.map(space => ({
         ...space,
         plants: space.plants.map(plant => 
-          plant.variety.id === updatedVariety.id
-            ? { ...plant, variety: updatedVariety }
+          plant.variety.id === varietyToUpdate.id
+            ? { ...plant, variety: varietyToUpdate }
             : plant
         )
       }))
@@ -371,7 +381,7 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
     
     addAlert({
       type: "info",
-      message: `Variété "${updatedVariety.name}" mise à jour avec succès`
+      message: `Variété "${varietyToUpdate.name}" mise à jour avec succès`
     });
   };
 
@@ -379,7 +389,6 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
     const variety = varieties.find(v => v.id === id);
     if (!variety) return;
     
-    // Check if any plants are using this variety
     let isUsed = false;
     for (const space of spaces) {
       if (space.plants.some(p => p.variety.id === id)) {
@@ -404,8 +413,55 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
+  const startCultivationSession = (name: string, startDate: Date) => {
+    const newSession: CultivationSession = {
+      id: `session-${Date.now()}`,
+      name,
+      startDate,
+      isActive: true
+    };
+    
+    setCurrentSession(newSession);
+    
+    addAlert({
+      type: "success",
+      message: `Nouvelle session de culture "${name}" démarrée avec succès`
+    });
+  };
+
+  const getEstimatedFloweringDate = (plantId: string): Date | null => {
+    if (!currentSession) return null;
+    
+    const plant = getPlantById(plantId);
+    if (!plant) return null;
+    
+    const variety = plant.variety;
+    if (!variety.germinationTime) return null;
+    
+    const germStartDate = new Date(currentSession.startDate);
+    const floweringDate = new Date(germStartDate);
+    floweringDate.setDate(floweringDate.getDate() + variety.germinationTime);
+    
+    return floweringDate;
+  };
+
+  const getEstimatedHarvestDate = (plantId: string): Date | null => {
+    if (!currentSession) return null;
+    
+    const plant = getPlantById(plantId);
+    if (!plant) return null;
+    
+    const variety = plant.variety;
+    if (!variety.germinationTime || !variety.floweringTime) return null;
+    
+    const germStartDate = new Date(currentSession.startDate);
+    const harvestDate = new Date(germStartDate);
+    harvestDate.setDate(harvestDate.getDate() + variety.germinationTime + variety.floweringTime);
+    
+    return harvestDate;
+  };
+
   useEffect(() => {
-    // Add an initial welcome alert
     addAlert({
       type: "info",
       message: "Bienvenue dans votre application de gestion de culture de CBD en aéroponie"
@@ -421,6 +477,7 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
         alerts,
         selectedSpaceId,
         selectedPlantIds,
+        currentSession,
         setSelectedSpaceId,
         setSelectedPlantIds,
         getPlantById,
@@ -443,6 +500,9 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
         addVariety,
         updateVariety,
         deleteVariety,
+        startCultivationSession,
+        getEstimatedFloweringDate,
+        getEstimatedHarvestDate,
       }}
     >
       {children}
