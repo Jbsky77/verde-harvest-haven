@@ -130,7 +130,7 @@ const ActiveSessionCard = ({ formatDateToLocale }: ActiveSessionCardProps) => {
                     // Show key dates only
                     if (day === 0 || day === Math.floor(totalDuration) || day === currentDayMarker) {
                       const date = new Date(startDate);
-                      date.setDate(date.getDate() + day);
+                      date.setDate(date.getDate() + Number(day));
                       return formatDateToLocale(date).split('/').slice(0, 2).join('/');
                     }
                     return '';
@@ -150,10 +150,12 @@ const ActiveSessionCard = ({ formatDateToLocale }: ActiveSessionCardProps) => {
                 />
                 <Tooltip 
                   formatter={(value, name) => {
+                    // Cast value to number before comparing
+                    const numValue = Number(value);
                     const phase = 
-                      value <= 25 ? "Germination" :
-                      value <= 50 ? "Croissance" :
-                      value <= 75 ? "Floraison" : "Récolte";
+                      numValue <= 25 ? "Germination" :
+                      numValue <= 50 ? "Croissance" :
+                      numValue <= 75 ? "Floraison" : "Récolte";
                     return [phase, name];
                   }}
                   labelFormatter={(day) => {
