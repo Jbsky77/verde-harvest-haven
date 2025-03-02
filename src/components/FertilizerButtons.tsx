@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Droplet, Leaf, Flower2, Zap, Beaker } from "lucide-react";
@@ -15,6 +14,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Fertilizer } from "@/types";
+import FertilizerManagement from "./FertilizerManagement";
 
 const FertilizerButtons = () => {
   const { 
@@ -27,10 +27,8 @@ const FertilizerButtons = () => {
   const [selectedFertilizerId, setSelectedFertilizerId] = React.useState<string>("");
   const [dosage, setDosage] = React.useState<string>("1.0");
 
-  // Find the selected fertilizer
   const selectedFertilizer = fertilizers.find(f => f.id === selectedFertilizerId);
 
-  // Set default values when fertilizer changes
   React.useEffect(() => {
     if (selectedFertilizer) {
       setDosage(selectedFertilizer.recommendedDosage.toString());
@@ -80,63 +78,67 @@ const FertilizerButtons = () => {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-lg">Engrais et boosters</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="fertilizer-type">Sélectionner un engrais</Label>
-          <Select 
-            value={selectedFertilizerId} 
-            onValueChange={setSelectedFertilizerId}
-          >
-            <SelectTrigger id="fertilizer-type">
-              <SelectValue placeholder="Choisir un engrais" />
-            </SelectTrigger>
-            <SelectContent>
-              {fertilizers.map(fertilizer => (
-                <SelectItem key={fertilizer.id} value={fertilizer.id}>
-                  <div className="flex items-center">
-                    {getFertilizerIcon(fertilizer)}
-                    <span className="ml-2">{fertilizer.name}</span>
-                    {fertilizer.isCustom && <span className="ml-2 text-xs text-muted-foreground">(Personnalisé)</span>}
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="fertilizer-dosage">Dosage</Label>
-          <div className="flex space-x-2">
-            <Input
-              id="fertilizer-dosage"
-              type="number"
-              step="0.1"
-              min="0.1"
-              value={dosage}
-              onChange={(e) => setDosage(e.target.value)}
-              className="flex-1"
-            />
-            <div className="w-24 flex items-center justify-center border rounded-md bg-muted">
-              {selectedFertilizer?.unitType || "ml/L"}
+    <div className="space-y-4">
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Engrais et boosters</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="fertilizer-type">Sélectionner un engrais</Label>
+            <Select 
+              value={selectedFertilizerId} 
+              onValueChange={setSelectedFertilizerId}
+            >
+              <SelectTrigger id="fertilizer-type">
+                <SelectValue placeholder="Choisir un engrais" />
+              </SelectTrigger>
+              <SelectContent>
+                {fertilizers.map(fertilizer => (
+                  <SelectItem key={fertilizer.id} value={fertilizer.id}>
+                    <div className="flex items-center">
+                      {getFertilizerIcon(fertilizer)}
+                      <span className="ml-2">{fertilizer.name}</span>
+                      {fertilizer.isCustom && <span className="ml-2 text-xs text-muted-foreground">(Personnalisé)</span>}
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="fertilizer-dosage">Dosage</Label>
+            <div className="flex space-x-2">
+              <Input
+                id="fertilizer-dosage"
+                type="number"
+                step="0.1"
+                min="0.1"
+                value={dosage}
+                onChange={(e) => setDosage(e.target.value)}
+                className="flex-1"
+              />
+              <div className="w-24 flex items-center justify-center border rounded-md bg-muted">
+                {selectedFertilizer?.unitType || "ml/L"}
+              </div>
             </div>
           </div>
-        </div>
-        
-        <Button 
-          variant="success" 
-          onClick={handleApplyFertilizer} 
-          className="w-full"
-          disabled={!selectedFertilizerId}
-        >
-          {selectedFertilizer && getFertilizerIcon(selectedFertilizer)}
-          Appliquer {selectedFertilizer ? selectedFertilizer.name : "l'engrais"}
-        </Button>
-      </CardContent>
-    </Card>
+          
+          <Button 
+            variant="success" 
+            onClick={handleApplyFertilizer} 
+            className="w-full"
+            disabled={!selectedFertilizerId}
+          >
+            {selectedFertilizer && getFertilizerIcon(selectedFertilizer)}
+            Appliquer {selectedFertilizer ? selectedFertilizer.name : "l'engrais"}
+          </Button>
+        </CardContent>
+      </Card>
+      
+      <FertilizerManagement />
+    </div>
   );
 };
 
