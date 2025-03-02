@@ -94,13 +94,13 @@ const SessionDialog = ({ open, onOpenChange }: SessionDialogProps) => {
                     initialFocus
                     defaultMonth={jan2025}
                     captionLayout="dropdown-buttons"
-                    fromYear={2023}
+                    fromYear={2020}
                     toYear={2030}
                   />
                 </PopoverContent>
               </Popover>
               <p className="text-sm text-muted-foreground mt-1">
-                Choisissez la date de début de session (incluant les dates de 2025 et au-delà)
+                Choisissez la date de début de session (incluant les dates passées, de 2020 jusqu'à 2030)
               </p>
             </div>
             
