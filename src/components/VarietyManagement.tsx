@@ -21,6 +21,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Edit, Trash2, Plus, Calendar, X } from "lucide-react";
 import { PlantVariety } from "@/types";
+import { Badge } from "@/components/ui/badge";
 
 const VarietyManagement = () => {
   const { 
@@ -195,8 +196,27 @@ const VarietyManagement = () => {
           <p className="text-green-700 text-sm">
             Date de départ: {new Date(currentSession.startDate).toLocaleDateString()}
           </p>
+          {currentSession.selectedVarieties && currentSession.selectedVarieties.length > 0 && (
+            <div className="mt-2">
+              <p className="text-green-700 text-sm font-medium">Variétés sélectionnées:</p>
+              <div className="flex flex-wrap gap-1 mt-1">
+                {currentSession.selectedVarieties.map(varietyId => {
+                  const variety = varieties.find(v => v.id === varietyId);
+                  return variety ? (
+                    <Badge 
+                      key={varietyId} 
+                      style={{ backgroundColor: variety.color, color: "#fff" }}
+                      className="text-xs"
+                    >
+                      {variety.name}
+                    </Badge>
+                  ) : null;
+                })}
+              </div>
+            </div>
+          )}
           {currentSession.endDate && (
-            <p className="text-green-700 text-sm">
+            <p className="text-green-700 text-sm mt-2">
               Session terminée le: {new Date(currentSession.endDate).toLocaleDateString()}
             </p>
           )}
@@ -223,7 +243,14 @@ const VarietyManagement = () => {
                   style={{ backgroundColor: variety.color }} 
                 />
               </TableCell>
-              <TableCell>{variety.name}</TableCell>
+              <TableCell>
+                {variety.name}
+                {currentSession?.selectedVarieties?.includes(variety.id) && (
+                  <Badge className="ml-2 bg-green-100 text-green-800 text-xs">
+                    Session en cours
+                  </Badge>
+                )}
+              </TableCell>
               <TableCell className="text-right">{variety.germinationTime || "-"}</TableCell>
               <TableCell className="text-right">{variety.growthTime || "-"}</TableCell>
               <TableCell className="text-right">{variety.floweringTime || "-"}</TableCell>

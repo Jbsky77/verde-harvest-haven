@@ -11,23 +11,43 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useCultivation } from "@/context/CultivationContext";
-import { CalendarIcon, PlayIcon } from "lucide-react";
+import { CalendarIcon, PlayIcon, X, Check } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const Dashboard = () => {
   const isMobile = useIsMobile();
   const [showAllSpaces, setShowAllSpaces] = useState(false);
   const [newSessionDialogOpen, setNewSessionDialogOpen] = useState(false);
   const [sessionName, setSessionName] = useState("");
-  const { startCultivationSession, currentSession } = useCultivation();
+  const { startCultivationSession, currentSession, varieties } = useCultivation();
+  const [selectedVarieties, setSelectedVarieties] = useState<string[]>([]);
   
   const handleStartSession = () => {
     if (sessionName.trim()) {
-      startCultivationSession(sessionName, new Date());
+      startCultivationSession(sessionName, new Date(), selectedVarieties);
       setNewSessionDialogOpen(false);
       setSessionName("");
+      setSelectedVarieties([]);
     }
+  };
+
+  const handleCheckVariety = (varietyId: string, checked: boolean) => {
+    if (checked) {
+      setSelectedVarieties(prev => [...prev, varietyId]);
+    } else {
+      setSelectedVarieties(prev => prev.filter(id => id !== varietyId));
+    }
+  };
+
+  const selectAllVarieties = () => {
+    setSelectedVarieties(varieties.map(v => v.id));
+  };
+
+  const deselectAllVarieties = () => {
+    setSelectedVarieties([]);
   };
   
   return (
@@ -102,7 +122,7 @@ const Dashboard = () => {
       </div>
       
       <Dialog open={newSessionDialogOpen} onOpenChange={setNewSessionDialogOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Démarrer une nouvelle session de culture</DialogTitle>
           </DialogHeader>
@@ -125,13 +145,69 @@ const Dashboard = () => {
                 </div>
                 <p className="text-sm text-muted-foreground mt-1">La date de début est définie à aujourd'hui</p>
               </div>
+              
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <Label>Sélectionner les variétés</Label>
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={selectAllVarieties}
+                      className="h-8 text-xs"
+                    >
+                      <Check className="mr-1 h-3 w-3" />
+                      Tout sélectionner
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={deselectAllVarieties}
+                      className="h-8 text-xs"
+                    >
+                      <X className="mr-1 h-3 w-3" />
+                      Tout désélectionner
+                    </Button>
+                  </div>
+                </div>
+                <ScrollArea className="h-44 border rounded-md p-2">
+                  <div className="space-y-2">
+                    {varieties.map((variety) => (
+                      <div key={variety.id} className="flex items-center gap-2">
+                        <Checkbox 
+                          id={`variety-${variety.id}`}
+                          checked={selectedVarieties.includes(variety.id)}
+                          onCheckedChange={(checked) => handleCheckVariety(variety.id, checked === true)}
+                        />
+                        <div 
+                          className="w-4 h-4 rounded-full" 
+                          style={{ backgroundColor: variety.color }}
+                        />
+                        <Label 
+                          htmlFor={`variety-${variety.id}`} 
+                          className="flex-grow cursor-pointer text-sm"
+                        >
+                          {variety.name}
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
+                </ScrollArea>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {selectedVarieties.length} variété(s) sélectionnée(s) sur {varieties.length}
+                </p>
+              </div>
             </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setNewSessionDialogOpen(false)}>
               Annuler
             </Button>
-            <Button variant="success" onClick={handleStartSession} disabled={!sessionName.trim()}>
+            <Button 
+              variant="success" 
+              onClick={handleStartSession} 
+              disabled={!sessionName.trim() || selectedVarieties.length === 0}
+            >
               Démarrer la session
             </Button>
           </DialogFooter>

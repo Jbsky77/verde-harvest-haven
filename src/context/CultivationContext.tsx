@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { Plant, PlantVariety, CultivationSpace, Alert, PlantState, Fertilizer } from '@/types';
 
@@ -8,6 +7,7 @@ type CultivationSession = {
   startDate: Date;
   isActive: boolean;
   endDate?: Date;
+  selectedVarieties?: string[];
 };
 
 type CultivationContextType = {
@@ -40,7 +40,7 @@ type CultivationContextType = {
   addVariety: (variety: Omit<PlantVariety, 'id'>) => void;
   updateVariety: (variety: PlantVariety) => void;
   deleteVariety: (id: string) => void;
-  startCultivationSession: (name: string, startDate: Date) => void;
+  startCultivationSession: (name: string, startDate: Date, selectedVarieties?: string[]) => void;
   endCultivationSession: () => void;
   getEstimatedFloweringDate: (plantId: string) => Date | null;
   getEstimatedHarvestDate: (plantId: string) => Date | null;
@@ -418,12 +418,13 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  const startCultivationSession = (name: string, startDate: Date) => {
+  const startCultivationSession = (name: string, startDate: Date, selectedVarieties?: string[]) => {
     const newSession: CultivationSession = {
       id: `session-${Date.now()}`,
       name,
       startDate,
-      isActive: true
+      isActive: true,
+      selectedVarieties
     };
     
     setCurrentSession(newSession);
