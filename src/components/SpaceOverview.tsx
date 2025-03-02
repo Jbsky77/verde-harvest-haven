@@ -1,4 +1,3 @@
-
 import { useCultivation } from "@/context/CultivationContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PlantState } from "@/types";
@@ -14,17 +13,15 @@ interface SpaceOverviewProps {
 const SpaceOverview = ({ showAllSpaces = false }: SpaceOverviewProps) => {
   const { selectedSpaceId, getSpaceById, spaces } = useCultivation();
   
-  // Function to get all plants across spaces
   const getAllPlants = () => {
     return spaces.flatMap(space => space.plants);
   };
   
-  // Get plants and space data based on selection
   const getSpaceData = () => {
     if (showAllSpaces) {
       const allPlants = getAllPlants();
       return {
-        id: 0, // Added id property with 0 to represent "all spaces"
+        id: 0,
         name: "Tous les espaces",
         plants: allPlants,
         rows: spaces.reduce((sum, space) => sum + space.rows, 0),
@@ -53,7 +50,6 @@ const SpaceOverview = ({ showAllSpaces = false }: SpaceOverviewProps) => {
     );
   }
   
-  // Count plants by state
   const plantsByState = spaceData.plants.reduce((acc, plant) => {
     acc[plant.state] = (acc[plant.state] || 0) + 1;
     return acc;
@@ -81,11 +77,9 @@ const SpaceOverview = ({ showAllSpaces = false }: SpaceOverviewProps) => {
     color: stateColors[state as PlantState]
   }));
   
-  // Average EC and pH data
   const averageEC = spaceData.plants.reduce((sum, plant) => sum + plant.ec, 0) / spaceData.plants.length;
   const averagePH = spaceData.plants.reduce((sum, plant) => sum + plant.ph, 0) / spaceData.plants.length;
   
-  // Data for varieties distribution
   const varietiesData = spaceData.plants.reduce((acc, plant) => {
     const variety = plant.variety.name;
     acc[variety] = (acc[variety] || 0) + 1;
@@ -98,7 +92,7 @@ const SpaceOverview = ({ showAllSpaces = false }: SpaceOverviewProps) => {
       count
     }))
     .sort((a, b) => b.count - a.count)
-    .slice(0, 7); // Limit to top 7 varieties for readability
+    .slice(0, 7);
   
   return (
     <div className="p-6 animate-fade-in bg-gradient-to-b from-gray-50 to-white">
@@ -219,7 +213,9 @@ const SpaceOverview = ({ showAllSpaces = false }: SpaceOverviewProps) => {
                     fill="#f43f5e" 
                     radius={[0, 4, 4, 0]} 
                     barSize={20}
-                  />
+                  >
+                    <LabelList dataKey="count" position="right" formatter={(value) => value} />
+                  </Bar>
                 </BarChart>
               </ResponsiveContainer>
             </div>
