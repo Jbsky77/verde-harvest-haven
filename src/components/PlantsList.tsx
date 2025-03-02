@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { ChevronDown, ChevronUp, Edit2, Leaf, Filter } from "lucide-react";
+import { ChevronDown, ChevronUp, Edit2, Leaf, Filter, ArrowLeft, ArrowRight } from "lucide-react";
 import PlantDetails from "@/components/PlantDetails";
 import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -34,7 +34,7 @@ type PlantsListProps = {
 const PlantsList = ({ space }: PlantsListProps) => {
   const [selectedPlant, setSelectedPlant] = useState<Plant | null>(null);
   const [expandedRows, setExpandedRows] = useState<number[]>([]);
-  const { updatePlant } = useCultivation();
+  const { updatePlant, spaces, setSelectedSpaceId } = useCultivation();
   
   const handlePlantClick = (plant: Plant) => {
     setSelectedPlant(plant);
@@ -46,6 +46,22 @@ const PlantsList = ({ space }: PlantsListProps) => {
   
   const closeDialog = () => {
     setSelectedPlant(null);
+  };
+
+  const navigateToSpace = (spaceId: number) => {
+    setSelectedSpaceId(spaceId);
+  };
+
+  const nextSpace = () => {
+    const currentIndex = spaces.findIndex(s => s.id === space.id);
+    const nextIndex = (currentIndex + 1) % spaces.length;
+    navigateToSpace(spaces[nextIndex].id);
+  };
+
+  const prevSpace = () => {
+    const currentIndex = spaces.findIndex(s => s.id === space.id);
+    const prevIndex = (currentIndex - 1 + spaces.length) % spaces.length;
+    navigateToSpace(spaces[prevIndex].id);
   };
   
   // Get unique rows from plants
@@ -73,15 +89,54 @@ const PlantsList = ({ space }: PlantsListProps) => {
   
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold flex items-center gap-2">
-          <Leaf className="h-5 w-5 text-primary" />
-          Plantes de l'espace {space.name}
-        </h2>
-        <Button variant="outline" size="sm" className="flex items-center gap-1">
-          <Filter className="h-4 w-4" />
-          Filtres
-        </Button>
+      <div className="flex flex-col space-y-4">
+        <div className="flex justify-between items-center">
+          <h2 className="text-xl font-semibold flex items-center gap-2">
+            <Leaf className="h-5 w-5 text-primary" />
+            Plantes de l'espace {space.name}
+          </h2>
+          <Button variant="outline" size="sm" className="flex items-center gap-1">
+            <Filter className="h-4 w-4" />
+            Filtres
+          </Button>
+        </div>
+
+        {/* Space navigation controls */}
+        <div className="flex items-center justify-between bg-muted/50 rounded-lg p-3">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={prevSpace}
+            className="flex items-center gap-1"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Espace précédent
+          </Button>
+          
+          <div className="flex gap-2">
+            {spaces.map(s => (
+              <Button
+                key={s.id}
+                variant={s.id === space.id ? "default" : "outline"}
+                size="sm"
+                onClick={() => navigateToSpace(s.id)}
+                className="min-w-10"
+              >
+                {s.id}
+              </Button>
+            ))}
+          </div>
+          
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={nextSpace}
+            className="flex items-center gap-1"
+          >
+            Espace suivant
+            <ArrowRight className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
       
       {rows.map(row => (
