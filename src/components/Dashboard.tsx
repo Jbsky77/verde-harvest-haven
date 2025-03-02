@@ -18,12 +18,17 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 
 const Dashboard = () => {
   const isMobile = useIsMobile();
   const [showAllSpaces, setShowAllSpaces] = useState(false);
   const [newSessionDialogOpen, setNewSessionDialogOpen] = useState(false);
   const [sessionName, setSessionName] = useState("");
+  const [sessionStartDate, setSessionStartDate] = useState<Date>(new Date());
   const { 
     startCultivationSession, 
     currentSession, 
@@ -35,10 +40,11 @@ const Dashboard = () => {
   
   const handleStartSession = () => {
     if (sessionName.trim()) {
-      startCultivationSession(sessionName, new Date(), selectedVarieties);
+      startCultivationSession(sessionName, sessionStartDate, selectedVarieties);
       setNewSessionDialogOpen(false);
       setSessionName("");
       setSelectedVarieties([]);
+      setSessionStartDate(new Date());
     }
   };
 
@@ -215,11 +221,30 @@ const Dashboard = () => {
               </div>
               <div>
                 <Label>Date de début</Label>
-                <div className="flex items-center h-10 px-3 mt-1 rounded-md border border-input">
-                  <CalendarIcon className="mr-2 h-4 w-4 opacity-50" />
-                  <span className="text-sm">{new Date().toLocaleDateString()}</span>
-                </div>
-                <p className="text-sm text-muted-foreground mt-1">La date de début est définie à aujourd'hui</p>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start text-left font-normal mt-1"
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {sessionStartDate ? (
+                        format(sessionStartDate, "d MMMM yyyy", { locale: fr })
+                      ) : (
+                        <span>Sélectionner une date</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={sessionStartDate}
+                      onSelect={(date) => date && setSessionStartDate(date)}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+                <p className="text-sm text-muted-foreground mt-1">Choisissez la date de début de session</p>
               </div>
               
               <div>
