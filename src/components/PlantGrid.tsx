@@ -144,44 +144,30 @@ const PlantGrid = ({ space }: PlantGridProps) => {
           <ScrollArea className="h-[400px] w-full">
             <div className="flex flex-col gap-4">
               {(() => {
-                const sortedPlants = [...space.plants].sort((a, b) => {
-                  const aId = a.id.toString();
-                  const bId = b.id.toString();
-                  return aId.localeCompare(bId, undefined, { numeric: true });
-                });
+                const rowNumbers = [1, 2, 3, 4];
                 
-                // Group plants by row (L1-L4)
-                const rowsMap: Record<number, Plant[]> = {};
-                sortedPlants.forEach(plant => {
-                  const row = plant.position.row;
-                  if (!rowsMap[row]) rowsMap[row] = [];
-                  rowsMap[row].push(plant);
-                });
-                
-                // Sort rows
-                const rows = Object.entries(rowsMap)
-                  .map(([rowNum, plants]) => ({
-                    rowNum: parseInt(rowNum),
-                    plants
-                  }))
-                  .sort((a, b) => a.rowNum - b.rowNum);
-                
-                return rows.map(row => (
-                  <div key={row.rowNum} className="flex items-center">
-                    <div className="w-14 text-sm font-medium text-muted-foreground mr-2">
-                      L{row.rowNum}:
+                return rowNumbers.map(rowNum => {
+                  const plantsInRow = space.plants
+                    .filter(plant => plant.position.row === rowNum)
+                    .sort((a, b) => a.position.column - b.position.column);
+                  
+                  return (
+                    <div key={rowNum} className="flex items-center">
+                      <div className="w-14 text-sm font-medium text-muted-foreground mr-2">
+                        L{rowNum}:
+                      </div>
+                      <div className="flex flex-nowrap gap-1 overflow-x-auto pb-2">
+                        {plantsInRow.map(plant => (
+                          <PlantCell 
+                            key={plant.id} 
+                            plant={plant} 
+                            onClick={handlePlantClick} 
+                          />
+                        ))}
+                      </div>
                     </div>
-                    <div className="flex flex-wrap gap-1">
-                      {row.plants.map(plant => (
-                        <PlantCell 
-                          key={plant.id} 
-                          plant={plant} 
-                          onClick={handlePlantClick} 
-                        />
-                      ))}
-                    </div>
-                  </div>
-                ));
+                  );
+                });
               })()}
             </div>
           </ScrollArea>
