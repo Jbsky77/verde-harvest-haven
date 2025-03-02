@@ -2,7 +2,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import BatchActions from "@/components/BatchActions";
 import FertilizerButtons from "@/components/FertilizerButtons";
-import VarietyButtons from "@/components/VarietyButtons";
+import VarietyManagementTab from "@/components/dashboard/VarietyManagementTab";
 import SettingsButtons from "@/components/SettingsButtons";
 
 const DashboardTabs = () => {
@@ -42,7 +42,7 @@ const DashboardTabs = () => {
           <FertilizerButtons />
         </TabsContent>
         <TabsContent value="varieties">
-          <VarietyButtons />
+          <VarietyManagementTab />
         </TabsContent>
         <TabsContent value="settings">
           <SettingsButtons />
