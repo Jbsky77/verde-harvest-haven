@@ -165,7 +165,7 @@ const FertilizerManagementDialog = () => {
               </TableCell>
               <TableCell>{fertilizer.name}</TableCell>
               <TableCell>{FertilizerTypeLabels[fertilizer.type]}</TableCell>
-              <TableCell>{fertilizer.recommendedDosage.toFixed(1)} {fertilizer.unitType}</TableCell>
+              <TableCell>{fertilizer.recommendedDosage.toFixed(2)} {fertilizer.unitType}</TableCell>
               <TableCell>
                 <div className="flex items-center gap-2">
                   <Button 
@@ -232,8 +232,8 @@ const FertilizerManagementDialog = () => {
                 <Input 
                   id="dosage" 
                   type="number"
-                  step="0.1"
-                  min="0.1"
+                  step="0.01"
+                  min="0.01"
                   value={recommendedDosage}
                   onChange={e => setRecommendedDosage(e.target.value)}
                 />

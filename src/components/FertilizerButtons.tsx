@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Droplet, Leaf, Flower2, Zap, Beaker } from "lucide-react";
@@ -25,13 +26,13 @@ const FertilizerButtons = () => {
   } = useCultivation();
 
   const [selectedFertilizerId, setSelectedFertilizerId] = React.useState<string>("");
-  const [dosage, setDosage] = React.useState<string>("1.0");
+  const [dosage, setDosage] = React.useState<string>("1.00");
 
   const selectedFertilizer = fertilizers.find(f => f.id === selectedFertilizerId);
 
   React.useEffect(() => {
     if (selectedFertilizer) {
-      setDosage(selectedFertilizer.recommendedDosage.toString());
+      setDosage(selectedFertilizer.recommendedDosage.toFixed(2));
     }
   }, [selectedFertilizerId, selectedFertilizer]);
 
@@ -61,7 +62,7 @@ const FertilizerButtons = () => {
 
     toast({
       title: "Engrais appliqué",
-      description: `${selectedFertilizer.name} appliqué à ${dosage} ${selectedFertilizer.unitType} sur ${plantsLabel}`,
+      description: `${selectedFertilizer.name} appliqué à ${parseFloat(dosage).toFixed(2)} ${selectedFertilizer.unitType} sur ${plantsLabel}`,
       variant: "success",
     });
   };
@@ -113,8 +114,8 @@ const FertilizerButtons = () => {
               <Input
                 id="fertilizer-dosage"
                 type="number"
-                step="0.1"
-                min="0.1"
+                step="0.01"
+                min="0.01"
                 value={dosage}
                 onChange={(e) => setDosage(e.target.value)}
                 className="flex-1"
