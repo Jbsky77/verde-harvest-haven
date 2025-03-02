@@ -44,6 +44,8 @@ type CultivationContextType = {
   endCultivationSession: () => void;
   getEstimatedFloweringDate: (plantId: string) => Date | null;
   getEstimatedHarvestDate: (plantId: string) => Date | null;
+  getEstimatedHarvestDateForVariety: (varietyId: string) => Date | null;
+  getMaxHarvestDateForSession: (session: CultivationSession) => Date | null;
 };
 
 const CultivationContext = createContext<CultivationContextType | undefined>(undefined);
@@ -492,6 +494,40 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
     return harvestDate;
   };
 
+  const getEstimatedHarvestDateForVariety = (varietyId: string): Date | null => {
+    if (!currentSession) return null;
+    
+    const variety = varieties.find(v => v.id === varietyId);
+    if (!variety || !variety.germinationTime || !variety.growthTime || !variety.floweringTime) return null;
+    
+    const germStartDate = new Date(currentSession.startDate);
+    const harvestDate = new Date(germStartDate);
+    harvestDate.setDate(harvestDate.getDate() + variety.germinationTime + variety.growthTime + variety.floweringTime);
+    
+    return harvestDate;
+  };
+
+  const getMaxHarvestDateForSession = (session: CultivationSession): Date | null => {
+    if (!session.selectedVarieties || session.selectedVarieties.length === 0) return null;
+    
+    let maxDate: Date | null = null;
+    
+    for (const varietyId of session.selectedVarieties) {
+      const variety = varieties.find(v => v.id === varietyId);
+      if (!variety || !variety.germinationTime || !variety.growthTime || !variety.floweringTime) continue;
+      
+      const germStartDate = new Date(session.startDate);
+      const harvestDate = new Date(germStartDate);
+      harvestDate.setDate(harvestDate.getDate() + variety.germinationTime + variety.growthTime + variety.floweringTime);
+      
+      if (!maxDate || harvestDate > maxDate) {
+        maxDate = harvestDate;
+      }
+    }
+    
+    return maxDate;
+  };
+
   useEffect(() => {
     addAlert({
       type: "info",
@@ -535,6 +571,8 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
         endCultivationSession,
         getEstimatedFloweringDate,
         getEstimatedHarvestDate,
+        getEstimatedHarvestDateForVariety,
+        getMaxHarvestDateForSession,
       }}
     >
       {children}
