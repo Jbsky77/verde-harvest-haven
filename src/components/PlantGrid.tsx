@@ -143,7 +143,7 @@ const PlantGrid = ({ space }: PlantGridProps) => {
         </CardHeader>
         <CardContent className="p-4">
           <ScrollArea className="h-[500px] w-full">
-            <div className="grid grid-cols-[auto_1fr] gap-4">
+            <div className="flex overflow-x-auto pb-4">
               {(() => {
                 const rowNumbers = [1, 2, 3, 4];
                 const colNumbers = Array.from({ length: 143 }, (_, i) => i + 1);
