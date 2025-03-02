@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { Plant, PlantVariety, CultivationSpace, Alert, PlantState, Fertilizer } from '@/types';
 
@@ -221,7 +220,7 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
           plant.id === plantId 
             ? { ...plant, ph, lastUpdated: new Date() } 
             : plant
-        )
+        ))
       }))
     );
 
@@ -380,7 +379,7 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
           plant.variety.id === varietyToUpdate.id
             ? { ...plant, variety: varietyToUpdate }
             : plant
-        )
+        ))
       }))
     );
     

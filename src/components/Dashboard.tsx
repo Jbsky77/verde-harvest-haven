@@ -17,7 +17,7 @@ const Dashboard = () => {
   return (
     <div className="flex flex-col h-full">
       <div className="flex-1 overflow-auto pb-16">
-        <div className="px-6 pt-6 flex justify-end items-center">
+        <div className="px-6 pt-6 flex justify-end">
           <div className="flex items-center space-x-2">
             <Switch
               id="show-all-spaces"
