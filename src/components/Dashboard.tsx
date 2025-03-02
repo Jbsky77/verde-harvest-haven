@@ -15,7 +15,7 @@ const Dashboard = () => {
   const [showAllSpaces, setShowAllSpaces] = useState(false);
   
   return (
-    <div className="flex flex-col md:flex-row h-full">
+    <div className="flex flex-col h-full">
       <div className="flex-1 overflow-auto pb-16">
         <div className="px-6 pt-6 flex justify-end">
           <div className="flex items-center space-x-2">
@@ -28,10 +28,8 @@ const Dashboard = () => {
           </div>
         </div>
         <SpaceOverview showAllSpaces={showAllSpaces} />
-      </div>
-      
-      <div className={`${isMobile ? 'w-full' : 'w-96'} bg-gray-50 border-l p-4 lg:p-6 flex-shrink-0 max-h-screen overflow-y-auto`}>
-        <div className="sticky top-0">
+        
+        <div className="px-6 py-8">
           <Tabs defaultValue="batch" className="w-full">
             <TabsList className="grid w-full grid-cols-4 mb-4 bg-white">
               <TabsTrigger 
@@ -59,18 +57,20 @@ const Dashboard = () => {
                 Paramètres
               </TabsTrigger>
             </TabsList>
-            <TabsContent value="batch">
-              <BatchActions />
-            </TabsContent>
-            <TabsContent value="fertilizers">
-              <FertilizerButtons />
-            </TabsContent>
-            <TabsContent value="varieties">
-              <VarietyButtons />
-            </TabsContent>
-            <TabsContent value="settings">
-              <SettingsButtons />
-            </TabsContent>
+            <div className="bg-gray-50 border rounded-lg p-4 lg:p-6">
+              <TabsContent value="batch">
+                <BatchActions />
+              </TabsContent>
+              <TabsContent value="fertilizers">
+                <FertilizerButtons />
+              </TabsContent>
+              <TabsContent value="varieties">
+                <VarietyButtons />
+              </TabsContent>
+              <TabsContent value="settings">
+                <SettingsButtons />
+              </TabsContent>
+            </div>
           </Tabs>
         </div>
       </div>
