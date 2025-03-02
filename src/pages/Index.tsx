@@ -12,7 +12,7 @@ const Index = () => {
       <AppHeader />
       <div className="flex flex-1 mt-16">
         <SideNavigation />
-        <main className={`flex-1 ${isMobile ? "w-full" : "ml-14 md:ml-56"} bg-white transition-all duration-300 ease-in-out`}>
+        <main className={`flex-1 ${isMobile ? "w-full" : "ml-14 md:ml-56"} bg-white transition-all duration-300 ease-in-out overflow-y-auto`}>
           <Dashboard />
         </main>
       </div>

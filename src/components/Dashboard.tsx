@@ -14,7 +14,11 @@ const Dashboard = () => {
   
   const formatDateToLocale = (date: Date | null) => {
     if (!date) return "N/A";
-    return date.toLocaleDateString();
+    return date.toLocaleDateString('fr-FR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
   };
   
   return (
