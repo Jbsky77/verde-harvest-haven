@@ -5,7 +5,9 @@ import SessionDialog from "@/components/session/SessionDialog";
 import ActiveSessionCard from "@/components/session/ActiveSessionCard";
 import DashboardTabs from "@/components/dashboard/DashboardTabs";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
+import SessionsTable from "@/components/session/SessionsTable";
 import { useCultivation } from "@/context/CultivationContext";
+import { Separator } from "@/components/ui/separator";
 
 const Dashboard = () => {
   const [showAllSpaces, setShowAllSpaces] = useState(false);
@@ -35,6 +37,11 @@ const Dashboard = () => {
             <ActiveSessionCard formatDateToLocale={formatDateToLocale} />
           </div>
         )}
+        
+        <div className="px-6 pt-4">
+          <SessionsTable formatDateToLocale={formatDateToLocale} />
+          <Separator className="my-6" />
+        </div>
         
         <SpaceOverview showAllSpaces={showAllSpaces} />
         

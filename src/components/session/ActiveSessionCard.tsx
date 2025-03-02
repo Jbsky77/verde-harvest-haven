@@ -1,4 +1,3 @@
-
 import { useCultivation } from "@/context/CultivationContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -97,7 +96,7 @@ const ActiveSessionCard = ({ formatDateToLocale }: ActiveSessionCardProps) => {
   const currentDayMarker = Math.floor(elapsedDays);
   
   const handleDeleteSession = () => {
-    endCultivationSession();
+    endCultivationSession(currentSession.id);
     setDeleteConfirmOpen(false);
     toast({
       title: "Session terminée",
