@@ -24,6 +24,7 @@ const SpaceOverview = ({ showAllSpaces = false }: SpaceOverviewProps) => {
     if (showAllSpaces) {
       const allPlants = getAllPlants();
       return {
+        id: 0, // Added id property with 0 to represent "all spaces"
         name: "Tous les espaces",
         plants: allPlants,
         rows: spaces.reduce((sum, space) => sum + space.rows, 0),
