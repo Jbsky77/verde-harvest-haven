@@ -142,7 +142,7 @@ const SessionsTable = ({ formatDateToLocale }: SessionsTableProps) => {
                   {currentSession?.id === session.id ? (
                     <Badge className="bg-green-600">Active</Badge>
                   ) : (
-                    <Badge variant="outline">En cours</Badge>
+                    <Badge variant="outline" className="bg-green-100 text-green-700">Active</Badge>
                   )}
                 </TableCell>
                 <TableCell className="text-right">
@@ -152,10 +152,10 @@ const SessionsTable = ({ formatDateToLocale }: SessionsTableProps) => {
                         variant="outline" 
                         size="sm" 
                         onClick={() => handleSetCurrentSession(session.id)}
-                        title="Définir comme session active"
+                        title="Définir comme session active principale"
                       >
                         <Check className="h-4 w-4 mr-1" />
-                        Activer
+                        Principale
                       </Button>
                     )}
                     <Button 

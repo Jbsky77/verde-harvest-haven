@@ -12,7 +12,9 @@ import { Separator } from "@/components/ui/separator";
 const Dashboard = () => {
   const [showAllSpaces, setShowAllSpaces] = useState(false);
   const [newSessionDialogOpen, setNewSessionDialogOpen] = useState(false);
-  const { currentSession } = useCultivation();
+  const { currentSession, sessions } = useCultivation();
+  
+  const activeSessions = sessions.filter(session => session.isActive);
   
   const formatDateToLocale = (date: Date | null) => {
     if (!date) return "N/A";
