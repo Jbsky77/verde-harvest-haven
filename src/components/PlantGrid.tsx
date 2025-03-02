@@ -3,8 +3,11 @@ import { useState } from "react";
 import { CultivationSpace, Plant, PlantState } from "@/types";
 import { useCultivation } from "@/context/CultivationContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Leaf, Filter, ArrowLeft, ArrowRight } from "lucide-react";
 import PlantDetails from "@/components/PlantDetails";
 import { cn } from "@/lib/utils";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 
 type PlantCellProps = {
   plant: Plant;
@@ -50,7 +53,7 @@ type PlantGridProps = {
 
 const PlantGrid = ({ space }: PlantGridProps) => {
   const [selectedPlant, setSelectedPlant] = useState<Plant | null>(null);
-  const { updatePlant } = useCultivation();
+  const { updatePlant, spaces, setSelectedSpaceId } = useCultivation();
   
   const handlePlantClick = (plant: Plant) => {
     setSelectedPlant(plant);
@@ -62,6 +65,22 @@ const PlantGrid = ({ space }: PlantGridProps) => {
   
   const closeDialog = () => {
     setSelectedPlant(null);
+  };
+
+  const navigateToSpace = (spaceId: number) => {
+    setSelectedSpaceId(spaceId);
+  };
+
+  const nextSpace = () => {
+    const currentIndex = spaces.findIndex(s => s.id === space.id);
+    const nextIndex = (currentIndex + 1) % spaces.length;
+    navigateToSpace(spaces[nextIndex].id);
+  };
+
+  const prevSpace = () => {
+    const currentIndex = spaces.findIndex(s => s.id === space.id);
+    const prevIndex = (currentIndex - 1 + spaces.length) % spaces.length;
+    navigateToSpace(spaces[prevIndex].id);
   };
   
   // Organize plants by row
@@ -83,23 +102,78 @@ const PlantGrid = ({ space }: PlantGridProps) => {
   
   return (
     <div className="space-y-4">
-      {Object.entries(plantsByRow)
-        .sort(([rowA], [rowB]) => Number(rowA) - Number(rowB))
-        .map(([row, plants]) => (
-          <div key={row} className="space-y-2">
-            <h3 className="text-sm font-medium">Ligne {row}</h3>
-            <div className="flex flex-wrap gap-1">
-              {plants.map(plant => (
-                <PlantCell 
-                  key={plant.id} 
-                  plant={plant} 
-                  onClick={handlePlantClick} 
-                />
-              ))}
-            </div>
+      <div className="flex flex-col space-y-4">
+        <div className="flex justify-between items-center">
+          <h2 className="text-xl font-semibold flex items-center gap-2">
+            <Leaf className="h-5 w-5 text-primary" />
+            Plantes de l'espace {space.name}
+          </h2>
+          <Button variant="outline" size="sm" className="flex items-center gap-1">
+            <Filter className="h-4 w-4" />
+            Filtres
+          </Button>
+        </div>
+
+        {/* Space navigation controls */}
+        <div className="flex items-center justify-between bg-muted/50 rounded-lg p-3">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={prevSpace}
+            className="flex items-center gap-1"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Espace précédent
+          </Button>
+          
+          <div className="flex gap-2">
+            {spaces.map(s => (
+              <Button
+                key={s.id}
+                variant={s.id === space.id ? "default" : "outline"}
+                size="sm"
+                onClick={() => navigateToSpace(s.id)}
+                className="min-w-10"
+              >
+                {s.id}
+              </Button>
+            ))}
           </div>
-        ))
-      }
+          
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={nextSpace}
+            className="flex items-center gap-1"
+          >
+            Espace suivant
+            <ArrowRight className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+
+      <Card className="shadow-sm">
+        <CardHeader className="py-3 px-4 bg-accent/30">
+          <CardTitle className="text-base font-medium">Vue en grille</CardTitle>
+        </CardHeader>
+        {Object.entries(plantsByRow)
+          .sort(([rowA], [rowB]) => Number(rowA) - Number(rowB))
+          .map(([row, plants]) => (
+            <div key={row} className="p-4 border-t">
+              <h3 className="text-sm font-medium mb-2">Ligne {row}</h3>
+              <div className="flex flex-wrap gap-1">
+                {plants.map(plant => (
+                  <PlantCell 
+                    key={plant.id} 
+                    plant={plant} 
+                    onClick={handlePlantClick} 
+                  />
+                ))}
+              </div>
+            </div>
+          ))
+        }
+      </Card>
       
       <Dialog open={!!selectedPlant} onOpenChange={(open) => !open && closeDialog()}>
         <DialogContent className="max-w-md">
