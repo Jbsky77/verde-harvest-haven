@@ -84,20 +84,7 @@ const PlantGrid = ({ space }: PlantGridProps) => {
     navigateToSpace(spaces[prevIndex].id);
   };
   
-  const allPlants = [...space.plants].sort((a, b) => {
-    const aId = a.id.toString();
-    const bId = b.id.toString();
-    
-    return aId.localeCompare(bId, undefined, { numeric: true });
-  });
-  const totalPlants = allPlants.length;
-  
-  // Diviser les plantes en 4 colonnes
-  const plantsPerColumn = Math.ceil(totalPlants / 4);
-  const column1 = allPlants.slice(0, plantsPerColumn);
-  const column2 = allPlants.slice(plantsPerColumn, plantsPerColumn * 2);
-  const column3 = allPlants.slice(plantsPerColumn * 2, plantsPerColumn * 3);
-  const column4 = allPlants.slice(plantsPerColumn * 3);
+  const allSpaces = [...spaces].sort((a, b) => a.id - b.id);
   
   return (
     <div className="space-y-4">
@@ -105,7 +92,7 @@ const PlantGrid = ({ space }: PlantGridProps) => {
         <div className="flex justify-between items-center">
           <h2 className="text-xl font-semibold flex items-center gap-2">
             <Leaf className="h-5 w-5 text-primary" />
-            Plantes de l'espace {space.name}
+            Vue d'ensemble des espaces
           </h2>
           <Button variant="outline" size="sm" className="flex items-center gap-1">
             <Filter className="h-4 w-4" />
@@ -152,47 +139,60 @@ const PlantGrid = ({ space }: PlantGridProps) => {
 
       <Card className="shadow-sm">
         <CardHeader className="py-3 px-4 bg-accent/30">
-          <CardTitle className="text-base font-medium">Vue en grille ({totalPlants} plantes)</CardTitle>
+          <CardTitle className="text-base font-medium">Vue en grille (tous les espaces)</CardTitle>
         </CardHeader>
         <CardContent className="p-4">
-          <ScrollArea className="h-48 w-full">
-            <div className="flex items-center justify-center gap-4">
-              <div className="flex flex-col gap-1">
-                {column1.map(plant => (
-                  <PlantCell 
-                    key={plant.id} 
-                    plant={plant} 
-                    onClick={handlePlantClick} 
-                  />
-                ))}
-              </div>
-              <div className="flex flex-col gap-1">
-                {column2.map(plant => (
-                  <PlantCell 
-                    key={plant.id} 
-                    plant={plant} 
-                    onClick={handlePlantClick} 
-                  />
-                ))}
-              </div>
-              <div className="flex flex-col gap-1">
-                {column3.map(plant => (
-                  <PlantCell 
-                    key={plant.id} 
-                    plant={plant} 
-                    onClick={handlePlantClick} 
-                  />
-                ))}
-              </div>
-              <div className="flex flex-col gap-1">
-                {column4.map(plant => (
-                  <PlantCell 
-                    key={plant.id} 
-                    plant={plant} 
-                    onClick={handlePlantClick} 
-                  />
-                ))}
-              </div>
+          <ScrollArea className="h-[500px] w-full">
+            <div className="flex flex-col gap-8">
+              {allSpaces.map((currentSpace) => {
+                const sortedPlants = [...currentSpace.plants].sort((a, b) => {
+                  const aId = a.id.toString();
+                  const bId = b.id.toString();
+                  return aId.localeCompare(bId, undefined, { numeric: true });
+                });
+                
+                // Group plants by row (L1-L4)
+                const rowsMap: Record<number, Plant[]> = {};
+                sortedPlants.forEach(plant => {
+                  const row = plant.position.row;
+                  if (!rowsMap[row]) rowsMap[row] = [];
+                  rowsMap[row].push(plant);
+                });
+                
+                // Sort rows
+                const rows = Object.entries(rowsMap)
+                  .map(([rowNum, plants]) => ({
+                    rowNum: parseInt(rowNum),
+                    plants
+                  }))
+                  .sort((a, b) => a.rowNum - b.rowNum);
+                
+                return (
+                  <div key={currentSpace.id} className="mb-6">
+                    <h3 className="text-lg font-medium mb-2 text-primary">
+                      Espace {currentSpace.id}
+                    </h3>
+                    <div className="flex flex-col gap-3">
+                      {rows.map(row => (
+                        <div key={row.rowNum} className="flex items-center">
+                          <div className="w-14 text-sm font-medium text-muted-foreground mr-2">
+                            L{row.rowNum}:
+                          </div>
+                          <div className="flex flex-wrap gap-1">
+                            {row.plants.map(plant => (
+                              <PlantCell 
+                                key={plant.id} 
+                                plant={plant} 
+                                onClick={handlePlantClick} 
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </ScrollArea>
         </CardContent>
