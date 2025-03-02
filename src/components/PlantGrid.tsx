@@ -142,7 +142,7 @@ const PlantGrid = ({ space }: PlantGridProps) => {
           <CardTitle className="text-base font-medium">Vue en grille (tous les espaces)</CardTitle>
         </CardHeader>
         <CardContent className="p-4">
-          <ScrollArea className="h-[500px] w-full">
+          <ScrollArea className="h-[700px] w-full">
             <div className="flex flex-col gap-8">
               {allSpaces.map((currentSpace) => {
                 const sortedPlants = [...currentSpace.plants].sort((a, b) => {
@@ -168,8 +168,8 @@ const PlantGrid = ({ space }: PlantGridProps) => {
                   .sort((a, b) => a.rowNum - b.rowNum);
                 
                 return (
-                  <div key={currentSpace.id} className="mb-6">
-                    <h3 className="text-lg font-medium mb-2 text-primary">
+                  <div key={currentSpace.id} className="mb-10">
+                    <h3 className="text-lg font-medium mb-3 text-primary">
                       Espace {currentSpace.id}
                     </h3>
                     <div className="flex flex-col gap-3">
