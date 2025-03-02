@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { CultivationSpace, Plant, PlantState } from "@/types";
 import { useCultivation } from "@/context/CultivationContext";
@@ -83,8 +82,12 @@ const PlantGrid = ({ space }: PlantGridProps) => {
     navigateToSpace(spaces[prevIndex].id);
   };
   
-  // Organize all plants in a single array, sorted by their ID
-  const allPlants = [...space.plants].sort((a, b) => a.id - b.id);
+  const allPlants = [...space.plants].sort((a, b) => {
+    const aId = a.id.toString();
+    const bId = b.id.toString();
+    
+    return aId.localeCompare(bId, undefined, { numeric: true });
+  });
   const totalPlants = allPlants.length;
   
   return (
@@ -101,7 +104,6 @@ const PlantGrid = ({ space }: PlantGridProps) => {
           </Button>
         </div>
 
-        {/* Space navigation controls */}
         <div className="flex items-center justify-between bg-muted/50 rounded-lg p-3">
           <Button 
             variant="outline" 
