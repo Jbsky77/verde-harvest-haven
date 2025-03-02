@@ -92,6 +92,13 @@ const PlantGrid = ({ space }: PlantGridProps) => {
   });
   const totalPlants = allPlants.length;
   
+  // Diviser les plantes en 4 colonnes
+  const plantsPerColumn = Math.ceil(totalPlants / 4);
+  const column1 = allPlants.slice(0, plantsPerColumn);
+  const column2 = allPlants.slice(plantsPerColumn, plantsPerColumn * 2);
+  const column3 = allPlants.slice(plantsPerColumn * 2, plantsPerColumn * 3);
+  const column4 = allPlants.slice(plantsPerColumn * 3);
+  
   return (
     <div className="space-y-4">
       <div className="flex flex-col space-y-4">
@@ -149,9 +156,36 @@ const PlantGrid = ({ space }: PlantGridProps) => {
         </CardHeader>
         <CardContent className="p-4">
           <ScrollArea className="h-48 w-full">
-            <div className="flex items-center justify-center">
+            <div className="flex items-center justify-center gap-4">
               <div className="flex flex-col gap-1">
-                {allPlants.map(plant => (
+                {column1.map(plant => (
+                  <PlantCell 
+                    key={plant.id} 
+                    plant={plant} 
+                    onClick={handlePlantClick} 
+                  />
+                ))}
+              </div>
+              <div className="flex flex-col gap-1">
+                {column2.map(plant => (
+                  <PlantCell 
+                    key={plant.id} 
+                    plant={plant} 
+                    onClick={handlePlantClick} 
+                  />
+                ))}
+              </div>
+              <div className="flex flex-col gap-1">
+                {column3.map(plant => (
+                  <PlantCell 
+                    key={plant.id} 
+                    plant={plant} 
+                    onClick={handlePlantClick} 
+                  />
+                ))}
+              </div>
+              <div className="flex flex-col gap-1">
+                {column4.map(plant => (
                   <PlantCell 
                     key={plant.id} 
                     plant={plant} 
