@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,20 +8,45 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Check, X } from "lucide-react";
 import { useCultivation } from "@/context/CultivationContext";
+import { useToast } from "@/hooks/use-toast";
 
 interface SessionDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  isEditing?: boolean;
+  currentSession?: {
+    id: string;
+    name: string;
+    startDate: Date;
+    selectedVarieties?: string[];
+  } | null;
 }
 
-const SessionDialog = ({ open, onOpenChange }: SessionDialogProps) => {
+const SessionDialog = ({ open, onOpenChange, isEditing = false, currentSession = null }: SessionDialogProps) => {
   const [sessionName, setSessionName] = useState("");
   const [sessionDateText, setSessionDateText] = useState("");
-  const { startCultivationSession, varieties } = useCultivation();
+  const { startCultivationSession, varieties, endCultivationSession } = useCultivation();
   const [selectedVarieties, setSelectedVarieties] = useState<string[]>([]);
   const [dateError, setDateError] = useState<string | null>(null);
+  const { toast } = useToast();
 
-  const handleStartSession = () => {
+  // Initialize form with current session data if editing
+  useEffect(() => {
+    if (isEditing && currentSession) {
+      setSessionName(currentSession.name);
+      
+      // Format the date to DD/MM/YYYY
+      const date = new Date(currentSession.startDate);
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      setSessionDateText(`${day}/${month}/${year}`);
+      
+      setSelectedVarieties(currentSession.selectedVarieties || []);
+    }
+  }, [isEditing, currentSession, open]);
+
+  const handleSaveSession = () => {
     if (sessionName.trim() && sessionDateText && selectedVarieties.length > 0) {
       // Parse the date from the French format (DD/MM/YYYY)
       const [day, month, year] = sessionDateText.split('/').map(num => parseInt(num, 10));
@@ -35,17 +60,38 @@ const SessionDialog = ({ open, onOpenChange }: SessionDialogProps) => {
         return;
       }
       
-      startCultivationSession(sessionName, sessionStartDate, selectedVarieties);
+      if (isEditing && currentSession) {
+        // For editing, end the current session and start a new one
+        endCultivationSession();
+        startCultivationSession(sessionName, sessionStartDate, selectedVarieties);
+        toast({
+          title: "Session modifiée",
+          description: `La session "${sessionName}" a été mise à jour avec succès.`,
+          variant: "default",
+        });
+      } else {
+        // For new session
+        startCultivationSession(sessionName, sessionStartDate, selectedVarieties);
+        toast({
+          title: "Session créée",
+          description: `La session "${sessionName}" a été démarrée avec succès.`,
+          variant: "default",
+        });
+      }
+      
       onOpenChange(false);
       resetForm();
     }
   };
 
   const resetForm = () => {
-    setSessionName("");
-    setSessionDateText("");
-    setSelectedVarieties([]);
-    setDateError(null);
+    // Only reset if not editing or dialog is closing
+    if (!isEditing || !open) {
+      setSessionName("");
+      setSessionDateText("");
+      setSelectedVarieties([]);
+      setDateError(null);
+    }
   };
 
   const handleCheckVariety = (varietyId: string, checked: boolean) => {
@@ -73,7 +119,11 @@ const SessionDialog = ({ open, onOpenChange }: SessionDialogProps) => {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Démarrer une nouvelle session de culture</DialogTitle>
+          <DialogTitle>
+            {isEditing 
+              ? `Modifier la session "${currentSession?.name}"`
+              : "Démarrer une nouvelle session de culture"}
+          </DialogTitle>
         </DialogHeader>
         <div className="py-4">
           <div className="space-y-4">
@@ -160,11 +210,11 @@ const SessionDialog = ({ open, onOpenChange }: SessionDialogProps) => {
             Annuler
           </Button>
           <Button 
-            variant="success" 
-            onClick={handleStartSession} 
+            variant={isEditing ? "default" : "success"}
+            onClick={handleSaveSession} 
             disabled={!sessionName.trim() || !sessionDateText || selectedVarieties.length === 0}
           >
-            Démarrer la session
+            {isEditing ? "Enregistrer les modifications" : "Démarrer la session"}
           </Button>
         </DialogFooter>
       </DialogContent>

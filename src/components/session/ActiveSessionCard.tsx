@@ -1,9 +1,14 @@
 
 import { useCultivation } from "@/context/CultivationContext";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { InfoIcon, CalendarIcon } from "lucide-react";
+import { InfoIcon, CalendarIcon, Edit, Trash2 } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import SessionDialog from "./SessionDialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
 
 interface ActiveSessionCardProps {
   formatDateToLocale: (date: Date | null) => string;
@@ -14,8 +19,13 @@ const ActiveSessionCard = ({ formatDateToLocale }: ActiveSessionCardProps) => {
     currentSession, 
     varieties, 
     getEstimatedHarvestDateForVariety,
-    getMaxHarvestDateForSession
+    getMaxHarvestDateForSession,
+    endCultivationSession
   } = useCultivation();
+  
+  const [editSessionOpen, setEditSessionOpen] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const { toast } = useToast();
 
   if (!currentSession || !currentSession.isActive) {
     return null;
@@ -85,177 +95,243 @@ const ActiveSessionCard = ({ formatDateToLocale }: ActiveSessionCardProps) => {
   
   // Calculate current day marker position
   const currentDayMarker = Math.floor(elapsedDays);
+  
+  const handleDeleteSession = () => {
+    endCultivationSession();
+    setDeleteConfirmOpen(false);
+    toast({
+      title: "Session terminée",
+      description: `La session "${currentSession.name}" a été terminée avec succès.`,
+      variant: "default",
+    });
+  };
 
   return (
-    <Card className="bg-green-50 border-green-200">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-green-800 flex items-center gap-2">
-          <CalendarIcon className="h-5 w-5" />
-          Session en cours: {currentSession.name}
-        </CardTitle>
-        <CardDescription className="text-green-700">
-          Démarrée le {formatDateToLocale(new Date(currentSession.startDate))}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-3">
-          {/* Progress indicator */}
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-green-800">Progression globale</span>
-            <Badge variant="outline" className="bg-white text-green-800">
-              {progressPercent}%
-            </Badge>
+    <>
+      <Card className="bg-green-50 border-green-200">
+        <CardHeader className="pb-2">
+          <div className="flex justify-between items-center">
+            <CardTitle className="text-green-800 flex items-center gap-2">
+              <CalendarIcon className="h-5 w-5" />
+              Session en cours: {currentSession.name}
+            </CardTitle>
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="h-8 bg-white hover:bg-green-100"
+                onClick={() => setEditSessionOpen(true)}
+              >
+                <Edit className="h-4 w-4 mr-1" />
+                Modifier
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="h-8 bg-white hover:bg-red-100 text-red-600 hover:text-red-700 border-red-200 hover:border-red-300"
+                onClick={() => setDeleteConfirmOpen(true)}
+              >
+                <Trash2 className="h-4 w-4 mr-1" />
+                Terminer
+              </Button>
+            </div>
           </div>
-          
-          {/* Growth phase chart */}
-          <div className="h-48 mt-4 mb-6">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={chartData}>
-                <defs>
-                  {currentSession.selectedVarieties?.map((varietyId, index) => {
+          <CardDescription className="text-green-700">
+            Démarrée le {formatDateToLocale(new Date(currentSession.startDate))}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            {/* Progress indicator */}
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-green-800">Progression globale</span>
+              <Badge variant="outline" className="bg-white text-green-800">
+                {progressPercent}%
+              </Badge>
+            </div>
+            
+            {/* Growth phase chart */}
+            <div className="h-48 mt-4 mb-6">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={chartData}>
+                  <defs>
+                    {currentSession.selectedVarieties?.map((varietyId, index) => {
+                      const variety = varieties.find(v => v.id === varietyId);
+                      if (!variety) return null;
+                      return (
+                        <linearGradient key={varietyId} id={`color${varietyId}`} x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor={variety.color} stopOpacity={0.8}/>
+                          <stop offset="95%" stopColor={variety.color} stopOpacity={0.2}/>
+                        </linearGradient>
+                      );
+                    })}
+                  </defs>
+                  <XAxis 
+                    dataKey="day" 
+                    tick={{fontSize: 10}}
+                    tickFormatter={(day) => {
+                      // Show key dates only
+                      if (day === 0 || day === Math.floor(totalDuration) || day === currentDayMarker) {
+                        const date = new Date(startDate);
+                        date.setDate(date.getDate() + Number(day));
+                        return formatDateToLocale(date).split('/').slice(0, 2).join('/');
+                      }
+                      return '';
+                    }}
+                  />
+                  <YAxis 
+                    tick={{fontSize: 10}} 
+                    domain={[0, 100]}
+                    tickFormatter={(value) => {
+                      if (value === 0) return 'Début';
+                      if (value === 25) return 'Germ.';
+                      if (value === 50) return 'Croiss.';
+                      if (value === 75) return 'Floraison';
+                      if (value === 100) return 'Récolte';
+                      return '';
+                    }}
+                  />
+                  <Tooltip 
+                    formatter={(value, name) => {
+                      // Cast value to number before comparing
+                      const numValue = Number(value);
+                      const phase = 
+                        numValue <= 25 ? "Germination" :
+                        numValue <= 50 ? "Croissance" :
+                        numValue <= 75 ? "Floraison" : "Récolte";
+                      return [phase, name];
+                    }}
+                    labelFormatter={(day) => {
+                      const date = new Date(startDate);
+                      date.setDate(date.getDate() + Number(day));
+                      return `Jour ${day}: ${formatDateToLocale(date)}`;
+                    }}
+                  />
+                  
+                  {currentSession.selectedVarieties?.map((varietyId) => {
                     const variety = varieties.find(v => v.id === varietyId);
                     if (!variety) return null;
                     return (
-                      <linearGradient key={varietyId} id={`color${varietyId}`} x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={variety.color} stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor={variety.color} stopOpacity={0.2}/>
-                      </linearGradient>
+                      <Area 
+                        key={varietyId}
+                        type="monotone" 
+                        dataKey={variety.name}
+                        stroke={variety.color} 
+                        fillOpacity={1}
+                        fill={`url(#color${varietyId})`}
+                      />
                     );
                   })}
-                </defs>
-                <XAxis 
-                  dataKey="day" 
-                  tick={{fontSize: 10}}
-                  tickFormatter={(day) => {
-                    // Show key dates only
-                    if (day === 0 || day === Math.floor(totalDuration) || day === currentDayMarker) {
-                      const date = new Date(startDate);
-                      date.setDate(date.getDate() + Number(day));
-                      return formatDateToLocale(date).split('/').slice(0, 2).join('/');
-                    }
-                    return '';
-                  }}
-                />
-                <YAxis 
-                  tick={{fontSize: 10}} 
-                  domain={[0, 100]}
-                  tickFormatter={(value) => {
-                    if (value === 0) return 'Début';
-                    if (value === 25) return 'Germ.';
-                    if (value === 50) return 'Croiss.';
-                    if (value === 75) return 'Floraison';
-                    if (value === 100) return 'Récolte';
-                    return '';
-                  }}
-                />
-                <Tooltip 
-                  formatter={(value, name) => {
-                    // Cast value to number before comparing
-                    const numValue = Number(value);
-                    const phase = 
-                      numValue <= 25 ? "Germination" :
-                      numValue <= 50 ? "Croissance" :
-                      numValue <= 75 ? "Floraison" : "Récolte";
-                    return [phase, name];
-                  }}
-                  labelFormatter={(day) => {
-                    const date = new Date(startDate);
-                    date.setDate(date.getDate() + Number(day));
-                    return `Jour ${day}: ${formatDateToLocale(date)}`;
-                  }}
-                />
-                
-                {currentSession.selectedVarieties?.map((varietyId) => {
-                  const variety = varieties.find(v => v.id === varietyId);
-                  if (!variety) return null;
-                  return (
-                    <Area 
-                      key={varietyId}
-                      type="monotone" 
-                      dataKey={variety.name}
-                      stroke={variety.color} 
-                      fillOpacity={1}
-                      fill={`url(#color${varietyId})`}
-                    />
-                  );
-                })}
-                
-                {/* Current day marker */}
-                <XAxis 
-                  dataKey="day"
-                  xAxisId="current-day"
-                  axisLine={false} 
-                  tickLine={false}
-                  tick={false}
-                  height={0}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-          
-          {/* Legend */}
-          <div className="flex flex-wrap gap-2 mt-1 mb-3">
-            {currentSession.selectedVarieties?.map((varietyId) => {
-              const variety = varieties.find(v => v.id === varietyId);
-              if (!variety) return null;
-              return (
-                <div key={varietyId} className="flex items-center gap-1">
-                  <div 
-                    className="w-3 h-3 rounded-full" 
-                    style={{ backgroundColor: variety.color }}
-                  />
-                  <span className="text-xs text-green-800">{variety.name}</span>
-                </div>
-              );
-            })}
-          </div>
-          
-          {/* Variety list */}
-          {currentSession.selectedVarieties && currentSession.selectedVarieties.length > 0 ? (
-            <>
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-green-800">Variétés cultivées</span>
-                <span className="text-sm text-green-800">Date de récolte estimée</span>
-              </div>
-              <div className="space-y-2">
-                {currentSession.selectedVarieties.map(varietyId => {
-                  const variety = varieties.find(v => v.id === varietyId);
-                  if (!variety) return null;
-
-                  const harvestDate = getEstimatedHarvestDateForVariety(varietyId);
                   
-                  return (
-                    <div key={varietyId} className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div 
-                          className="w-3 h-3 rounded-full" 
-                          style={{ backgroundColor: variety.color }}
-                        />
-                        <span className="text-sm text-green-800">{variety.name}</span>
-                      </div>
-                      <Badge variant="outline" className="bg-white text-green-800">
-                        {formatDateToLocale(harvestDate)}
-                      </Badge>
-                    </div>
-                  );
-                })}
-              </div>
-              <div className="pt-2 border-t border-green-200 flex justify-between items-center">
-                <div className="flex items-center gap-1 text-green-800">
-                  <InfoIcon className="h-4 w-4" />
-                  <span className="text-sm font-medium">Fin de récolte estimée</span>
+                  {/* Current day marker */}
+                  <XAxis 
+                    dataKey="day"
+                    xAxisId="current-day"
+                    axisLine={false} 
+                    tickLine={false}
+                    tick={false}
+                    height={0}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+            
+            {/* Legend */}
+            <div className="flex flex-wrap gap-2 mt-1 mb-3">
+              {currentSession.selectedVarieties?.map((varietyId) => {
+                const variety = varieties.find(v => v.id === varietyId);
+                if (!variety) return null;
+                return (
+                  <div key={varietyId} className="flex items-center gap-1">
+                    <div 
+                      className="w-3 h-3 rounded-full" 
+                      style={{ backgroundColor: variety.color }}
+                    />
+                    <span className="text-xs text-green-800">{variety.name}</span>
+                  </div>
+                );
+              })}
+            </div>
+            
+            {/* Variety list */}
+            {currentSession.selectedVarieties && currentSession.selectedVarieties.length > 0 ? (
+              <>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-green-800">Variétés cultivées</span>
+                  <span className="text-sm text-green-800">Date de récolte estimée</span>
                 </div>
-                <Badge className="bg-green-700">
-                  {formatDateToLocale(getMaxHarvestDateForSession(currentSession))}
-                </Badge>
-              </div>
-            </>
-          ) : (
-            <p className="text-sm text-green-800">Aucune variété sélectionnée pour cette session.</p>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+                <div className="space-y-2">
+                  {currentSession.selectedVarieties.map(varietyId => {
+                    const variety = varieties.find(v => v.id === varietyId);
+                    if (!variety) return null;
+
+                    const harvestDate = getEstimatedHarvestDateForVariety(varietyId);
+                    
+                    return (
+                      <div key={varietyId} className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div 
+                            className="w-3 h-3 rounded-full" 
+                            style={{ backgroundColor: variety.color }}
+                          />
+                          <span className="text-sm text-green-800">{variety.name}</span>
+                        </div>
+                        <Badge variant="outline" className="bg-white text-green-800">
+                          {formatDateToLocale(harvestDate)}
+                        </Badge>
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="pt-2 border-t border-green-200 flex justify-between items-center">
+                  <div className="flex items-center gap-1 text-green-800">
+                    <InfoIcon className="h-4 w-4" />
+                    <span className="text-sm font-medium">Fin de récolte estimée</span>
+                  </div>
+                  <Badge className="bg-green-700">
+                    {formatDateToLocale(getMaxHarvestDateForSession(currentSession))}
+                  </Badge>
+                </div>
+              </>
+            ) : (
+              <p className="text-sm text-green-800">Aucune variété sélectionnée pour cette session.</p>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+      
+      {/* Edit Session Dialog */}
+      <SessionDialog 
+        open={editSessionOpen} 
+        onOpenChange={setEditSessionOpen}
+        isEditing={true}
+        currentSession={currentSession}
+      />
+      
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Terminer la session</DialogTitle>
+            <DialogDescription>
+              Êtes-vous sûr de vouloir terminer la session en cours "{currentSession.name}" ?
+              Cette action n'est pas réversible.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteConfirmOpen(false)}>
+              Annuler
+            </Button>
+            <Button 
+              variant="destructive" 
+              onClick={handleDeleteSession}
+            >
+              Terminer la session
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 
