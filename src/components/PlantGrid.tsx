@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Leaf, Filter, ArrowLeft, ArrowRight } from "lucide-react";
 import PlantDetails from "@/components/PlantDetails";
 import { cn } from "@/lib/utils";
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 type PlantCellProps = {
   plant: Plant;
@@ -83,22 +83,9 @@ const PlantGrid = ({ space }: PlantGridProps) => {
     navigateToSpace(spaces[prevIndex].id);
   };
   
-  // Organize plants by row
-  const plantsByRow: Record<number, Plant[]> = {};
-  
-  space.plants.forEach(plant => {
-    const row = plant.position.row;
-    if (!plantsByRow[row]) {
-      plantsByRow[row] = [];
-    }
-    plantsByRow[row].push(plant);
-  });
-  
-  // Sort plants in each row by column
-  Object.keys(plantsByRow).forEach(rowKey => {
-    const row = Number(rowKey);
-    plantsByRow[row] = plantsByRow[row].sort((a, b) => a.position.column - b.position.column);
-  });
+  // Organize all plants in a single array, sorted by their ID
+  const allPlants = [...space.plants].sort((a, b) => a.id - b.id);
+  const totalPlants = allPlants.length;
   
   return (
     <div className="space-y-4">
@@ -154,25 +141,19 @@ const PlantGrid = ({ space }: PlantGridProps) => {
 
       <Card className="shadow-sm">
         <CardHeader className="py-3 px-4 bg-accent/30">
-          <CardTitle className="text-base font-medium">Vue en grille</CardTitle>
+          <CardTitle className="text-base font-medium">Vue en grille ({totalPlants} plantes)</CardTitle>
         </CardHeader>
-        {Object.entries(plantsByRow)
-          .sort(([rowA], [rowB]) => Number(rowA) - Number(rowB))
-          .map(([row, plants]) => (
-            <div key={row} className="p-4 border-t">
-              <h3 className="text-sm font-medium mb-2">Ligne {row}</h3>
-              <div className="flex flex-wrap gap-1">
-                {plants.map(plant => (
-                  <PlantCell 
-                    key={plant.id} 
-                    plant={plant} 
-                    onClick={handlePlantClick} 
-                  />
-                ))}
-              </div>
-            </div>
-          ))
-        }
+        <CardContent className="p-4">
+          <div className="flex flex-wrap gap-1.5">
+            {allPlants.map(plant => (
+              <PlantCell 
+                key={plant.id} 
+                plant={plant} 
+                onClick={handlePlantClick} 
+              />
+            ))}
+          </div>
+        </CardContent>
       </Card>
       
       <Dialog open={!!selectedPlant} onOpenChange={(open) => !open && closeDialog()}>
