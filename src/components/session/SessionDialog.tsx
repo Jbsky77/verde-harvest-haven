@@ -6,11 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Check, X, CalendarIcon } from "lucide-react";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
+import { Check, X } from "lucide-react";
 import { useCultivation } from "@/context/CultivationContext";
 
 interface SessionDialogProps {
@@ -20,21 +16,36 @@ interface SessionDialogProps {
 
 const SessionDialog = ({ open, onOpenChange }: SessionDialogProps) => {
   const [sessionName, setSessionName] = useState("");
-  const [sessionStartDate, setSessionStartDate] = useState<Date>(new Date());
+  const [sessionDateText, setSessionDateText] = useState("");
   const { startCultivationSession, varieties } = useCultivation();
   const [selectedVarieties, setSelectedVarieties] = useState<string[]>([]);
-  
-  // Create a date for January 1, 2025
-  const jan2025 = new Date(2025, 0, 1);
+  const [dateError, setDateError] = useState<string | null>(null);
 
   const handleStartSession = () => {
-    if (sessionName.trim()) {
+    if (sessionName.trim() && sessionDateText && selectedVarieties.length > 0) {
+      // Parse the date from the French format (DD/MM/YYYY)
+      const [day, month, year] = sessionDateText.split('/').map(num => parseInt(num, 10));
+      
+      // JavaScript months are 0-indexed
+      const sessionStartDate = new Date(year, month - 1, day);
+      
+      // Check if this is a valid date
+      if (isNaN(sessionStartDate.getTime())) {
+        setDateError("Format de date invalide. Utilisez JJ/MM/AAAA");
+        return;
+      }
+      
       startCultivationSession(sessionName, sessionStartDate, selectedVarieties);
       onOpenChange(false);
-      setSessionName("");
-      setSelectedVarieties([]);
-      setSessionStartDate(new Date());
+      resetForm();
     }
+  };
+
+  const resetForm = () => {
+    setSessionName("");
+    setSessionDateText("");
+    setSelectedVarieties([]);
+    setDateError(null);
   };
 
   const handleCheckVariety = (varietyId: string, checked: boolean) => {
@@ -51,6 +62,11 @@ const SessionDialog = ({ open, onOpenChange }: SessionDialogProps) => {
 
   const deselectAllVarieties = () => {
     setSelectedVarieties([]);
+  };
+
+  const handleDateChange = (value: string) => {
+    setSessionDateText(value);
+    setDateError(null);
   };
 
   return (
@@ -71,36 +87,18 @@ const SessionDialog = ({ open, onOpenChange }: SessionDialogProps) => {
               />
             </div>
             <div>
-              <Label>Date de début</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start text-left font-normal mt-1"
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {sessionStartDate ? (
-                      format(sessionStartDate, "d MMMM yyyy", { locale: fr })
-                    ) : (
-                      <span>Sélectionner une date</span>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={sessionStartDate}
-                    onSelect={(date) => date && setSessionStartDate(date)}
-                    initialFocus
-                    defaultMonth={jan2025}
-                    captionLayout="dropdown-buttons"
-                    fromYear={2020}
-                    toYear={2030}
-                  />
-                </PopoverContent>
-              </Popover>
+              <Label htmlFor="session-date">Date de début</Label>
+              <Input
+                id="session-date"
+                value={sessionDateText}
+                onChange={(e) => handleDateChange(e.target.value)}
+                placeholder="JJ/MM/AAAA"
+              />
+              {dateError && (
+                <p className="text-sm text-red-500 mt-1">{dateError}</p>
+              )}
               <p className="text-sm text-muted-foreground mt-1">
-                Choisissez la date de début de session (incluant les dates passées, de 2020 jusqu'à 2030)
+                Entrez la date de début au format JJ/MM/AAAA (exemple: 15/04/2023)
               </p>
             </div>
             
@@ -164,7 +162,7 @@ const SessionDialog = ({ open, onOpenChange }: SessionDialogProps) => {
           <Button 
             variant="success" 
             onClick={handleStartSession} 
-            disabled={!sessionName.trim() || selectedVarieties.length === 0}
+            disabled={!sessionName.trim() || !sessionDateText || selectedVarieties.length === 0}
           >
             Démarrer la session
           </Button>
