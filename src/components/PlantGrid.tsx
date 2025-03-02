@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { CultivationSpace, Plant, PlantState } from "@/types";
 import { useCultivation } from "@/context/CultivationContext";
@@ -141,30 +142,37 @@ const PlantGrid = ({ space }: PlantGridProps) => {
           <CardTitle className="text-base font-medium">Vue en grille (Espace {space.id})</CardTitle>
         </CardHeader>
         <CardContent className="p-4">
-          <ScrollArea className="h-[400px] w-full">
-            <div className="flex flex-col gap-4">
+          <ScrollArea className="h-[500px] w-full">
+            <div className="grid grid-cols-[auto_1fr] gap-4">
               {(() => {
                 const rowNumbers = [1, 2, 3, 4];
+                const colNumbers = Array.from({ length: 143 }, (_, i) => i + 1);
                 
-                return rowNumbers.map(rowNum => {
-                  const plantsInRow = space.plants
-                    .filter(plant => plant.position.row === rowNum)
-                    .sort((a, b) => a.position.column - b.position.column);
-                  
+                // Créer un tableau de cellules verticales pour chaque colonne
+                return colNumbers.map(colNum => {
                   return (
-                    <div key={rowNum} className="flex items-center">
-                      <div className="w-14 text-sm font-medium text-muted-foreground mr-2">
-                        L{rowNum}:
+                    <div key={`col-${colNum}`} className="flex flex-col gap-1 mr-1">
+                      <div className="text-xs font-medium text-muted-foreground text-center mb-1">
+                        {colNum}
                       </div>
-                      <div className="flex flex-nowrap gap-1 overflow-x-auto pb-2">
-                        {plantsInRow.map(plant => (
+                      {rowNumbers.map(rowNum => {
+                        const plant = space.plants.find(
+                          p => p.position.column === colNum && p.position.row === rowNum
+                        );
+                        
+                        return plant ? (
                           <PlantCell 
-                            key={plant.id} 
+                            key={`plant-${rowNum}-${colNum}`} 
                             plant={plant} 
                             onClick={handlePlantClick} 
                           />
-                        ))}
-                      </div>
+                        ) : (
+                          <div 
+                            key={`empty-${rowNum}-${colNum}`} 
+                            className="w-5 h-5 border border-dashed border-gray-200 rounded-sm"
+                          />
+                        );
+                      })}
                     </div>
                   );
                 });
