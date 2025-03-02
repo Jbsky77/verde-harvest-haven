@@ -195,7 +195,7 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
           plant.id === plantId 
             ? { ...plant, ec, lastUpdated: new Date() } 
             : plant
-        )
+        ))
       }))
     );
 
