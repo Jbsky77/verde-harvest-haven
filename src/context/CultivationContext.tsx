@@ -23,7 +23,7 @@ type CultivationContextType = {
   addAlert: (alert: Omit<Alert, 'id' | 'timestamp' | 'read'>) => void;
   markAlertAsRead: (id: string) => void;
   clearAllAlerts: () => void;
-  addFertilizer: (fertilizer: Omit<Fertilizer, 'id' | 'createdAt'>) => void;
+  addFertilizer: (fertilizer: Omit<Fertilizer, 'id' | 'createdAt' | 'color'> & { color: string }) => void;
   updateFertilizer: (fertilizer: Fertilizer) => void;
   deleteFertilizer: (id: string) => void;
   getFertilizerById: (id: string) => Fertilizer | undefined;
@@ -45,11 +45,11 @@ const initialVarieties: PlantVariety[] = [
 
 // Initial fertilizers
 const initialFertilizers: Fertilizer[] = [
-  { id: "fert1", name: "Nutrient de base", type: "base", unitType: "ml/L", recommendedDosage: 1.5 },
-  { id: "fert2", name: "Nutrient de croissance", type: "growth", unitType: "ml/L", recommendedDosage: 2.0 },
-  { id: "fert3", name: "Nutrient de floraison", type: "bloom", unitType: "ml/L", recommendedDosage: 2.5 },
-  { id: "fert4", name: "Booster PK", type: "booster", unitType: "ml/L", recommendedDosage: 1.0 },
-  { id: "fert5", name: "Stimulateur racinaire", type: "custom", unitType: "ml/L", recommendedDosage: 0.5, isCustom: true, createdAt: new Date() },
+  { id: "fert1", name: "Nutrient de base", type: "base", unitType: "ml/L", recommendedDosage: 1.5, color: "#9b87f5" },
+  { id: "fert2", name: "Nutrient de croissance", type: "growth", unitType: "ml/L", recommendedDosage: 2.0, color: "#4CAF50" },
+  { id: "fert3", name: "Nutrient de floraison", type: "bloom", unitType: "ml/L", recommendedDosage: 2.5, color: "#E5BE7F" },
+  { id: "fert4", name: "Booster PK", type: "booster", unitType: "ml/L", recommendedDosage: 1.0, color: "#F5A962" },
+  { id: "fert5", name: "Stimulateur racinaire", type: "custom", unitType: "ml/L", recommendedDosage: 0.5, color: "#6ECFF6", isCustom: true, createdAt: new Date() },
 ];
 
 // Helper function to create a plant
@@ -290,7 +290,7 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
   };
 
   // New functions for fertilizer management
-  const addFertilizer = (fertilizer: Omit<Fertilizer, 'id' | 'createdAt'>) => {
+  const addFertilizer = (fertilizer: Omit<Fertilizer, 'id' | 'createdAt' | 'color'> & { color: string }) => {
     const newFertilizer: Fertilizer = {
       ...fertilizer,
       id: `fert-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,

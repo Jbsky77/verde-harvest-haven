@@ -35,6 +35,7 @@ export type Fertilizer = {
   type: FertilizerType;
   unitType: "ml/L" | "g/L";
   recommendedDosage: number;
+  color?: string;
   createdAt?: Date;
   isCustom?: boolean;
 };
