@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { CultivationSpace, Plant, PlantState } from "@/types";
 import { useCultivation } from "@/context/CultivationContext";
@@ -139,13 +138,13 @@ const PlantGrid = ({ space }: PlantGridProps) => {
 
       <Card className="shadow-sm">
         <CardHeader className="py-3 px-4 bg-accent/30">
-          <CardTitle className="text-base font-medium">Vue en grille (tous les espaces)</CardTitle>
+          <CardTitle className="text-base font-medium">Vue en grille (Espace {space.id})</CardTitle>
         </CardHeader>
         <CardContent className="p-4">
-          <ScrollArea className="h-[700px] w-full">
-            <div className="flex flex-col gap-8">
-              {allSpaces.map((currentSpace) => {
-                const sortedPlants = [...currentSpace.plants].sort((a, b) => {
+          <ScrollArea className="h-[400px] w-full">
+            <div className="flex flex-col gap-4">
+              {(() => {
+                const sortedPlants = [...space.plants].sort((a, b) => {
                   const aId = a.id.toString();
                   const bId = b.id.toString();
                   return aId.localeCompare(bId, undefined, { numeric: true });
@@ -167,32 +166,23 @@ const PlantGrid = ({ space }: PlantGridProps) => {
                   }))
                   .sort((a, b) => a.rowNum - b.rowNum);
                 
-                return (
-                  <div key={currentSpace.id} className="mb-10">
-                    <h3 className="text-lg font-medium mb-3 text-primary">
-                      Espace {currentSpace.id}
-                    </h3>
-                    <div className="flex flex-col gap-3">
-                      {rows.map(row => (
-                        <div key={row.rowNum} className="flex items-center">
-                          <div className="w-14 text-sm font-medium text-muted-foreground mr-2">
-                            L{row.rowNum}:
-                          </div>
-                          <div className="flex flex-wrap gap-1">
-                            {row.plants.map(plant => (
-                              <PlantCell 
-                                key={plant.id} 
-                                plant={plant} 
-                                onClick={handlePlantClick} 
-                              />
-                            ))}
-                          </div>
-                        </div>
+                return rows.map(row => (
+                  <div key={row.rowNum} className="flex items-center">
+                    <div className="w-14 text-sm font-medium text-muted-foreground mr-2">
+                      L{row.rowNum}:
+                    </div>
+                    <div className="flex flex-wrap gap-1">
+                      {row.plants.map(plant => (
+                        <PlantCell 
+                          key={plant.id} 
+                          plant={plant} 
+                          onClick={handlePlantClick} 
+                        />
                       ))}
                     </div>
                   </div>
-                );
-              })}
+                ));
+              })()}
             </div>
           </ScrollArea>
         </CardContent>
