@@ -1,4 +1,3 @@
-
 import BatchActions from "@/components/BatchActions";
 import SpaceOverview from "@/components/SpaceOverview";
 import FertilizerButtons from "@/components/FertilizerButtons";
@@ -244,7 +243,7 @@ const Dashboard = () => {
                     />
                   </PopoverContent>
                 </Popover>
-                <p className="text-sm text-muted-foreground mt-1">Choisissez la date de début de session</p>
+                <p className="text-sm text-muted-foreground mt-1">Choisissez la date de début de session (dates passées autorisées)</p>
               </div>
               
               <div>
