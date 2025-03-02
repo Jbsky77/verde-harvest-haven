@@ -5,7 +5,7 @@ import { PlantState } from "@/types";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PlantGrid from "@/components/PlantGrid";
 import PlantsList from "@/components/PlantsList";
-import { BarChart, PieChart, Bar, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { BarChart, PieChart, Bar, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LabelList } from "recharts";
 
 interface SpaceOverviewProps {
   showAllSpaces?: boolean;
@@ -181,6 +181,7 @@ const SpaceOverview = ({ showAllSpaces = false }: SpaceOverviewProps) => {
                         fill={index === 0 ? '#06b6d4' : '#9b87f5'} 
                       />
                     ))}
+                    <LabelList dataKey="value" position="top" formatter={(value) => value.toFixed(2)} />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
