@@ -1,10 +1,10 @@
-
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import { Plant, PlantVariety, CultivationSpace, Alert, PlantState } from '@/types';
+import { Plant, PlantVariety, CultivationSpace, Alert, PlantState, Fertilizer } from '@/types';
 
 type CultivationContextType = {
   spaces: CultivationSpace[];
   varieties: PlantVariety[];
+  fertilizers: Fertilizer[];
   alerts: Alert[];
   selectedSpaceId: number | null;
   selectedPlantIds: string[];
@@ -23,6 +23,10 @@ type CultivationContextType = {
   addAlert: (alert: Omit<Alert, 'id' | 'timestamp' | 'read'>) => void;
   markAlertAsRead: (id: string) => void;
   clearAllAlerts: () => void;
+  addFertilizer: (fertilizer: Omit<Fertilizer, 'id' | 'createdAt'>) => void;
+  updateFertilizer: (fertilizer: Fertilizer) => void;
+  deleteFertilizer: (id: string) => void;
+  getFertilizerById: (id: string) => Fertilizer | undefined;
 };
 
 const CultivationContext = createContext<CultivationContextType | undefined>(undefined);
@@ -34,6 +38,15 @@ const initialVarieties: PlantVariety[] = [
   { id: "var3", name: "ACDC", color: "#6E59A5" },
   { id: "var4", name: "Harlequin", color: "#D6BCFA" },
   { id: "var5", name: "Cannatonic", color: "#E5DEFF" },
+];
+
+// Initial fertilizers
+const initialFertilizers: Fertilizer[] = [
+  { id: "fert1", name: "Nutrient de base", type: "base", unitType: "ml/L", recommendedDosage: 1.5 },
+  { id: "fert2", name: "Nutrient de croissance", type: "growth", unitType: "ml/L", recommendedDosage: 2.0 },
+  { id: "fert3", name: "Nutrient de floraison", type: "bloom", unitType: "ml/L", recommendedDosage: 2.5 },
+  { id: "fert4", name: "Booster PK", type: "booster", unitType: "ml/L", recommendedDosage: 1.0 },
+  { id: "fert5", name: "Stimulateur racinaire", type: "custom", unitType: "ml/L", recommendedDosage: 0.5, isCustom: true, createdAt: new Date() },
 ];
 
 // Helper function to create a plant
@@ -85,6 +98,7 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
   const [spaces, setSpaces] = useState<CultivationSpace[]>(generateInitialSpaces);
   const [varieties, setVarieties] = useState<PlantVariety[]>(initialVarieties);
   const [alerts, setAlerts] = useState<Alert[]>([]);
+  const [fertilizers, setFertilizers] = useState<Fertilizer[]>(initialFertilizers);
   const [selectedSpaceId, setSelectedSpaceId] = useState<number | null>(1);
   const [selectedPlantIds, setSelectedPlantIds] = useState<string[]>([]);
 
@@ -272,6 +286,52 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
     setAlerts([]);
   };
 
+  // New functions for fertilizer management
+  const addFertilizer = (fertilizer: Omit<Fertilizer, 'id' | 'createdAt'>) => {
+    const newFertilizer: Fertilizer = {
+      ...fertilizer,
+      id: `fert-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      createdAt: new Date(),
+      isCustom: true
+    };
+    
+    setFertilizers(prev => [...prev, newFertilizer]);
+    
+    addAlert({
+      type: "success",
+      message: `Nouvel engrais "${newFertilizer.name}" ajouté avec succès`
+    });
+  };
+
+  const updateFertilizer = (updatedFertilizer: Fertilizer) => {
+    setFertilizers(prev => 
+      prev.map(fertilizer => 
+        fertilizer.id === updatedFertilizer.id ? updatedFertilizer : fertilizer
+      )
+    );
+    
+    addAlert({
+      type: "info",
+      message: `Engrais "${updatedFertilizer.name}" mis à jour avec succès`
+    });
+  };
+
+  const deleteFertilizer = (id: string) => {
+    const fertilizer = getFertilizerById(id);
+    if (fertilizer) {
+      setFertilizers(prev => prev.filter(f => f.id !== id));
+      
+      addAlert({
+        type: "info",
+        message: `Engrais "${fertilizer.name}" supprimé avec succès`
+      });
+    }
+  };
+
+  const getFertilizerById = (id: string): Fertilizer | undefined => {
+    return fertilizers.find(f => f.id === id);
+  };
+
   useEffect(() => {
     // Add an initial welcome alert
     addAlert({
@@ -285,6 +345,7 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
       value={{
         spaces,
         varieties,
+        fertilizers,
         alerts,
         selectedSpaceId,
         selectedPlantIds,
@@ -303,6 +364,10 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
         addAlert,
         markAlertAsRead,
         clearAllAlerts,
+        addFertilizer,
+        updateFertilizer,
+        deleteFertilizer,
+        getFertilizerById,
       }}
     >
       {children}

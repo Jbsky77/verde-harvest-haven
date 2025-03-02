@@ -1,4 +1,5 @@
 
+
 export type PlantVariety = {
   id: string;
   name: string;
@@ -27,7 +28,7 @@ export type Plant = {
   notes?: string;
 };
 
-export type FertilizerType = "base" | "growth" | "bloom" | "booster";
+export type FertilizerType = "base" | "growth" | "bloom" | "booster" | "custom";
 
 export type Fertilizer = {
   id: string;
@@ -35,6 +36,8 @@ export type Fertilizer = {
   type: FertilizerType;
   unitType: "ml/L" | "g/L";
   recommendedDosage: number;
+  createdAt?: Date;
+  isCustom?: boolean;
 };
 
 export type CultivationSpace = {
@@ -54,3 +57,4 @@ export type Alert = {
   spaceId?: number;
   plantId?: string;
 };
+

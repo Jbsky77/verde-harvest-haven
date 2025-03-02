@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Droplet, Leaf, Flower2, Zap } from "lucide-react";
+import { Droplet, Leaf, Flower2, Zap, Beaker } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useCultivation } from "@/context/CultivationContext";
 import { toast } from "@/hooks/use-toast";
@@ -14,19 +14,43 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import type { FertilizerType } from "@/types";
+import { Fertilizer } from "@/types";
 
 const FertilizerButtons = () => {
-  const { selectedPlantIds, selectedSpaceId, getSpaceById, updatePlantsBatchState } = useCultivation();
-  const [selectedFertilizer, setSelectedFertilizer] = React.useState<FertilizerType>("base");
+  const { 
+    selectedPlantIds, 
+    selectedSpaceId, 
+    getSpaceById, 
+    fertilizers
+  } = useCultivation();
+
+  const [selectedFertilizerId, setSelectedFertilizerId] = React.useState<string>("");
   const [dosage, setDosage] = React.useState<string>("1.0");
-  const [unitType, setUnitType] = React.useState<"ml/L" | "g/L">("ml/L");
+
+  // Find the selected fertilizer
+  const selectedFertilizer = fertilizers.find(f => f.id === selectedFertilizerId);
+
+  // Set default values when fertilizer changes
+  React.useEffect(() => {
+    if (selectedFertilizer) {
+      setDosage(selectedFertilizer.recommendedDosage.toString());
+    }
+  }, [selectedFertilizerId, selectedFertilizer]);
 
   const handleApplyFertilizer = () => {
     if (!selectedPlantIds.length && !selectedSpaceId) {
       toast({
         title: "Aucune sélection",
         description: "Sélectionnez des plantes ou un espace pour appliquer l'engrais",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!selectedFertilizer) {
+      toast({
+        title: "Aucun engrais sélectionné",
+        description: "Veuillez sélectionner un engrais à appliquer",
         variant: "destructive",
       });
       return;
@@ -39,27 +63,18 @@ const FertilizerButtons = () => {
 
     toast({
       title: "Engrais appliqué",
-      description: `${getFertilizerName(selectedFertilizer)} appliqué à ${dosage} ${unitType} sur ${plantsLabel}`,
-      variant: "default",
+      description: `${selectedFertilizer.name} appliqué à ${dosage} ${selectedFertilizer.unitType} sur ${plantsLabel}`,
+      variant: "success",
     });
   };
 
-  const getFertilizerName = (type: FertilizerType): string => {
-    switch (type) {
-      case "base": return "Engrais de base";
-      case "growth": return "Engrais de croissance";
-      case "bloom": return "Engrais de floraison";
-      case "booster": return "Booster";
-      default: return "Engrais";
-    }
-  };
-
-  const getFertilizerIcon = (type: FertilizerType) => {
-    switch (type) {
+  const getFertilizerIcon = (fertilizer: Fertilizer) => {
+    switch (fertilizer.type) {
       case "base": return <Droplet />;
       case "growth": return <Leaf />;
       case "bloom": return <Flower2 />;
       case "booster": return <Zap />;
+      case "custom": return <Beaker />;
       default: return <Droplet />;
     }
   };
@@ -71,19 +86,24 @@ const FertilizerButtons = () => {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="fertilizer-type">Type d'engrais</Label>
+          <Label htmlFor="fertilizer-type">Sélectionner un engrais</Label>
           <Select 
-            value={selectedFertilizer} 
-            onValueChange={(value) => setSelectedFertilizer(value as FertilizerType)}
+            value={selectedFertilizerId} 
+            onValueChange={setSelectedFertilizerId}
           >
             <SelectTrigger id="fertilizer-type">
-              <SelectValue placeholder="Choisir un type d'engrais" />
+              <SelectValue placeholder="Choisir un engrais" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="base">Engrais de base</SelectItem>
-              <SelectItem value="growth">Engrais de croissance</SelectItem>
-              <SelectItem value="bloom">Engrais de floraison</SelectItem>
-              <SelectItem value="booster">Booster</SelectItem>
+              {fertilizers.map(fertilizer => (
+                <SelectItem key={fertilizer.id} value={fertilizer.id}>
+                  <div className="flex items-center">
+                    {getFertilizerIcon(fertilizer)}
+                    <span className="ml-2">{fertilizer.name}</span>
+                    {fertilizer.isCustom && <span className="ml-2 text-xs text-muted-foreground">(Personnalisé)</span>}
+                  </div>
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -100,18 +120,9 @@ const FertilizerButtons = () => {
               onChange={(e) => setDosage(e.target.value)}
               className="flex-1"
             />
-            <Select 
-              value={unitType} 
-              onValueChange={(value) => setUnitType(value as "ml/L" | "g/L")}
-            >
-              <SelectTrigger className="w-24">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="ml/L">ml/L</SelectItem>
-                <SelectItem value="g/L">g/L</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="w-24 flex items-center justify-center border rounded-md bg-muted">
+              {selectedFertilizer?.unitType || "ml/L"}
+            </div>
           </div>
         </div>
         
@@ -119,9 +130,10 @@ const FertilizerButtons = () => {
           variant="success" 
           onClick={handleApplyFertilizer} 
           className="w-full"
+          disabled={!selectedFertilizerId}
         >
-          {getFertilizerIcon(selectedFertilizer)}
-          Appliquer {getFertilizerName(selectedFertilizer)}
+          {selectedFertilizer && getFertilizerIcon(selectedFertilizer)}
+          Appliquer {selectedFertilizer ? selectedFertilizer.name : "l'engrais"}
         </Button>
       </CardContent>
     </Card>
