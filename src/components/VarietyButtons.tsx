@@ -13,6 +13,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { 
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import VarietyManagement from "./VarietyManagement";
 import { PlantVariety } from "@/types";
 
 const VarietyButtons = () => {
@@ -26,6 +33,7 @@ const VarietyButtons = () => {
   } = useCultivation();
   
   const [selectedVarietyId, setSelectedVarietyId] = React.useState<string>("");
+  const [isManagementOpen, setIsManagementOpen] = React.useState(false);
 
   const handleApplyVariety = () => {
     if (!selectedPlantIds.length && !selectedSpaceId) {
@@ -73,61 +81,68 @@ const VarietyButtons = () => {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-lg">Variétés</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="variety-select">Variété</Label>
-          <Select 
-            value={selectedVarietyId} 
-            onValueChange={setSelectedVarietyId}
-          >
-            <SelectTrigger id="variety-select">
-              <SelectValue placeholder="Choisir une variété" />
-            </SelectTrigger>
-            <SelectContent>
-              {varieties.map((variety) => (
-                <SelectItem key={variety.id} value={variety.id}>
-                  <div className="flex items-center gap-2">
-                    <div 
-                      className="w-3 h-3 rounded-full" 
-                      style={{ backgroundColor: variety.color }}
-                    />
-                    {variety.name}
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        
-        <div className="grid grid-cols-2 gap-2">
-          <Button 
-            variant="success" 
-            onClick={handleApplyVariety}
-            disabled={!selectedVarietyId}
-          >
-            <Sprout />
-            Appliquer
-          </Button>
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Variétés</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="variety-select">Variété</Label>
+            <Select 
+              value={selectedVarietyId} 
+              onValueChange={setSelectedVarietyId}
+            >
+              <SelectTrigger id="variety-select">
+                <SelectValue placeholder="Choisir une variété" />
+              </SelectTrigger>
+              <SelectContent>
+                {varieties.map((variety) => (
+                  <SelectItem key={variety.id} value={variety.id}>
+                    <div className="flex items-center gap-2">
+                      <div 
+                        className="w-3 h-3 rounded-full" 
+                        style={{ backgroundColor: variety.color }}
+                      />
+                      {variety.name}
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           
-          <Button 
-            variant="outline"
-            onClick={() => {
-              toast({
-                title: "Gestion des variétés",
-                description: "La fonctionnalité de gestion des variétés sera disponible bientôt",
-              });
-            }}
-          >
-            <Edit />
-            Gérer
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+          <div className="grid grid-cols-2 gap-2">
+            <Button 
+              variant="success" 
+              onClick={handleApplyVariety}
+              disabled={!selectedVarietyId}
+            >
+              <Sprout />
+              Appliquer
+            </Button>
+            
+            <Button 
+              variant="outline"
+              onClick={() => setIsManagementOpen(true)}
+            >
+              <Edit />
+              Gérer
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Dialog open={isManagementOpen} onOpenChange={setIsManagementOpen}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Gestion des variétés</DialogTitle>
+          </DialogHeader>
+          
+          <VarietyManagement />
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 

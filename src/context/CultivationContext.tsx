@@ -27,6 +27,9 @@ type CultivationContextType = {
   updateFertilizer: (fertilizer: Fertilizer) => void;
   deleteFertilizer: (id: string) => void;
   getFertilizerById: (id: string) => Fertilizer | undefined;
+  addVariety: (variety: Omit<PlantVariety, 'id'>) => void;
+  updateVariety: (variety: PlantVariety) => void;
+  deleteVariety: (id: string) => void;
 };
 
 const CultivationContext = createContext<CultivationContextType | undefined>(undefined);
@@ -332,6 +335,75 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
     return fertilizers.find(f => f.id === id);
   };
 
+  // New functions for variety management
+  const addVariety = (variety: Omit<PlantVariety, 'id'>) => {
+    const newVariety: PlantVariety = {
+      ...variety,
+      id: `var-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    };
+    
+    setVarieties(prev => [...prev, newVariety]);
+    
+    addAlert({
+      type: "success",
+      message: `Nouvelle variété "${newVariety.name}" ajoutée avec succès`
+    });
+  };
+
+  const updateVariety = (updatedVariety: PlantVariety) => {
+    setVarieties(prev => 
+      prev.map(variety => 
+        variety.id === updatedVariety.id ? updatedVariety : variety
+      )
+    );
+    
+    // Update any plants that use this variety
+    setSpaces(prevSpaces =>
+      prevSpaces.map(space => ({
+        ...space,
+        plants: space.plants.map(plant => 
+          plant.variety.id === updatedVariety.id
+            ? { ...plant, variety: updatedVariety }
+            : plant
+        )
+      }))
+    );
+    
+    addAlert({
+      type: "info",
+      message: `Variété "${updatedVariety.name}" mise à jour avec succès`
+    });
+  };
+
+  const deleteVariety = (id: string) => {
+    const variety = varieties.find(v => v.id === id);
+    if (!variety) return;
+    
+    // Check if any plants are using this variety
+    let isUsed = false;
+    for (const space of spaces) {
+      if (space.plants.some(p => p.variety.id === id)) {
+        isUsed = true;
+        break;
+      }
+    }
+    
+    if (isUsed) {
+      addAlert({
+        type: "error",
+        message: `Impossible de supprimer la variété "${variety.name}" car elle est utilisée par des plantes`
+      });
+      return;
+    }
+    
+    setVarieties(prev => prev.filter(v => v.id !== id));
+    
+    addAlert({
+      type: "info",
+      message: `Variété "${variety.name}" supprimée avec succès`
+    });
+  };
+
   useEffect(() => {
     // Add an initial welcome alert
     addAlert({
@@ -368,6 +440,9 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
         updateFertilizer,
         deleteFertilizer,
         getFertilizerById,
+        addVariety,
+        updateVariety,
+        deleteVariety,
       }}
     >
       {children}

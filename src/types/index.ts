@@ -1,5 +1,4 @@
 
-
 export type PlantVariety = {
   id: string;
   name: string;
