@@ -1,3 +1,4 @@
+
 import BatchActions from "@/components/BatchActions";
 import SpaceOverview from "@/components/SpaceOverview";
 import FertilizerButtons from "@/components/FertilizerButtons";
@@ -36,6 +37,9 @@ const Dashboard = () => {
     getMaxHarvestDateForSession
   } = useCultivation();
   const [selectedVarieties, setSelectedVarieties] = useState<string[]>([]);
+  
+  // Create a date for January 1, 2025
+  const jan2025 = new Date(2025, 0, 1);
   
   const handleStartSession = () => {
     if (sessionName.trim()) {
@@ -240,10 +244,14 @@ const Dashboard = () => {
                       selected={sessionStartDate}
                       onSelect={(date) => date && setSessionStartDate(date)}
                       initialFocus
+                      defaultMonth={jan2025}
+                      captionLayout="dropdown-buttons"
+                      fromYear={2023}
+                      toYear={2030}
                     />
                   </PopoverContent>
                 </Popover>
-                <p className="text-sm text-muted-foreground mt-1">Choisissez la date de début de session (dates passées autorisées)</p>
+                <p className="text-sm text-muted-foreground mt-1">Choisissez la date de début de session (incluant les dates de 2025 et au-delà)</p>
               </div>
               
               <div>
