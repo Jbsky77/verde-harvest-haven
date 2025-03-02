@@ -14,16 +14,17 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useCultivation } from "@/context/CultivationContext";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Link, useLocation } from "react-router-dom";
 
 type NavItemProps = {
   icon: React.ReactNode;
   label: string;
-  onClick: () => void;
+  to: string;
   active: boolean;
   collapsed: boolean;
 };
 
-const NavItem = ({ icon, label, onClick, active, collapsed }: NavItemProps) => {
+const NavItem = ({ icon, label, to, active, collapsed }: NavItemProps) => {
   return (
     <Button
       variant={active ? "secondary" : "ghost"}
@@ -31,10 +32,12 @@ const NavItem = ({ icon, label, onClick, active, collapsed }: NavItemProps) => {
         "w-full justify-start gap-3 mb-1",
         collapsed ? "px-3" : "px-4"
       )}
-      onClick={onClick}
+      asChild
     >
-      {icon}
-      {!collapsed && <span>{label}</span>}
+      <Link to={to}>
+        {icon}
+        {!collapsed && <span>{label}</span>}
+      </Link>
     </Button>
   );
 };
@@ -69,12 +72,25 @@ const SideNavigation = () => {
   const { selectedSpaceId, setSelectedSpaceId, spaces } = useCultivation();
   const isMobile = useIsMobile();
   const [collapsed, setCollapsed] = useState(false);
-  const [page, setPage] = useState<"home" | "spaces" | "analytics" | "fertilizers" | "plants" | "settings">("spaces");
+  const location = useLocation();
+  const currentPath = location.pathname;
   
   // On mobile, always show expanded sidebar
   const isCollapsed = isMobile ? false : collapsed;
 
   if (isMobile) return null;
+
+  const getActivePage = () => {
+    if (currentPath === "/") return "home";
+    if (currentPath === "/spaces") return "spaces";
+    if (currentPath === "/analytics") return "analytics";
+    if (currentPath === "/fertilizers") return "fertilizers";
+    if (currentPath === "/plants") return "plants";
+    if (currentPath === "/settings") return "settings";
+    return "spaces"; // default
+  };
+
+  const page = getActivePage();
 
   return (
     <aside 
@@ -87,42 +103,42 @@ const SideNavigation = () => {
         <NavItem
           icon={<Home className="h-5 w-5" />}
           label="Accueil"
-          onClick={() => setPage("home")}
+          to="/"
           active={page === "home"}
           collapsed={isCollapsed}
         />
         <NavItem
           icon={<Grid3X3 className="h-5 w-5" />}
           label="Espaces"
-          onClick={() => setPage("spaces")}
+          to="/spaces"
           active={page === "spaces"}
           collapsed={isCollapsed}
         />
         <NavItem
           icon={<BarChart3 className="h-5 w-5" />}
           label="Analyses"
-          onClick={() => setPage("analytics")}
+          to="/analytics"
           active={page === "analytics"}
           collapsed={isCollapsed}
         />
         <NavItem
           icon={<Droplet className="h-5 w-5" />}
           label="Fertilisants"
-          onClick={() => setPage("fertilizers")}
+          to="/fertilizers"
           active={page === "fertilizers"}
           collapsed={isCollapsed}
         />
         <NavItem
           icon={<Sprout className="h-5 w-5" />}
           label="Variétés"
-          onClick={() => setPage("plants")}
+          to="/plants"
           active={page === "plants"}
           collapsed={isCollapsed}
         />
         <NavItem
           icon={<Settings className="h-5 w-5" />}
           label="Paramètres"
-          onClick={() => setPage("settings")}
+          to="/settings"
           active={page === "settings"}
           collapsed={isCollapsed}
         />
