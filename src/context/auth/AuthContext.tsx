@@ -26,11 +26,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Initialize auth session
     const initAuth = async () => {
       try {
+        console.log("Initializing auth session...");
         const { session, profile } = await initializeAuthSession();
+        console.log("Session loaded:", !!session, "Profile loaded:", !!profile);
         setSession(session);
         setUser(session?.user ?? null);
         setProfile(profile);
+      } catch (error) {
+        console.error("Error initializing auth:", error);
       } finally {
+        console.log("Auth initialization complete, setting loading to false");
         setLoading(false);
       }
     };
@@ -39,12 +44,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     
     // Set up auth state change listener
     const subscription = setupAuthStateChangeListener((newSession, newProfile) => {
+      console.log("Auth state changed. New session:", !!newSession, "New profile:", !!newProfile);
       setSession(newSession);
       setUser(newSession?.user ?? null);
       setProfile(newProfile);
-      if (!newSession) {
-        setLoading(false);
-      }
+      setLoading(false);
     });
 
     // Cleanup subscription on unmount

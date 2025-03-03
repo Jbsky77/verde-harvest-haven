@@ -17,8 +17,9 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     }
   }, [user, loading, navigate]);
 
-  // Afficher un indicateur de chargement pendant la vérification d'authentification
+  // Si la session est encore en cours de chargement, afficher un indicateur
   if (loading) {
+    console.log("ProtectedRoute - Still loading, showing spinner");
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
@@ -27,5 +28,6 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   }
 
   // Rendre le contenu uniquement si l'utilisateur est authentifié
+  console.log("ProtectedRoute - Rendering content, user:", !!user);
   return user ? <>{children}</> : null;
 };

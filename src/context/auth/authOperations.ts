@@ -44,15 +44,22 @@ export async function signOutUser() {
 }
 
 export async function initializeAuthSession() {
-  const { data: { session } } = await supabase.auth.getSession();
-  console.log("Initial session loaded:", !!session);
-  
-  if (session?.user) {
-    const profile = await fetchProfile(session.user.id);
+  console.log("Getting initial session");
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    console.log("Initial session loaded:", !!session);
+    
+    let profile = null;
+    if (session?.user) {
+      profile = await fetchProfile(session.user.id);
+      console.log("Profile loaded:", !!profile);
+    }
+    
     return { session, profile };
+  } catch (error) {
+    console.error("Error initializing session:", error);
+    return { session: null, profile: null };
   }
-  
-  return { session: null, profile: null };
 }
 
 export function setupAuthStateChangeListener(callback: (session: any, profile: any) => void) {
