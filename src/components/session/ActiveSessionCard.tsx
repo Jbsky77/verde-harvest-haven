@@ -1,3 +1,4 @@
+
 import { useCultivation } from "@/context/CultivationContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -9,6 +10,7 @@ import SessionDialog from "./SessionDialog";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { Progress } from "@/components/ui/progress";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 interface ActiveSessionCardProps {
   formatDateToLocale: (date: Date | null) => string;
@@ -26,6 +28,7 @@ const ActiveSessionCard = ({ formatDateToLocale }: ActiveSessionCardProps) => {
   const [editSessionOpen, setEditSessionOpen] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const { toast } = useToast();
+  const isMobile = useMediaQuery('(max-width: 768px)');
 
   if (!currentSession || !currentSession.isActive) {
     return null;
@@ -109,30 +112,30 @@ const ActiveSessionCard = ({ formatDateToLocale }: ActiveSessionCardProps) => {
   return (
     <>
       <Card className="bg-green-50 border-green-200">
-        <CardHeader className="pb-2">
-          <div className="flex justify-between items-center">
+        <CardHeader className={`pb-2 ${isMobile ? 'px-3' : ''}`}>
+          <div className={`flex ${isMobile ? 'flex-col' : 'justify-between'} items-${isMobile ? 'start' : 'center'}`}>
             <CardTitle className="text-green-800 flex items-center gap-2">
               <CalendarIcon className="h-5 w-5" />
               Session en cours: {currentSession.name}
             </CardTitle>
-            <div className="flex gap-2">
+            <div className={`flex gap-2 ${isMobile ? 'mt-2 w-full justify-between' : ''}`}>
               <Button 
                 variant="outline" 
-                size="sm" 
+                size={isMobile ? "sm" : "default"} 
                 className="h-8 bg-white hover:bg-green-100"
                 onClick={() => setEditSessionOpen(true)}
               >
                 <Edit className="h-4 w-4 mr-1" />
-                Modifier
+                {isMobile ? "" : "Modifier"}
               </Button>
               <Button 
                 variant="outline" 
-                size="sm" 
+                size={isMobile ? "sm" : "default"} 
                 className="h-8 bg-white hover:bg-red-100 text-red-600 hover:text-red-700 border-red-200 hover:border-red-300"
                 onClick={() => setDeleteConfirmOpen(true)}
               >
                 <Trash2 className="h-4 w-4 mr-1" />
-                Terminer
+                {isMobile ? "" : "Terminer"}
               </Button>
             </div>
           </div>
@@ -140,7 +143,7 @@ const ActiveSessionCard = ({ formatDateToLocale }: ActiveSessionCardProps) => {
             Démarrée le {formatDateToLocale(new Date(currentSession.startDate))}
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className={isMobile ? 'px-3 py-3' : ''}>
           <div className="space-y-3">
             <div className="mb-2">
               <div className="flex items-center justify-between mb-1">
@@ -154,7 +157,7 @@ const ActiveSessionCard = ({ formatDateToLocale }: ActiveSessionCardProps) => {
                 <span>Jour {Math.floor(elapsedDays)}/{Math.ceil(totalDuration)}</span>
                 <div className="flex items-center">
                   <Timer className="h-3 w-3 mr-1" />
-                  <span>{daysRemaining} jour{daysRemaining > 1 ? 's' : ''} restant{daysRemaining > 1 ? 's' : ''} avant récolte</span>
+                  <span>{daysRemaining} jour{daysRemaining > 1 ? 's' : ''} restant{daysRemaining > 1 ? 's' : ''}</span>
                 </div>
               </div>
             </div>
@@ -162,7 +165,7 @@ const ActiveSessionCard = ({ formatDateToLocale }: ActiveSessionCardProps) => {
             <div className="bg-white rounded-lg p-3 border border-green-200 shadow-sm">
               <div className="flex items-center justify-center gap-2">
                 <Timer className="h-5 w-5 text-green-700" />
-                <span className="text-lg font-bold text-green-800">
+                <span className={`${isMobile ? 'text-base' : 'text-lg'} font-bold text-green-800`}>
                   {daysRemaining} jour{daysRemaining > 1 ? 's' : ''} avant récolte
                 </span>
               </div>
@@ -171,9 +174,9 @@ const ActiveSessionCard = ({ formatDateToLocale }: ActiveSessionCardProps) => {
               </div>
             </div>
             
-            <div className="h-48 mt-4 mb-6">
+            <div className={`${isMobile ? 'h-40' : 'h-48'} mt-4 mb-6`}>
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={chartData}>
+                <AreaChart data={chartData} margin={isMobile ? { top: 5, right: 5, left: -15, bottom: 5 } : {}}>
                   <defs>
                     {currentSession.selectedVarieties?.map((varietyId, index) => {
                       const variety = varieties.find(v => v.id === varietyId);
@@ -188,7 +191,7 @@ const ActiveSessionCard = ({ formatDateToLocale }: ActiveSessionCardProps) => {
                   </defs>
                   <XAxis 
                     dataKey="day" 
-                    tick={{fontSize: 10}}
+                    tick={{fontSize: isMobile ? 8 : 10}}
                     tickFormatter={(day) => {
                       if (day === 0 || day === Math.floor(totalDuration) || day === currentDayMarker) {
                         const date = new Date(startDate);
@@ -199,7 +202,7 @@ const ActiveSessionCard = ({ formatDateToLocale }: ActiveSessionCardProps) => {
                     }}
                   />
                   <YAxis 
-                    tick={{fontSize: 10}} 
+                    tick={{fontSize: isMobile ? 8 : 10}} 
                     domain={[0, 100]}
                     tickFormatter={(value) => {
                       if (value === 0) return 'Début';
@@ -209,6 +212,7 @@ const ActiveSessionCard = ({ formatDateToLocale }: ActiveSessionCardProps) => {
                       if (value === 100) return 'Récolte';
                       return '';
                     }}
+                    width={isMobile ? 40 : 50}
                   />
                   <Tooltip 
                     formatter={(value, name) => {
@@ -271,9 +275,9 @@ const ActiveSessionCard = ({ formatDateToLocale }: ActiveSessionCardProps) => {
             
             {currentSession.selectedVarieties && currentSession.selectedVarieties.length > 0 ? (
               <>
-                <div className="flex items-center justify-between">
+                <div className={`flex items-center ${isMobile ? 'flex-col items-start' : 'justify-between'}`}>
                   <span className="text-sm font-medium text-green-800">Variétés cultivées</span>
-                  <span className="text-sm text-green-800">Date de récolte estimée</span>
+                  {!isMobile && <span className="text-sm text-green-800">Date de récolte estimée</span>}
                 </div>
                 <div className="space-y-2">
                   {currentSession.selectedVarieties.map(varietyId => {
@@ -283,7 +287,7 @@ const ActiveSessionCard = ({ formatDateToLocale }: ActiveSessionCardProps) => {
                     const harvestDate = getEstimatedHarvestDateForVariety(varietyId);
                     
                     return (
-                      <div key={varietyId} className="flex items-center justify-between">
+                      <div key={varietyId} className={`flex ${isMobile ? 'flex-col gap-1' : 'items-center justify-between'}`}>
                         <div className="flex items-center gap-2">
                           <div 
                             className="w-3 h-3 rounded-full" 
@@ -298,7 +302,7 @@ const ActiveSessionCard = ({ formatDateToLocale }: ActiveSessionCardProps) => {
                     );
                   })}
                 </div>
-                <div className="pt-2 border-t border-green-200 flex justify-between items-center">
+                <div className={`pt-2 border-t border-green-200 flex ${isMobile ? 'flex-col gap-1' : 'justify-between items-center'}`}>
                   <div className="flex items-center gap-1 text-green-800">
                     <InfoIcon className="h-4 w-4" />
                     <span className="text-sm font-medium">Fin de récolte estimée</span>
@@ -331,13 +335,18 @@ const ActiveSessionCard = ({ formatDateToLocale }: ActiveSessionCardProps) => {
               Cette action n'est pas réversible.
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteConfirmOpen(false)}>
+          <DialogFooter className={isMobile ? "flex-col space-y-2" : ""}>
+            <Button 
+              variant="outline" 
+              onClick={() => setDeleteConfirmOpen(false)}
+              className={isMobile ? "w-full" : ""}
+            >
               Annuler
             </Button>
             <Button 
               variant="destructive" 
               onClick={handleDeleteSession}
+              className={isMobile ? "w-full" : ""}
             >
               Terminer la session
             </Button>

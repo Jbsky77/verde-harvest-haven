@@ -11,11 +11,13 @@ import AlertPanel from "@/components/AlertPanel";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useLocation } from "react-router-dom";
 import { Toaster } from "@/components/ui/sonner";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 const Index = () => {
   const { spaces, selectedSpaceId } = useCultivation();
   const location = useLocation();
   const isSpacesRoute = location.pathname === "/spaces";
+  const isMobile = useMediaQuery('(max-width: 768px)');
   
   const selectedSpace = useMemo(() => {
     return spaces.find(space => space.id === selectedSpaceId) || spaces[0];
@@ -29,7 +31,7 @@ const Index = () => {
       <SideNavigation />
       
       <main className="flex-1 flex flex-col">
-        <div className="container py-6 space-y-6 flex-1">
+        <div className={`${isMobile ? 'px-1' : 'container'} py-6 space-y-6 flex-1`}>
           {!isSpacesRoute && <Dashboard />}
           
           {isSpacesRoute && selectedSpace && (
@@ -42,7 +44,7 @@ const Index = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="md:col-span-2 space-y-6">
                 {selectedSpace && (
-                  <ScrollArea className="h-[calc(100vh-20rem)] pr-4">
+                  <ScrollArea className={`${isMobile ? 'h-[calc(100vh-15rem)]' : 'h-[calc(100vh-20rem)]'} pr-4`}>
                     <PlantsList space={selectedSpace} />
                   </ScrollArea>
                 )}
