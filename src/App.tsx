@@ -8,7 +8,15 @@ import { CultivationProvider } from "@/context/CultivationContext";
 import Index from "@/pages/Index";
 import NotFound from "@/pages/NotFound";
 
-const queryClient = new QueryClient();
+// Optimize by creating the query client outside of component render
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1,
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
