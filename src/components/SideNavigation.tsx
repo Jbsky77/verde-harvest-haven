@@ -1,5 +1,3 @@
-
-import { useState } from "react";
 import { 
   Home, 
   Grid3X3, 
@@ -7,8 +5,7 @@ import {
   Droplet, 
   Sprout, 
   Settings,
-  ChevronDown,
-  ChevronUp
+  ChevronDown
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -79,7 +76,7 @@ const SideNavigation = () => {
     if (currentPath === "/analytics") return "analytics";
     if (currentPath === "/fertilizers") return "fertilizers";
     if (currentPath === "/plants") return "plants";
-    if (currentPath === "/settings") return "settings";
+    if (currentPath.includes("/settings")) return "settings";
     return "spaces"; // default
   };
 
