@@ -4,7 +4,7 @@ import SideNavigation from "@/components/SideNavigation";
 import Dashboard from "@/components/Dashboard";
 import { useCultivation } from "@/context/CultivationContext";
 import { PlantsList } from "@/components/plants";
-import SpaceOverview from "@/components/SpaceOverview";
+import SpaceOverview from "@/components/space-overview";
 import PlantGrid from "@/components/PlantGrid";
 import BatchActions from "@/components/BatchActions";
 import AlertPanel from "@/components/AlertPanel";
