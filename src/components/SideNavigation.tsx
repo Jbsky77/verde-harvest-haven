@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   Sidebar, 
@@ -10,7 +9,7 @@ import { Menu, Home, Leaf, Sprout, LayoutDashboard, User, LogOut } from 'lucide-
 import { Logo } from './Logo';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { Link } from 'react-router-dom';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/context/auth/AuthContext';
 
 export default function SideNavigation() {
   const { collapseSidebar, collapsed } = useProSidebar();
