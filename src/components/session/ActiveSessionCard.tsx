@@ -1,13 +1,15 @@
+
 import { useCultivation } from "@/context/CultivationContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { InfoIcon, CalendarIcon, Edit, Trash2 } from "lucide-react";
+import { InfoIcon, CalendarIcon, Edit, Trash2, Timer } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import SessionDialog from "./SessionDialog";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import { Progress } from "@/components/ui/progress";
 
 interface ActiveSessionCardProps {
   formatDateToLocale: (date: Date | null) => string;
@@ -41,6 +43,11 @@ const ActiveSessionCard = ({ formatDateToLocale }: ActiveSessionCardProps) => {
   
   const elapsedDays = (today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24);
   const progressPercent = Math.min(Math.max(Math.round((elapsedDays / totalDuration) * 100), 0), 100);
+  
+  // Calculate days remaining until harvest
+  const daysRemaining = maxHarvestDate ? 
+    Math.max(Math.ceil((maxHarvestDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)), 0) : 
+    Math.max(Math.ceil(totalDuration - elapsedDays), 0);
   
   // Generate chart data
   const generateChartData = () => {
@@ -141,12 +148,22 @@ const ActiveSessionCard = ({ formatDateToLocale }: ActiveSessionCardProps) => {
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            {/* Progress indicator */}
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-green-800">Progression globale</span>
-              <Badge variant="outline" className="bg-white text-green-800">
-                {progressPercent}%
-              </Badge>
+            {/* Progress indicator with percentage and days countdown */}
+            <div className="mb-2">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-sm font-medium text-green-800">Progression de la session</span>
+                <Badge variant="outline" className="bg-white text-green-800">
+                  {progressPercent}%
+                </Badge>
+              </div>
+              <Progress value={progressPercent} className="h-2" />
+              <div className="flex items-center justify-between mt-1 text-xs text-green-800">
+                <span>Jour {Math.floor(elapsedDays)}/{Math.ceil(totalDuration)}</span>
+                <div className="flex items-center">
+                  <Timer className="h-3 w-3 mr-1" />
+                  <span>{daysRemaining} jour{daysRemaining > 1 ? 's' : ''} restant{daysRemaining > 1 ? 's' : ''} avant récolte</span>
+                </div>
+              </div>
             </div>
             
             {/* Growth phase chart */}
