@@ -1,8 +1,8 @@
-
 import { Badge } from "@/components/ui/badge";
 import { InfoIcon } from "lucide-react";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import { CultivationSession, PlantVariety } from "@/types";
+import { PlantVariety } from "@/types";
+import { CultivationSession } from "@/context/types";
 
 interface SessionVarietyListProps {
   currentSession: CultivationSession;

@@ -1,6 +1,7 @@
 
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
-import { CultivationSession, PlantVariety } from "@/types";
+import { PlantVariety } from "@/types";
+import { CultivationSession } from "@/context/types";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 interface SessionChartProps {

@@ -1,5 +1,5 @@
-
-import { CultivationSession, PlantVariety } from "@/types";
+import { PlantVariety } from "@/types";
+import { CultivationSession } from "@/context/types";
 
 export const generateChartData = (
   currentSession: CultivationSession,
