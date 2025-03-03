@@ -1,3 +1,4 @@
+
 import React from 'react';
 import {
   Sidebar,
@@ -10,7 +11,7 @@ import {
   SidebarButton,
   useSidebar,
 } from 'react-pro-sidebar';
-import { Menu, Home, Plant, Sprout, LayoutDashboard } from 'lucide-react';
+import { Menu, Home, Leaf, Sprout, LayoutDashboard } from 'lucide-react';
 import { Logo } from './Logo';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { Link } from 'react-router-dom';
@@ -40,7 +41,7 @@ export default function SideNavigation() {
         <SidebarNavigation>
           <SidebarItem icon={<LayoutDashboard />} label="Dashboard" href="/" />
           <SidebarItem icon={<Home />} label="Espaces" href="/spaces" />
-          <SidebarItem icon={<Plant />} label="Plantes" href="/plants" />
+          <SidebarItem icon={<Leaf />} label="Plantes" href="/plants" />
           <SidebarItem icon={<Sprout />} label="Variétés" href="/varieties" />
         </SidebarNavigation>
       </SidebarContent>
