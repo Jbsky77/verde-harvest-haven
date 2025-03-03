@@ -8,7 +8,7 @@ import { Toaster } from '@/components/ui/sonner';
 import App from './App.tsx';
 import './index.css';
 import NotFound from './pages/NotFound.tsx';
-import { AuthProvider } from './context/AuthContext.tsx';
+import { AuthProvider } from './context/auth/AuthContext.tsx';
 import Auth from './pages/Auth.tsx';
 import Profile from './pages/Profile.tsx';
 import { ProtectedRoute } from './components/ProtectedRoute.tsx';
