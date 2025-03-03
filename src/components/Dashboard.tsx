@@ -12,7 +12,7 @@ import { Separator } from "@/components/ui/separator";
 const Dashboard = () => {
   const [showAllSpaces, setShowAllSpaces] = useState(false);
   const [newSessionDialogOpen, setNewSessionDialogOpen] = useState(false);
-  const { currentSession, sessions } = useCultivation();
+  const { currentSession, sessions, selectedSpaceId, getSpaceById } = useCultivation();
   
   const activeSessions = sessions.filter(session => session.isActive);
   
@@ -25,9 +25,12 @@ const Dashboard = () => {
     });
   };
   
+  // Get the selected space for the DashboardTabs component
+  const selectedSpace = selectedSpaceId ? getSpaceById(selectedSpaceId) : null;
+  
   return (
     <div className="flex flex-col h-full">
-      <div className="flex-1 overflow-auto pb-16">
+      <div className="flex-1 overflow-auto pb-16 pl-0 md:pl-14 lg:pl-56">
         <DashboardHeader 
           showAllSpaces={showAllSpaces}
           setShowAllSpaces={setShowAllSpaces}
@@ -48,7 +51,7 @@ const Dashboard = () => {
         <SpaceOverview showAllSpaces={showAllSpaces} />
         
         <div className="px-6 py-8">
-          <DashboardTabs />
+          {selectedSpace && <DashboardTabs space={selectedSpace} />}
         </div>
       </div>
       

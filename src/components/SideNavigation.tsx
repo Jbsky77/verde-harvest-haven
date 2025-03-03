@@ -95,7 +95,7 @@ const SideNavigation = () => {
   return (
     <aside 
       className={cn(
-        "fixed left-0 top-16 bottom-0 border-r bg-white transition-all duration-300 ease-in-out overflow-hidden flex flex-col",
+        "fixed left-0 top-16 bottom-0 border-r bg-white transition-all duration-300 ease-in-out overflow-hidden z-40 flex flex-col",
         isCollapsed ? "w-14" : "w-56"
       )}
     >
