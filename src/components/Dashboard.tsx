@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import SpaceOverview from "@/components/SpaceOverview";
+import SpaceOverview from "@/components/space-overview";
 import SessionDialog from "@/components/session/SessionDialog";
 import ActiveSessionCard from "@/components/session/ActiveSessionCard";
 import DashboardTabs from "@/components/dashboard/DashboardTabs";

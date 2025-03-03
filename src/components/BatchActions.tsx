@@ -1,4 +1,3 @@
-
 import { useCultivation } from "@/context/CultivationContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,7 +6,7 @@ import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
-import { PlantState } from "@/types";
+import { CultivationSpace, PlantState } from "@/types";
 import { toast } from "@/components/ui/use-toast";
 
 const stateOptions: { value: PlantState; label: string }[] = [
@@ -18,7 +17,11 @@ const stateOptions: { value: PlantState; label: string }[] = [
   { value: "harvested", label: "Récolté" }
 ];
 
-const BatchActions = () => {
+interface BatchActionsProps {
+  space: CultivationSpace;
+}
+
+const BatchActions = ({ space }: BatchActionsProps) => {
   const { 
     selectedSpaceId, 
     updatePlantsInSpace, 
@@ -38,9 +41,6 @@ const BatchActions = () => {
   const [varietyId, setVarietyId] = useState<string>("");
   
   if (!selectedSpaceId) return null;
-  
-  const space = getSpaceById(selectedSpaceId);
-  if (!space) return null;
   
   const handleApplyToSpace = () => {
     updatePlantsInSpace(selectedSpaceId, {
