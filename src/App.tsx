@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CultivationProvider } from "@/context/CultivationContext";
 import Index from "@/pages/Index";
 import Auth from "@/pages/Auth";
+import Profile from "@/pages/Profile";
 import NotFound from "@/pages/NotFound";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
@@ -29,6 +30,12 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/auth" element={<Auth />} />
+            
+            <Route path="/profile" element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            } />
             
             <Route path="/" element={
               <ProtectedRoute>
