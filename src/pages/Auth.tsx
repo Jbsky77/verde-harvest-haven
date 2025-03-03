@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Mail, Lock, User, LogIn } from "lucide-react";
+import { Mail, Lock, User, LogIn, AlertCircle, Info } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const Auth = () => {
   const [loading, setLoading] = useState(false);
@@ -15,6 +16,7 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [isLogin, setIsLogin] = useState(true);
   const [username, setUsername] = useState("");
+  const [authError, setAuthError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   // Vérifier si l'utilisateur est déjà connecté
@@ -29,6 +31,7 @@ const Auth = () => {
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setAuthError(null);
 
     try {
       if (isLogin) {
@@ -57,13 +60,20 @@ const Auth = () => {
         });
 
         if (error) {
-          throw error;
+          // Check if error is related to disabled email signups
+          if (error.message.includes("Email signups are disabled")) {
+            setAuthError("Les inscriptions par email sont désactivées. Veuillez contacter l'administrateur.");
+          } else {
+            throw error;
+          }
+        } else {
+          toast.success("Inscription réussie! Veuillez vérifier votre email.");
         }
-
-        toast.success("Inscription réussie! Veuillez vérifier votre email.");
       }
     } catch (error: any) {
-      toast.error(error.message || "Une erreur est survenue");
+      const errorMessage = error.message || "Une erreur est survenue";
+      setAuthError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -89,6 +99,25 @@ const Auth = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {authError && (
+            <Alert variant="destructive" className="mb-4">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Erreur</AlertTitle>
+              <AlertDescription>{authError}</AlertDescription>
+            </Alert>
+          )}
+          
+          {!isLogin && (
+            <Alert variant="default" className="mb-4 bg-amber-50 border-amber-200">
+              <Info className="h-4 w-4 text-amber-500" />
+              <AlertTitle className="text-amber-700">Information</AlertTitle>
+              <AlertDescription className="text-amber-600">
+                Les inscriptions par email peuvent être désactivées par l'administrateur. 
+                Si vous ne pouvez pas vous inscrire, veuillez contacter l'administrateur.
+              </AlertDescription>
+            </Alert>
+          )}
+          
           <form onSubmit={handleAuth} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email" className="flex items-center gap-1">
@@ -161,7 +190,10 @@ const Auth = () => {
         <CardFooter className="flex flex-col space-y-2">
           <Button 
             variant="link" 
-            onClick={() => setIsLogin(!isLogin)}
+            onClick={() => {
+              setIsLogin(!isLogin);
+              setAuthError(null);
+            }}
             className="text-green-700"
           >
             {isLogin 
