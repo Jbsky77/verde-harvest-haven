@@ -9,7 +9,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { User, UserCircle, Mail, Edit, Save, LogOut, AlertCircle } from "lucide-react";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -21,55 +20,97 @@ const Profile = () => {
   const [fullName, setFullName] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [authError, setAuthError] = useState(false);
+  const [isTokenRefreshed, setIsTokenRefreshed] = useState(false);
 
   useEffect(() => {
-    const fetchUserAndProfile = async () => {
+    const checkSession = async () => {
       try {
-        // Get the current user
-        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        // Get current session
+        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
         
-        if (userError) {
-          console.error("Error fetching user data:", userError);
-          if (userError.message.includes("JWT")) {
-            setAuthError(true);
-            return;
-          }
-          throw userError;
+        if (sessionError) {
+          console.error("Error fetching session:", sessionError);
+          setAuthError(true);
+          return;
         }
         
-        if (!user) {
+        // If no active session, redirect to auth
+        if (!sessionData.session) {
           navigate("/auth");
           return;
         }
         
-        setUser(user);
-        
-        // Get the user's profile
-        const { data: profileData, error: profileError } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", user.id)
-          .single();
-        
-        if (profileError && profileError.code !== "PGRST116") {
-          throw profileError;
-        }
-        
-        if (profileData) {
-          setProfile(profileData);
-          setUsername(profileData.username || "");
-          setFullName(profileData.full_name || "");
-        }
-      } catch (error: any) {
-        console.error("Error fetching user data:", error);
-        toast.error("Erreur lors du chargement du profil");
-      } finally {
+        fetchUserAndProfile();
+      } catch (error) {
+        console.error("Session check error:", error);
+        setAuthError(true);
         setLoading(false);
       }
     };
 
-    fetchUserAndProfile();
-  }, [navigate]);
+    checkSession();
+  }, [navigate, isTokenRefreshed]);
+
+  const fetchUserAndProfile = async () => {
+    try {
+      setLoading(true);
+      
+      // Get the current user
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      
+      if (userError) {
+        console.error("Error fetching user data:", userError);
+        if (userError.message.includes("JWT")) {
+          // Try to refresh the session if JWT error occurs
+          const { error: refreshError } = await supabase.auth.refreshSession();
+          
+          if (refreshError) {
+            console.error("Error refreshing session:", refreshError);
+            setAuthError(true);
+            return;
+          }
+          
+          setIsTokenRefreshed(prev => !prev);
+          return;
+        }
+        throw userError;
+      }
+      
+      if (!user) {
+        navigate("/auth");
+        return;
+      }
+      
+      setUser(user);
+      
+      // Get the user's profile
+      const { data: profileData, error: profileError } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .single();
+      
+      if (profileError && profileError.code !== "PGRST116") {
+        throw profileError;
+      }
+      
+      if (profileData) {
+        setProfile(profileData);
+        setUsername(profileData.username || "");
+        setFullName(profileData.full_name || "");
+      } else {
+        // Handle case where profile doesn't exist yet
+        setAuthError(true);
+        toast.error("Profil non trouvé. Veuillez vous reconnecter.");
+      }
+    } catch (error: any) {
+      console.error("Error fetching user data:", error);
+      toast.error("Erreur lors du chargement du profil");
+      setAuthError(true);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleUpdateProfile = async () => {
     if (!user || !user.id) {
