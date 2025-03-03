@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { Alert, Plant, PlantState, PlantVariety } from '@/types';
 import { SessionService } from '@/services/SessionService';
