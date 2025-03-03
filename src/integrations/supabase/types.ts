@@ -9,6 +9,36 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      cultivation_sessions: {
+        Row: {
+          created_at: string
+          end_date: string | null
+          id: string
+          is_active: boolean
+          name: string
+          start_date: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          start_date: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          start_date?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       fertilizers: {
         Row: {
           color: string | null
@@ -77,6 +107,42 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      session_varieties: {
+        Row: {
+          created_at: string
+          id: string
+          session_id: string | null
+          variety_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          session_id?: string | null
+          variety_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          session_id?: string | null
+          variety_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "session_varieties_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "cultivation_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "session_varieties_variety_id_fkey"
+            columns: ["variety_id"]
+            isOneToOne: false
+            referencedRelation: "plant_varieties"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
