@@ -27,7 +27,13 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     );
   }
 
+  // Si l'utilisateur n'est pas connecté, ne rien afficher (la redirection sera gérée par l'effet)
+  if (!user) {
+    console.log("ProtectedRoute - No user, returning null (redirect effect will handle)");
+    return null;
+  }
+
   // Rendre le contenu uniquement si l'utilisateur est authentifié
-  console.log("ProtectedRoute - Rendering content, user:", !!user);
-  return user ? <>{children}</> : null;
+  console.log("ProtectedRoute - User authenticated, rendering content");
+  return <>{children}</>;
 };

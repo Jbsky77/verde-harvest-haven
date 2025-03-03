@@ -32,14 +32,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                   </ProtectedRoute>
                 } 
               />
-              <Route 
-                path="/*" 
-                element={
-                  <ProtectedRoute>
-                    <App />
-                  </ProtectedRoute>
-                } 
-              />
+              <Route path="/*" element={<App />} />
             </Routes>
             <Toaster />
           </AuthProvider>
