@@ -10,6 +10,7 @@ import BatchActions from "@/components/BatchActions";
 import AlertPanel from "@/components/AlertPanel";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useLocation } from "react-router-dom";
+import { Toaster } from "@/components/ui/sonner";
 
 const Index = () => {
   const { spaces, selectedSpaceId } = useCultivation();
@@ -22,6 +23,9 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      {/* Add Toaster component for notifications */}
+      <Toaster position="top-right" />
+      
       <SideNavigation />
       
       <main className="flex-1 flex flex-col">

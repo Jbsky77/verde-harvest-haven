@@ -9,6 +9,7 @@ import SessionsTable from "@/components/session/SessionsTable";
 import { useCultivation } from "@/context/CultivationContext";
 import { Separator } from "@/components/ui/separator";
 import { useLocation } from "react-router-dom";
+import { Toaster } from "@/components/ui/sonner";
 
 const Dashboard = () => {
   const [showAllSpaces, setShowAllSpaces] = useState(false);
@@ -38,6 +39,9 @@ const Dashboard = () => {
   
   return (
     <div className="flex flex-col h-full">
+      {/* Add Toaster component for notifications */}
+      <Toaster position="top-right" />
+      
       <div className="flex-1 overflow-auto pb-16">
         <DashboardHeader 
           showAllSpaces={showAllSpaces}
