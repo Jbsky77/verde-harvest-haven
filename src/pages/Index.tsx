@@ -28,24 +28,27 @@ const Index = () => {
         <div className="container py-6 space-y-6 flex-1">
           {!isSpacesRoute && <Dashboard />}
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="md:col-span-2 space-y-6">
-              {selectedSpace && (
-                <>
-                  <SpaceOverview />
-                  {!isSpacesRoute && <BatchActions space={selectedSpace} />}
+          {isSpacesRoute && selectedSpace && (
+            <div className="animate-fade-in">
+              <SpaceOverview />
+            </div>
+          )}
+          
+          {isSpacesRoute && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="md:col-span-2 space-y-6">
+                {selectedSpace && (
                   <ScrollArea className="h-[calc(100vh-20rem)] pr-4">
                     <PlantsList space={selectedSpace} />
                   </ScrollArea>
-                </>
-              )}
+                )}
+              </div>
+              
+              <div className="space-y-6">
+                <AlertPanel onClose={() => {}} />
+              </div>
             </div>
-            
-            <div className="space-y-6">
-              <AlertPanel onClose={() => {}} />
-              {selectedSpace && !isSpacesRoute && <PlantGrid space={selectedSpace} />}
-            </div>
-          </div>
+          )}
         </div>
       </main>
     </div>

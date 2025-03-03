@@ -8,11 +8,14 @@ import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import SessionsTable from "@/components/session/SessionsTable";
 import { useCultivation } from "@/context/CultivationContext";
 import { Separator } from "@/components/ui/separator";
+import { useLocation } from "react-router-dom";
 
 const Dashboard = () => {
   const [showAllSpaces, setShowAllSpaces] = useState(false);
   const [newSessionDialogOpen, setNewSessionDialogOpen] = useState(false);
   const { currentSession, sessions, selectedSpaceId, getSpaceById } = useCultivation();
+  const location = useLocation();
+  const isSpacesRoute = location.pathname === "/spaces";
   
   const activeSessions = sessions.filter(session => session.isActive);
   
@@ -48,11 +51,15 @@ const Dashboard = () => {
           <Separator className="my-6" />
         </div>
         
-        <SpaceOverview showAllSpaces={showAllSpaces} />
-        
-        <div className="px-6 py-8">
-          {selectedSpace && <DashboardTabs space={selectedSpace} />}
-        </div>
+        {!isSpacesRoute && (
+          <>
+            <SpaceOverview showAllSpaces={showAllSpaces} />
+            
+            <div className="px-6 py-8">
+              {selectedSpace && <DashboardTabs space={selectedSpace} />}
+            </div>
+          </>
+        )}
       </div>
       
       <SessionDialog 
