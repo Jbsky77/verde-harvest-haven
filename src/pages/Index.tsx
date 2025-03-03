@@ -9,9 +9,12 @@ import PlantGrid from "@/components/PlantGrid";
 import BatchActions from "@/components/BatchActions";
 import AlertPanel from "@/components/AlertPanel";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useLocation } from "react-router-dom";
 
 const Index = () => {
   const { spaces, selectedSpaceId } = useCultivation();
+  const location = useLocation();
+  const isSpacesRoute = location.pathname === "/spaces";
   
   const selectedSpace = useMemo(() => {
     return spaces.find(space => space.id === selectedSpaceId) || spaces[0];
@@ -23,14 +26,14 @@ const Index = () => {
       
       <main className="flex-1 flex flex-col">
         <div className="container py-6 space-y-6 flex-1">
-          <Dashboard />
+          {!isSpacesRoute && <Dashboard />}
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="md:col-span-2 space-y-6">
               {selectedSpace && (
                 <>
                   <SpaceOverview />
-                  <BatchActions space={selectedSpace} />
+                  {!isSpacesRoute && <BatchActions space={selectedSpace} />}
                   <ScrollArea className="h-[calc(100vh-20rem)] pr-4">
                     <PlantsList space={selectedSpace} />
                   </ScrollArea>
@@ -40,7 +43,7 @@ const Index = () => {
             
             <div className="space-y-6">
               <AlertPanel onClose={() => {}} />
-              {selectedSpace && <PlantGrid space={selectedSpace} />}
+              {selectedSpace && !isSpacesRoute && <PlantGrid space={selectedSpace} />}
             </div>
           </div>
         </div>
