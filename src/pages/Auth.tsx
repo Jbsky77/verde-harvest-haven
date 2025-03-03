@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { z } from 'zod';
@@ -36,11 +35,12 @@ export default function Auth() {
   const { signIn, signUp, loading, user } = useAuth();
   const navigate = useNavigate();
 
-  // Redirection si déjà connecté
-  if (user) {
-    navigate('/');
-    return null;
-  }
+  // Redirection si déjà connecté - utilisons un useEffect pour gérer la redirection
+  useEffect(() => {
+    if (user) {
+      navigate('/');
+    }
+  }, [user, navigate]);
 
   const loginForm = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -63,7 +63,7 @@ export default function Auth() {
   const onLoginSubmit = async (values: LoginFormValues) => {
     try {
       await signIn(values.email, values.password);
-      navigate('/');
+      // La redirection est maintenant gérée par le useEffect
     } catch (error) {
       console.error('Erreur de connexion:', error);
     }
@@ -79,6 +79,9 @@ export default function Auth() {
       console.error('Erreur d\'inscription:', error);
     }
   };
+
+  // Rendre null si l'utilisateur est déjà connecté
+  if (user) return null;
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-background p-4">

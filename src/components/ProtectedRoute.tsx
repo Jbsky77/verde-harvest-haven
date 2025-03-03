@@ -13,7 +13,7 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     }
   }, [user, loading, navigate]);
 
-  // Afficher un spinner de chargement ou rien pendant la vérification
+  // Afficher un spinner de chargement pendant la vérification
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
