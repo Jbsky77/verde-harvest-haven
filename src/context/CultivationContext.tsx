@@ -448,14 +448,6 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
     try {
       const sessionId = await SessionService.createSession(name, startDate, selectedVarieties);
       
-      if (!sessionId) {
-        addAlert({
-          type: "error",
-          message: "Erreur lors de la création de la session dans la base de données"
-        });
-        return `session-local-${Date.now()}`;
-      }
-
       const newSession: CultivationSession = {
         id: sessionId,
         name,
@@ -482,7 +474,7 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
         type: "error",
         message: "Erreur lors de la création de la session"
       });
-      return `session-local-${Date.now()}`;
+      throw error;
     }
   };
 

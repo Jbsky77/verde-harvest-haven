@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { PlantVariety } from "@/types";
 
@@ -68,7 +67,7 @@ export class SessionService {
     name: string, 
     startDate: Date, 
     selectedVarieties?: string[]
-  ): Promise<string | null> {
+  ): Promise<string> {
     try {
       // Insérer la session
       const { data: sessionData, error: sessionError } = await supabase
@@ -83,7 +82,7 @@ export class SessionService {
 
       if (sessionError || !sessionData) {
         console.error("Erreur lors de la création de la session:", sessionError);
-        return null;
+        throw new Error("Erreur lors de la création de la session");
       }
 
       const sessionId = sessionData.id;
@@ -108,7 +107,7 @@ export class SessionService {
       return sessionId;
     } catch (error) {
       console.error("Erreur inattendue lors de la création de la session:", error);
-      return null;
+      throw error;
     }
   }
 

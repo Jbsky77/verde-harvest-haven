@@ -59,7 +59,7 @@ const SessionDialog = ({
     }
   }, [isEditing, currentSession, open]);
 
-  const handleSaveSession = () => {
+  const handleSaveSession = async () => {
     if (sessionName.trim() && sessionDateText && selectedVarieties.length > 0) {
       // Parse the date from the French format (DD/MM/YYYY)
       const [day, month, year] = sessionDateText.split('/').map(num => parseInt(num, 10));
@@ -90,17 +90,26 @@ const SessionDialog = ({
         });
       } else {
         // Pour une nouvelle session
-        const sessionId = startCultivationSession(sessionName, sessionStartDate, selectedVarieties);
-        
-        toast({
-          title: "Session créée",
-          description: `La session "${sessionName}" a été créée avec succès.`,
-          variant: "default",
-        });
-        
-        // Callback pour informer le parent de la création de la session
-        if (onSessionCreated) {
-          onSessionCreated(sessionId);
+        try {
+          const sessionId = await startCultivationSession(sessionName, sessionStartDate, selectedVarieties);
+          
+          toast({
+            title: "Session créée",
+            description: `La session "${sessionName}" a été créée avec succès.`,
+            variant: "default",
+          });
+          
+          // Callback pour informer le parent de la création de la session
+          if (onSessionCreated && sessionId) {
+            onSessionCreated(sessionId);
+          }
+        } catch (error) {
+          console.error("Erreur lors de la création de la session:", error);
+          toast({
+            title: "Erreur",
+            description: "Une erreur s'est produite lors de la création de la session.",
+            variant: "destructive",
+          });
         }
       }
       
