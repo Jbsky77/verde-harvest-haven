@@ -1,4 +1,5 @@
 
 import { getPlantOperations } from './getPlantOperations';
+import { getPlantRetrievalOperations } from './plantRetrievalOperations';
 
-export { getPlantOperations };
+export { getPlantOperations, getPlantRetrievalOperations };
