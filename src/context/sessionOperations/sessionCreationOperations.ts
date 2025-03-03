@@ -10,7 +10,14 @@ export const getSessionCreationOperations = (
 ) => {
   const startCultivationSession = async (name: string, startDate: Date, selectedVarieties?: string[]): Promise<string> => {
     try {
+      console.log("Creating cultivation session:", { name, startDate, selectedVarieties });
       const sessionId = await SessionService.createSession(name, startDate, selectedVarieties);
+      
+      if (!sessionId) {
+        throw new Error("Aucun ID de session retourné");
+      }
+      
+      console.log("Session created with ID:", sessionId);
       
       const newSession: CultivationSession = {
         id: sessionId,
@@ -36,7 +43,7 @@ export const getSessionCreationOperations = (
       console.error("Erreur lors de la création de la session:", error);
       addAlert({
         type: "error",
-        message: "Erreur lors de la création de la session"
+        message: error instanceof Error ? error.message : "Erreur lors de la création de la session"
       });
       throw error;
     }

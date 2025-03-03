@@ -29,6 +29,7 @@ export const SessionDialogForm = ({
   const [sessionDateText, setSessionDateText] = useState("");
   const [selectedVarieties, setSelectedVarieties] = useState<string[]>([]);
   const [dateError, setDateError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
   const { 
     startCultivationSession, 
@@ -49,6 +50,13 @@ export const SessionDialogForm = ({
       setSessionDateText(`${day}/${month}/${year}`);
       
       setSelectedVarieties(currentSession.selectedVarieties || []);
+    } else {
+      // Set today's date as default for new sessions
+      const today = new Date();
+      const day = String(today.getDate()).padStart(2, '0');
+      const month = String(today.getMonth() + 1).padStart(2, '0');
+      const year = today.getFullYear();
+      setSessionDateText(`${day}/${month}/${year}`);
     }
   }, [isEditing, currentSession]);
 
@@ -69,60 +77,77 @@ export const SessionDialogForm = ({
 
   const handleSaveSession = async () => {
     if (sessionName.trim() && sessionDateText && selectedVarieties.length > 0) {
-      // Parse the date from the French format (DD/MM/YYYY)
-      const [day, month, year] = sessionDateText.split('/').map(num => parseInt(num, 10));
+      setIsSubmitting(true);
       
-      // JavaScript months are 0-indexed
-      const sessionStartDate = new Date(year, month - 1, day);
-      
-      // Check if this is a valid date
-      if (isNaN(sessionStartDate.getTime())) {
-        setDateError("Format de date invalide. Utilisez JJ/MM/AAAA");
-        return;
-      }
-      
-      if (isEditing && currentSession) {
-        // Pour l'édition, mettre à jour la session existante
-        updateSession({
-          id: currentSession.id,
-          name: sessionName,
-          startDate: sessionStartDate,
-          isActive: true,
-          selectedVarieties
-        });
+      try {
+        // Parse the date from the French format (DD/MM/YYYY)
+        const [day, month, year] = sessionDateText.split('/').map(num => parseInt(num, 10));
         
-        toast({
-          title: "Session modifiée",
-          description: `La session "${sessionName}" a été mise à jour avec succès.`,
-          variant: "default",
-        });
-      } else {
-        // Pour une nouvelle session
-        try {
-          const sessionId = await startCultivationSession(sessionName, sessionStartDate, selectedVarieties);
+        // JavaScript months are 0-indexed
+        const sessionStartDate = new Date(year, month - 1, day);
+        
+        // Check if this is a valid date
+        if (isNaN(sessionStartDate.getTime())) {
+          setDateError("Format de date invalide. Utilisez JJ/MM/AAAA");
+          setIsSubmitting(false);
+          return;
+        }
+        
+        if (isEditing && currentSession) {
+          // Pour l'édition, mettre à jour la session existante
+          await updateSession({
+            id: currentSession.id,
+            name: sessionName,
+            startDate: sessionStartDate,
+            isActive: true,
+            selectedVarieties
+          });
           
           toast({
-            title: "Session créée",
-            description: `La session "${sessionName}" a été créée avec succès.`,
+            title: "Session modifiée",
+            description: `La session "${sessionName}" a été mise à jour avec succès.`,
             variant: "default",
           });
-          
-          // Callback pour informer le parent de la création de la session
-          if (onSessionCreated && sessionId) {
-            onSessionCreated(sessionId);
+        } else {
+          // Pour une nouvelle session
+          try {
+            console.log("Starting cultivation session with:", { sessionName, sessionStartDate, selectedVarieties });
+            const sessionId = await startCultivationSession(sessionName, sessionStartDate, selectedVarieties);
+            
+            toast({
+              title: "Session créée",
+              description: `La session "${sessionName}" a été créée avec succès.`,
+              variant: "default",
+            });
+            
+            // Callback pour informer le parent de la création de la session
+            if (onSessionCreated && sessionId) {
+              onSessionCreated(sessionId);
+            }
+          } catch (error) {
+            console.error("Erreur lors de la création de la session:", error);
+            toast({
+              title: "Erreur",
+              description: error instanceof Error ? error.message : "Une erreur s'est produite lors de la création de la session.",
+              variant: "destructive",
+            });
+            setIsSubmitting(false);
+            return;
           }
-        } catch (error) {
-          console.error("Erreur lors de la création de la session:", error);
-          toast({
-            title: "Erreur",
-            description: "Une erreur s'est produite lors de la création de la session.",
-            variant: "destructive",
-          });
         }
+        
+        onOpenChange(false);
+        resetForm();
+      } catch (error) {
+        console.error("Erreur lors du traitement:", error);
+        toast({
+          title: "Erreur",
+          description: error instanceof Error ? error.message : "Une erreur s'est produite lors du traitement.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsSubmitting(false);
       }
-      
-      onOpenChange(false);
-      resetForm();
     }
   };
 
@@ -162,15 +187,15 @@ export const SessionDialogForm = ({
       </div>
 
       <div className="flex justify-end gap-2 mt-6">
-        <Button variant="outline" onClick={() => onOpenChange(false)}>
+        <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
           Annuler
         </Button>
         <Button 
           variant={isEditing ? "default" : "success"}
           onClick={handleSaveSession} 
-          disabled={!sessionName.trim() || !sessionDateText || selectedVarieties.length === 0}
+          disabled={!sessionName.trim() || !sessionDateText || selectedVarieties.length === 0 || isSubmitting}
         >
-          {isEditing ? "Enregistrer les modifications" : "Créer la session"}
+          {isSubmitting ? "En cours..." : isEditing ? "Enregistrer les modifications" : "Créer la session"}
         </Button>
       </div>
     </div>

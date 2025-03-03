@@ -27,6 +27,11 @@ const Dashboard = () => {
       year: 'numeric'
     });
   };
+
+  const handleSessionCreated = (sessionId: string) => {
+    console.log("New session created:", sessionId);
+    // Any additional actions after session creation can be handled here
+  };
   
   // Get the selected space for the DashboardTabs component
   const selectedSpace = selectedSpaceId ? getSpaceById(selectedSpaceId) : null;
@@ -64,7 +69,8 @@ const Dashboard = () => {
       
       <SessionDialog 
         open={newSessionDialogOpen} 
-        onOpenChange={setNewSessionDialogOpen} 
+        onOpenChange={setNewSessionDialogOpen}
+        onSessionCreated={handleSessionCreated}
       />
     </div>
   );
