@@ -4,8 +4,13 @@ import BatchActions from "@/components/BatchActions";
 import FertilizerButtons from "@/components/FertilizerButtons";
 import VarietyManagementTab from "@/components/dashboard/VarietyManagementTab";
 import SettingsButtons from "@/components/SettingsButtons";
+import { CultivationSpace } from "@/types";
 
-const DashboardTabs = () => {
+interface DashboardTabsProps {
+  space: CultivationSpace;
+}
+
+const DashboardTabs = ({ space }: DashboardTabsProps) => {
   return (
     <Tabs defaultValue="batch" className="w-full">
       <TabsList className="grid w-full grid-cols-4 mb-4 bg-white">
@@ -36,7 +41,7 @@ const DashboardTabs = () => {
       </TabsList>
       <div className="bg-gray-50 border rounded-lg p-4 lg:p-6">
         <TabsContent value="batch">
-          <BatchActions />
+          <BatchActions space={space} />
         </TabsContent>
         <TabsContent value="fertilizers">
           <FertilizerButtons />
