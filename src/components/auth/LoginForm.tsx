@@ -39,15 +39,31 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
       setLoading(true);
       setErrorMessage(null);
       console.log("Attempting to sign in with:", values.email);
+      
       await signIn(values.email, values.password);
+      
       console.log("Login successful");
+      toast.success('Connexion réussie!');
+      
       if (onSuccess) {
         onSuccess();
       }
     } catch (error: any) {
       console.error('Erreur de connexion:', error);
-      setErrorMessage(error.message || 'Échec de connexion. Veuillez vérifier vos informations.');
-      toast.error(error.message || 'Échec de connexion');
+      
+      // Check for specific error messages and provide more user-friendly versions
+      let errorMsg = 'Échec de connexion. Veuillez vérifier vos informations.';
+      
+      if (error.message?.includes('Invalid login credentials')) {
+        errorMsg = 'Email ou mot de passe incorrect.';
+      } else if (error.message?.includes('Email not confirmed')) {
+        errorMsg = 'Email non confirmé. Veuillez vérifier votre boîte de réception.';
+      } else if (error.message) {
+        errorMsg = error.message;
+      }
+      
+      setErrorMessage(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setLoading(false);
     }
