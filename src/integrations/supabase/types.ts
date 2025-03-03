@@ -9,6 +9,42 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      fertilizers: {
+        Row: {
+          color: string | null
+          created_at: string
+          id: string
+          is_custom: boolean | null
+          name: string
+          recommended_dosage: number
+          type: string
+          unit_type: string
+          updated_at: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          id?: string
+          is_custom?: boolean | null
+          name: string
+          recommended_dosage: number
+          type: string
+          unit_type: string
+          updated_at?: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          id?: string
+          is_custom?: boolean | null
+          name?: string
+          recommended_dosage?: number
+          type?: string
+          unit_type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       plant_varieties: {
         Row: {
           color: string
