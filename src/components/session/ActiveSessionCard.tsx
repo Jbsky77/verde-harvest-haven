@@ -1,4 +1,3 @@
-
 import { useCultivation } from "@/context/CultivationContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -32,7 +31,6 @@ const ActiveSessionCard = ({ formatDateToLocale }: ActiveSessionCardProps) => {
     return null;
   }
 
-  // Calculate session progress
   const startDate = new Date(currentSession.startDate);
   const today = new Date();
   const maxHarvestDate = getMaxHarvestDateForSession(currentSession);
@@ -44,19 +42,16 @@ const ActiveSessionCard = ({ formatDateToLocale }: ActiveSessionCardProps) => {
   const elapsedDays = (today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24);
   const progressPercent = Math.min(Math.max(Math.round((elapsedDays / totalDuration) * 100), 0), 100);
   
-  // Calculate days remaining until harvest
   const daysRemaining = maxHarvestDate ? 
     Math.max(Math.ceil((maxHarvestDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)), 0) : 
     Math.max(Math.ceil(totalDuration - elapsedDays), 0);
   
-  // Generate chart data
   const generateChartData = () => {
     if (!currentSession.selectedVarieties) return [];
     
     const data = [];
     const sessionDays = Math.ceil(totalDuration);
     
-    // Generate data points for variety growth phases
     for (let day = 0; day <= sessionDays; day++) {
       const date = new Date(startDate);
       date.setDate(date.getDate() + day);
@@ -99,7 +94,6 @@ const ActiveSessionCard = ({ formatDateToLocale }: ActiveSessionCardProps) => {
   
   const chartData = generateChartData();
   
-  // Calculate current day marker position
   const currentDayMarker = Math.floor(elapsedDays);
   
   const handleDeleteSession = () => {
@@ -148,7 +142,6 @@ const ActiveSessionCard = ({ formatDateToLocale }: ActiveSessionCardProps) => {
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            {/* Progress indicator with percentage and days countdown */}
             <div className="mb-2">
               <div className="flex items-center justify-between mb-1">
                 <span className="text-sm font-medium text-green-800">Progression de la session</span>
@@ -166,7 +159,18 @@ const ActiveSessionCard = ({ formatDateToLocale }: ActiveSessionCardProps) => {
               </div>
             </div>
             
-            {/* Growth phase chart */}
+            <div className="bg-white rounded-lg p-3 border border-green-200 shadow-sm">
+              <div className="flex items-center justify-center gap-2">
+                <Timer className="h-5 w-5 text-green-700" />
+                <span className="text-lg font-bold text-green-800">
+                  {daysRemaining} jour{daysRemaining > 1 ? 's' : ''} avant récolte
+                </span>
+              </div>
+              <div className="text-center text-xs text-green-600 mt-1">
+                Date estimée: {formatDateToLocale(maxHarvestDate)}
+              </div>
+            </div>
+            
             <div className="h-48 mt-4 mb-6">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={chartData}>
@@ -186,7 +190,6 @@ const ActiveSessionCard = ({ formatDateToLocale }: ActiveSessionCardProps) => {
                     dataKey="day" 
                     tick={{fontSize: 10}}
                     tickFormatter={(day) => {
-                      // Show key dates only
                       if (day === 0 || day === Math.floor(totalDuration) || day === currentDayMarker) {
                         const date = new Date(startDate);
                         date.setDate(date.getDate() + Number(day));
@@ -209,7 +212,6 @@ const ActiveSessionCard = ({ formatDateToLocale }: ActiveSessionCardProps) => {
                   />
                   <Tooltip 
                     formatter={(value, name) => {
-                      // Cast value to number before comparing
                       const numValue = Number(value);
                       const phase = 
                         numValue <= 25 ? "Germination" :
@@ -239,7 +241,6 @@ const ActiveSessionCard = ({ formatDateToLocale }: ActiveSessionCardProps) => {
                     );
                   })}
                   
-                  {/* Current day marker */}
                   <XAxis 
                     dataKey="day"
                     xAxisId="current-day"
@@ -252,7 +253,6 @@ const ActiveSessionCard = ({ formatDateToLocale }: ActiveSessionCardProps) => {
               </ResponsiveContainer>
             </div>
             
-            {/* Legend */}
             <div className="flex flex-wrap gap-2 mt-1 mb-3">
               {currentSession.selectedVarieties?.map((varietyId) => {
                 const variety = varieties.find(v => v.id === varietyId);
@@ -269,7 +269,6 @@ const ActiveSessionCard = ({ formatDateToLocale }: ActiveSessionCardProps) => {
               })}
             </div>
             
-            {/* Variety list */}
             {currentSession.selectedVarieties && currentSession.selectedVarieties.length > 0 ? (
               <>
                 <div className="flex items-center justify-between">
@@ -316,7 +315,6 @@ const ActiveSessionCard = ({ formatDateToLocale }: ActiveSessionCardProps) => {
         </CardContent>
       </Card>
       
-      {/* Edit Session Dialog */}
       <SessionDialog 
         open={editSessionOpen} 
         onOpenChange={setEditSessionOpen}
@@ -324,7 +322,6 @@ const ActiveSessionCard = ({ formatDateToLocale }: ActiveSessionCardProps) => {
         currentSession={currentSession}
       />
       
-      {/* Delete Confirmation Dialog */}
       <Dialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
