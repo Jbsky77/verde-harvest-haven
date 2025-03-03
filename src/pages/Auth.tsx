@@ -80,16 +80,16 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-green-50 to-green-100 p-4">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-purple-50 to-purple-100 p-4">
       <div className="w-full max-w-md mb-8 text-center">
-        <h1 className="text-3xl font-bold text-green-700 mb-2">Cultiv</h1>
+        <h1 className="text-3xl font-bold text-primary mb-2">Cultiv</h1>
         <p className="text-gray-600">Gérez vos espaces de culture simplement</p>
       </div>
       
-      <Card className="w-full max-w-md shadow-lg border-green-100">
+      <Card className="w-full max-w-md shadow-lg border-purple-100">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center flex items-center justify-center gap-2">
-            <LogIn className="h-6 w-6 text-green-600" />
+            <LogIn className="h-6 w-6 text-primary" />
             {isLogin ? "Se connecter" : "S'inscrire"}
           </CardTitle>
           <CardDescription className="text-center">
@@ -176,7 +176,7 @@ const Auth = () => {
             
             <Button 
               type="submit" 
-              className="w-full bg-green-600 hover:bg-green-700" 
+              className="w-full bg-primary hover:bg-primary/90" 
               disabled={loading}
             >
               {loading
@@ -194,7 +194,7 @@ const Auth = () => {
               setIsLogin(!isLogin);
               setAuthError(null);
             }}
-            className="text-green-700"
+            className="text-primary"
           >
             {isLogin 
               ? "Vous n'avez pas de compte ? S'inscrire" 

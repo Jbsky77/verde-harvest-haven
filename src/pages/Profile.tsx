@@ -186,7 +186,7 @@ const Profile = () => {
               
               <Button 
                 onClick={handleReconnect}
-                className="w-full bg-purple-600 hover:bg-purple-700"
+                className="w-full"
               >
                 Se reconnecter
               </Button>
@@ -200,7 +200,7 @@ const Profile = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
       </div>
     );
   }
@@ -236,11 +236,11 @@ const Profile = () => {
 
   return (
     <div className="container mx-auto py-8 px-4 max-w-3xl">
-      <Card className="shadow-lg border-green-100">
+      <Card className="shadow-lg border-purple-100">
         <CardHeader className="pb-4">
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-2xl font-bold text-green-700">Profil Utilisateur</CardTitle>
+              <CardTitle className="text-2xl font-bold text-primary">Profil Utilisateur</CardTitle>
               <CardDescription>Gérez vos informations personnelles</CardDescription>
             </div>
             {!isEditing ? (
@@ -269,7 +269,7 @@ const Profile = () => {
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex justify-center mb-6">
-            <div className="bg-green-100 rounded-full p-8 text-green-700">
+            <div className="bg-purple-100 rounded-full p-8 text-primary">
               <UserCircle size={80} />
             </div>
           </div>
@@ -277,7 +277,7 @@ const Profile = () => {
           <div className="grid gap-4">
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <Mail className="h-4 w-4 text-green-600" />
+                <Mail className="h-4 w-4 text-primary" />
                 <Label htmlFor="email">Email</Label>
               </div>
               <Input 
@@ -291,7 +291,7 @@ const Profile = () => {
             
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <User className="h-4 w-4 text-green-600" />
+                <User className="h-4 w-4 text-primary" />
                 <Label htmlFor="username">Nom d'utilisateur</Label>
               </div>
               <Input 
@@ -305,7 +305,7 @@ const Profile = () => {
             
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <User className="h-4 w-4 text-green-600" />
+                <User className="h-4 w-4 text-primary" />
                 <Label htmlFor="fullname">Nom complet</Label>
               </div>
               <Input 
@@ -319,7 +319,7 @@ const Profile = () => {
           </div>
           
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className="px-3 py-1 border-green-200 bg-green-50 text-green-700">
+            <Badge variant="outline" className="px-3 py-1 border-purple-200 bg-purple-50 text-primary">
               Compte créé le {new Date(profile?.created_at).toLocaleDateString('fr-FR')}
             </Badge>
           </div>
