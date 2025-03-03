@@ -9,7 +9,39 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      plant_varieties: {
+        Row: {
+          color: string
+          created_at: string
+          flowering_time: number | null
+          germination_time: number | null
+          growth_time: number | null
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          color: string
+          created_at?: string
+          flowering_time?: number | null
+          germination_time?: number | null
+          growth_time?: number | null
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          flowering_time?: number | null
+          germination_time?: number | null
+          growth_time?: number | null
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
