@@ -8,7 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
-import { User, UserCircle, Mail, Edit, Save, LogOut } from "lucide-react";
+import { User, UserCircle, Mail, Edit, Save, LogOut, AlertCircle } from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -19,13 +20,22 @@ const Profile = () => {
   const [username, setUsername] = useState("");
   const [fullName, setFullName] = useState("");
   const [isEditing, setIsEditing] = useState(false);
+  const [authError, setAuthError] = useState(false);
 
   useEffect(() => {
     const fetchUserAndProfile = async () => {
       try {
         // Get the current user
         const { data: { user }, error: userError } = await supabase.auth.getUser();
-        if (userError) throw userError;
+        
+        if (userError) {
+          console.error("Error fetching user data:", userError);
+          if (userError.message.includes("JWT")) {
+            setAuthError(true);
+            return;
+          }
+          throw userError;
+        }
         
         if (!user) {
           navigate("/auth");
@@ -62,6 +72,12 @@ const Profile = () => {
   }, [navigate]);
 
   const handleUpdateProfile = async () => {
+    if (!user || !user.id) {
+      toast.error("Session expirée. Veuillez vous reconnecter.");
+      navigate("/auth");
+      return;
+    }
+    
     try {
       setUpdating(true);
       
@@ -106,10 +122,71 @@ const Profile = () => {
     }
   };
 
+  const handleReconnect = () => {
+    navigate("/auth");
+  };
+
+  if (authError) {
+    return (
+      <div className="container mx-auto py-8 px-4 max-w-3xl">
+        <Card className="shadow-lg border-red-100">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-2xl font-bold text-red-700 flex items-center gap-2">
+              <AlertCircle className="h-6 w-6" /> Erreur d'authentification
+            </CardTitle>
+            <CardDescription>Votre session a expiré ou n'est plus valide</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <p className="text-center text-gray-600">
+              Veuillez vous reconnecter pour accéder à votre profil
+            </p>
+          </CardContent>
+          <CardFooter className="flex justify-center border-t pt-6">
+            <Button 
+              onClick={handleReconnect}
+              className="w-full max-w-xs"
+            >
+              Se reconnecter
+            </Button>
+          </CardFooter>
+        </Card>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-600"></div>
+      </div>
+    );
+  }
+
+  // If user or profile is null after loading, show an error
+  if (!user || !profile) {
+    return (
+      <div className="container mx-auto py-8 px-4 max-w-3xl">
+        <Card className="shadow-lg border-red-100">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-2xl font-bold text-red-700 flex items-center gap-2">
+              <AlertCircle className="h-6 w-6" /> Erreur de chargement
+            </CardTitle>
+            <CardDescription>Impossible de charger les données du profil</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <p className="text-center text-gray-600">
+              Il y a eu un problème lors du chargement de votre profil. Veuillez vous reconnecter.
+            </p>
+          </CardContent>
+          <CardFooter className="flex justify-center border-t pt-6">
+            <Button 
+              onClick={handleLogout}
+              className="w-full max-w-xs"
+            >
+              Se reconnecter
+            </Button>
+          </CardFooter>
+        </Card>
       </div>
     );
   }
