@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { PlantState } from "@/types";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PlantGrid from "@/components/PlantGrid";
-import PlantsList from "@/components/PlantsList";
+import { PlantsList } from "@/components/plants"; // Updated import from the plants directory
 import { BarChart, PieChart, Bar, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LabelList } from "recharts";
 
 interface SpaceOverviewProps {
