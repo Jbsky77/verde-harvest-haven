@@ -3,9 +3,9 @@ import { SessionRetrievalService } from "./sessions/sessionRetrievalService";
 import { SessionCreationService } from "./sessions/sessionCreationService";
 import { SessionUpdateService } from "./sessions/sessionUpdateService";
 import { SessionDeletionService } from "./sessions/sessionDeletionService";
-import { SessionWithVarieties } from "./sessions/types";
+import type { SessionWithVarieties } from "./sessions/types";
 
-export { SessionWithVarieties };
+export type { SessionWithVarieties };
 
 export class SessionService {
   // Récupérer toutes les sessions
