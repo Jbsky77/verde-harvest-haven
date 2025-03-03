@@ -86,4 +86,13 @@
   .glass-effect {
     @apply bg-white/90 backdrop-blur-sm border border-white/40;
   }
+  
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
 }

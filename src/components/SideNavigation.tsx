@@ -7,8 +7,8 @@ import {
   Droplet, 
   Sprout, 
   Settings,
-  ChevronLeft,
-  ChevronRight
+  ChevronDown,
+  ChevronUp
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -21,22 +21,21 @@ type NavItemProps = {
   label: string;
   to: string;
   active: boolean;
-  collapsed: boolean;
 };
 
-const NavItem = ({ icon, label, to, active, collapsed }: NavItemProps) => {
+const NavItem = ({ icon, label, to, active }: NavItemProps) => {
   return (
     <Button
       variant={active ? "secondary" : "ghost"}
       className={cn(
-        "w-full justify-start gap-3 mb-1",
-        collapsed ? "px-3" : "px-4"
+        "h-10 gap-2",
+        active ? "bg-gray-100" : ""
       )}
       asChild
     >
       <Link to={to}>
         {icon}
-        {!collapsed && <span>{label}</span>}
+        <span className="text-sm">{label}</span>
       </Link>
     </Button>
   );
@@ -47,23 +46,22 @@ type SpaceItemProps = {
   label: string;
   onClick: () => void;
   active: boolean;
-  collapsed: boolean;
 };
 
-const SpaceItem = ({ spaceId, label, onClick, active, collapsed }: SpaceItemProps) => {
+const SpaceItem = ({ spaceId, label, onClick, active }: SpaceItemProps) => {
   return (
     <Button
       variant={active ? "secondary" : "ghost"}
       className={cn(
-        "w-full justify-start gap-3 mb-1",
-        collapsed ? "px-3" : "px-4"
+        "h-9 gap-2 mb-1",
+        active ? "bg-gray-100" : ""
       )}
       onClick={onClick}
     >
       <div className="flex items-center justify-center w-5 h-5">
         <span className="text-xs font-medium">{spaceId}</span>
       </div>
-      {!collapsed && <span>{label}</span>}
+      <span>{label}</span>
     </Button>
   );
 };
@@ -71,15 +69,10 @@ const SpaceItem = ({ spaceId, label, onClick, active, collapsed }: SpaceItemProp
 const SideNavigation = () => {
   const { selectedSpaceId, setSelectedSpaceId, spaces } = useCultivation();
   const isMobile = useIsMobile();
-  const [collapsed, setCollapsed] = useState(false);
+  const [spacesExpanded, setSpacesExpanded] = useState(false);
   const location = useLocation();
   const currentPath = location.pathname;
   
-  // On mobile, always show expanded sidebar
-  const isCollapsed = isMobile ? false : collapsed;
-
-  if (isMobile) return null;
-
   const getActivePage = () => {
     if (currentPath === "/") return "home";
     if (currentPath === "/spaces") return "spaces";
@@ -93,90 +86,85 @@ const SideNavigation = () => {
   const page = getActivePage();
 
   return (
-    <aside 
-      className={cn(
-        "fixed left-0 top-16 bottom-0 border-r bg-white transition-all duration-300 ease-in-out overflow-hidden z-40 flex flex-col",
-        isCollapsed ? "w-14" : "w-56"
-      )}
-    >
-      <div className="flex flex-col p-2 flex-1">
-        <NavItem
-          icon={<Home className="h-5 w-5" />}
-          label="Accueil"
-          to="/"
-          active={page === "home"}
-          collapsed={isCollapsed}
-        />
-        <NavItem
-          icon={<Grid3X3 className="h-5 w-5" />}
-          label="Espaces"
-          to="/spaces"
-          active={page === "spaces"}
-          collapsed={isCollapsed}
-        />
-        <NavItem
-          icon={<BarChart3 className="h-5 w-5" />}
-          label="Analyses"
-          to="/analytics"
-          active={page === "analytics"}
-          collapsed={isCollapsed}
-        />
-        <NavItem
-          icon={<Droplet className="h-5 w-5" />}
-          label="Fertilisants"
-          to="/fertilizers"
-          active={page === "fertilizers"}
-          collapsed={isCollapsed}
-        />
-        <NavItem
-          icon={<Sprout className="h-5 w-5" />}
-          label="Variétés"
-          to="/plants"
-          active={page === "plants"}
-          collapsed={isCollapsed}
-        />
-        <NavItem
-          icon={<Settings className="h-5 w-5" />}
-          label="Paramètres"
-          to="/settings"
-          active={page === "settings"}
-          collapsed={isCollapsed}
-        />
-
-        {page === "spaces" && (
-          <div className="mt-4">
-            <div className={cn("mb-2 px-2", isCollapsed && "text-center")}>
-              {!isCollapsed && <p className="text-xs font-medium text-muted-foreground">ESPACES</p>}
-            </div>
-            {spaces.map((space) => (
-              <SpaceItem
-                key={space.id}
-                spaceId={space.id}
-                label={space.name}
-                onClick={() => setSelectedSpaceId(space.id)}
-                active={selectedSpaceId === space.id}
-                collapsed={isCollapsed}
-              />
-            ))}
+    <header className="w-full bg-white border-b shadow-sm z-40 sticky top-0">
+      <div className="container mx-auto">
+        <div className="flex items-center h-16">
+          <div className="flex space-x-1 overflow-x-auto hide-scrollbar">
+            <NavItem
+              icon={<Home className="h-4 w-4" />}
+              label="Accueil"
+              to="/"
+              active={page === "home"}
+            />
+            <NavItem
+              icon={<Grid3X3 className="h-4 w-4" />}
+              label="Espaces"
+              to="/spaces"
+              active={page === "spaces"}
+            />
+            <NavItem
+              icon={<BarChart3 className="h-4 w-4" />}
+              label="Analyses"
+              to="/analytics"
+              active={page === "analytics"}
+            />
+            <NavItem
+              icon={<Droplet className="h-4 w-4" />}
+              label="Fertilisants"
+              to="/fertilizers"
+              active={page === "fertilizers"}
+            />
+            <NavItem
+              icon={<Sprout className="h-4 w-4" />}
+              label="Variétés"
+              to="/plants"
+              active={page === "plants"}
+            />
+            <NavItem
+              icon={<Settings className="h-4 w-4" />}
+              label="Paramètres"
+              to="/settings"
+              active={page === "settings"}
+            />
           </div>
-        )}
-      </div>
-      
-      <div className="p-2 border-t">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="w-full h-8"
-          onClick={() => setCollapsed(!collapsed)}
-        >
-          {isCollapsed ? (
-            <ChevronRight className="h-4 w-4" />
-          ) : (
-            <ChevronLeft className="h-4 w-4" />
+
+          {page === "spaces" && (
+            <div className="ml-auto relative">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="flex items-center gap-1"
+                onClick={() => setSpacesExpanded(!spacesExpanded)}
+              >
+                Espaces
+                {spacesExpanded ? (
+                  <ChevronUp className="h-4 w-4" />
+                ) : (
+                  <ChevronDown className="h-4 w-4" />
+                )}
+              </Button>
+              
+              {spacesExpanded && (
+                <div className="absolute right-0 mt-1 bg-white border rounded-md shadow-md p-2 w-48 z-50">
+                  {spaces.map((space) => (
+                    <SpaceItem
+                      key={space.id}
+                      spaceId={space.id}
+                      label={space.name}
+                      onClick={() => {
+                        setSelectedSpaceId(space.id);
+                        setSpacesExpanded(false);
+                      }}
+                      active={selectedSpaceId === space.id}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
           )}
-        </Button>
+        </div>
       </div>
-    </aside>
+    </header>
   );
 };
 

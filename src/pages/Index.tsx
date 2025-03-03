@@ -19,10 +19,10 @@ const Index = () => {
   }, [spaces, selectedSpaceId]);
 
   return (
-    <div className="min-h-screen flex bg-background">
+    <div className="min-h-screen flex flex-col bg-background">
       <SideNavigation />
       
-      <main className="flex-1 flex flex-col pl-0 md:pl-14 lg:pl-56">
+      <main className="flex-1 flex flex-col">
         <div className="container py-6 space-y-6 flex-1 overflow-hidden">
           <Dashboard />
           

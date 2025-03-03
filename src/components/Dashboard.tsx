@@ -30,7 +30,7 @@ const Dashboard = () => {
   
   return (
     <div className="flex flex-col h-full">
-      <div className="flex-1 overflow-auto pb-16 pl-0 md:pl-14 lg:pl-56">
+      <div className="flex-1 overflow-auto pb-16">
         <DashboardHeader 
           showAllSpaces={showAllSpaces}
           setShowAllSpaces={setShowAllSpaces}
