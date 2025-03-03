@@ -13,7 +13,7 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     }
   }, [user, loading, navigate]);
 
-  // Afficher un spinner de chargement pendant la vérification
+  // Show a loading spinner during authentication check
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -22,6 +22,6 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     );
   }
 
-  // Ne rendre les enfants que si l'utilisateur est connecté
+  // Only render children if user is authenticated
   return user ? <>{children}</> : null;
 };

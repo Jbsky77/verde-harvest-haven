@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
@@ -35,10 +36,11 @@ export default function Auth() {
   const { signIn, signUp, loading, user } = useAuth();
   const navigate = useNavigate();
 
-  // Redirection si déjà connecté - utilisons un useEffect pour gérer la redirection
+  // Redirect if already authenticated
   useEffect(() => {
     if (user) {
-      navigate('/');
+      console.log("User authenticated, redirecting to home page");
+      navigate('/', { replace: true });
     }
   }, [user, navigate]);
 
@@ -63,7 +65,8 @@ export default function Auth() {
   const onLoginSubmit = async (values: LoginFormValues) => {
     try {
       await signIn(values.email, values.password);
-      // La redirection est maintenant gérée par le useEffect
+      // The redirection is now handled by the useEffect
+      console.log("Login successful");
     } catch (error) {
       console.error('Erreur de connexion:', error);
     }
@@ -80,7 +83,7 @@ export default function Auth() {
     }
   };
 
-  // Rendre null si l'utilisateur est déjà connecté
+  // Render null if user is already authenticated
   if (user) return null;
 
   return (
