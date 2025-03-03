@@ -128,28 +128,30 @@ const Profile = () => {
 
   if (authError) {
     return (
-      <div className="container mx-auto py-8 px-4 max-w-3xl">
-        <Card className="shadow-lg border-red-100">
-          <CardHeader className="pb-4">
-            <CardTitle className="text-2xl font-bold text-red-700 flex items-center gap-2">
-              <AlertCircle className="h-6 w-6" /> Erreur d'authentification
-            </CardTitle>
-            <CardDescription>Votre session a expiré ou n'est plus valide</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <p className="text-center text-gray-600">
-              Veuillez vous reconnecter pour accéder à votre profil
-            </p>
-          </CardContent>
-          <CardFooter className="flex justify-center border-t pt-6">
-            <Button 
-              onClick={handleReconnect}
-              className="w-full max-w-xs"
-            >
-              Se reconnecter
-            </Button>
-          </CardFooter>
-        </Card>
+      <div className="flex items-center justify-center min-h-screen p-4">
+        <div className="w-full max-w-md bg-white rounded-lg shadow-lg overflow-hidden">
+          <div className="p-6 space-y-6">
+            <div className="flex items-center gap-3">
+              <div className="flex-shrink-0 p-1.5 rounded-full bg-red-50">
+                <AlertCircle className="h-7 w-7 text-red-600" />
+              </div>
+              <h2 className="text-xl font-bold text-red-600">Erreur d'authentification</h2>
+            </div>
+            
+            <p className="text-gray-600">Votre session a expiré ou n'est plus valide</p>
+            
+            <div className="text-center pt-4">
+              <p className="text-sm text-gray-600 mb-6">Veuillez vous reconnecter pour accéder à votre profil</p>
+              
+              <Button 
+                onClick={handleReconnect}
+                className="w-full bg-purple-600 hover:bg-purple-700"
+              >
+                Se reconnecter
+              </Button>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
