@@ -42,6 +42,31 @@ const NavItem = ({ icon, label, to, active, collapsed }: NavItemProps) => {
   );
 };
 
+type TabNavItemProps = {
+  icon: React.ReactNode;
+  label: string;
+  tabValue: string;
+  active: boolean;
+  collapsed: boolean;
+  onClick: () => void;
+};
+
+const TabNavItem = ({ icon, label, active, collapsed, onClick }: TabNavItemProps) => {
+  return (
+    <Button
+      variant={active ? "secondary" : "ghost"}
+      className={cn(
+        "w-full justify-start gap-3 mb-1",
+        collapsed ? "px-3" : "px-4"
+      )}
+      onClick={onClick}
+    >
+      {icon}
+      {!collapsed && <span>{label}</span>}
+    </Button>
+  );
+};
+
 type SpaceItemProps = {
   spaceId: number;
   label: string;
@@ -92,6 +117,16 @@ const SideNavigation = () => {
 
   const page = getActivePage();
 
+  const selectTab = (tabValue: string) => {
+    // Find the tab element and click it
+    setTimeout(() => {
+      const tabElement = document.querySelector(`[role="tab"][value="${tabValue}"]`) as HTMLElement;
+      if (tabElement) {
+        tabElement.click();
+      }
+    }, 50);
+  };
+
   return (
     <aside 
       className={cn(
@@ -114,33 +149,61 @@ const SideNavigation = () => {
           active={page === "spaces"}
           collapsed={isCollapsed}
         />
-        <NavItem
+        <TabNavItem
           icon={<BarChart3 className="h-5 w-5" />}
           label="Analyses"
-          to="/analytics"
+          tabValue="analytics"
           active={page === "analytics"}
           collapsed={isCollapsed}
+          onClick={() => {
+            if (currentPath !== "/") {
+              window.location.href = "/?tab=analytics";
+            } else {
+              selectTab("analytics");
+            }
+          }}
         />
-        <NavItem
+        <TabNavItem
           icon={<Droplet className="h-5 w-5" />}
           label="Fertilisants"
-          to="/fertilizers"
+          tabValue="fertilizers"
           active={page === "fertilizers"}
           collapsed={isCollapsed}
+          onClick={() => {
+            if (currentPath !== "/") {
+              window.location.href = "/?tab=fertilizers";
+            } else {
+              selectTab("fertilizers");
+            }
+          }}
         />
-        <NavItem
+        <TabNavItem
           icon={<Sprout className="h-5 w-5" />}
           label="Variétés"
-          to="/plants"
+          tabValue="varieties"
           active={page === "plants"}
           collapsed={isCollapsed}
+          onClick={() => {
+            if (currentPath !== "/") {
+              window.location.href = "/?tab=varieties";
+            } else {
+              selectTab("varieties");
+            }
+          }}
         />
-        <NavItem
+        <TabNavItem
           icon={<Settings className="h-5 w-5" />}
           label="Paramètres"
-          to="/settings"
+          tabValue="settings"
           active={page === "settings"}
           collapsed={isCollapsed}
+          onClick={() => {
+            if (currentPath !== "/") {
+              window.location.href = "/?tab=settings";
+            } else {
+              selectTab("settings");
+            }
+          }}
         />
 
         {page === "spaces" && (
