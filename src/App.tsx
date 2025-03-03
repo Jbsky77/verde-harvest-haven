@@ -6,7 +6,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CultivationProvider } from "@/context/CultivationContext";
 import Index from "@/pages/Index";
+import Auth from "@/pages/Auth";
 import NotFound from "@/pages/NotFound";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 // Optimize by creating the query client outside of component render
 const queryClient = new QueryClient({
@@ -26,12 +28,44 @@ const App = () => (
         <Sonner position="top-right" />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/spaces" element={<Index />} />
-            <Route path="/analytics" element={<Index />} />
-            <Route path="/fertilizers" element={<Index />} />
-            <Route path="/plants" element={<Index />} />
-            <Route path="/settings" element={<Index />} />
+            <Route path="/auth" element={<Auth />} />
+            
+            <Route path="/" element={
+              <ProtectedRoute>
+                <Index />
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/spaces" element={
+              <ProtectedRoute>
+                <Index />
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/analytics" element={
+              <ProtectedRoute>
+                <Index />
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/fertilizers" element={
+              <ProtectedRoute>
+                <Index />
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/plants" element={
+              <ProtectedRoute>
+                <Index />
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/settings" element={
+              <ProtectedRoute>
+                <Index />
+              </ProtectedRoute>
+            } />
+            
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
