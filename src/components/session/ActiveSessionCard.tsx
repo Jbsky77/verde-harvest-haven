@@ -1,16 +1,20 @@
 
 import { useCultivation } from "@/context/CultivationContext";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { InfoIcon, CalendarIcon, Edit, Trash2, Timer } from "lucide-react";
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Edit, Trash2, CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import SessionDialog from "./SessionDialog";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Progress } from "@/components/ui/progress";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { 
+  SessionProgressBar, 
+  HarvestCountdown, 
+  SessionChart, 
+  SessionVarietyList,
+  generateChartData
+} from "./active-session";
 
 interface ActiveSessionCardProps {
   formatDateToLocale: (date: Date | null) => string;
@@ -49,53 +53,13 @@ const ActiveSessionCard = ({ formatDateToLocale }: ActiveSessionCardProps) => {
     Math.max(Math.ceil((maxHarvestDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)), 0) : 
     Math.max(Math.ceil(totalDuration - elapsedDays), 0);
   
-  const generateChartData = () => {
-    if (!currentSession.selectedVarieties) return [];
-    
-    const data = [];
-    const sessionDays = Math.ceil(totalDuration);
-    
-    for (let day = 0; day <= sessionDays; day++) {
-      const date = new Date(startDate);
-      date.setDate(date.getDate() + day);
-      
-      const dataPoint: any = {
-        day,
-        date: formatDateToLocale(date),
-      };
-      
-      currentSession.selectedVarieties.forEach(varietyId => {
-        const variety = varieties.find(v => v.id === varietyId);
-        if (!variety || !variety.germinationTime || !variety.growthTime || !variety.floweringTime) return;
-        
-        const germDays = variety.germinationTime;
-        const growthDays = variety.growthTime;
-        const floweringDays = variety.floweringTime;
-        
-        let phase = "none";
-        if (day <= germDays) {
-          phase = "germination";
-        } else if (day <= germDays + growthDays) {
-          phase = "growth";
-        } else if (day <= germDays + growthDays + floweringDays) {
-          phase = "flowering";
-        } else {
-          phase = "harvest";
-        }
-        
-        dataPoint[`${variety.name}`] = phase === "germination" ? 25 :
-                                     phase === "growth" ? 50 :
-                                     phase === "flowering" ? 75 :
-                                     phase === "harvest" ? 100 : 0;
-      });
-      
-      data.push(dataPoint);
-    }
-    
-    return data;
-  };
-  
-  const chartData = generateChartData();
+  const chartData = generateChartData(
+    currentSession, 
+    varieties, 
+    startDate, 
+    totalDuration, 
+    formatDateToLocale
+  );
   
   const currentDayMarker = Math.floor(elapsedDays);
   
@@ -145,176 +109,36 @@ const ActiveSessionCard = ({ formatDateToLocale }: ActiveSessionCardProps) => {
         </CardHeader>
         <CardContent className={isMobile ? 'px-3 py-3' : ''}>
           <div className="space-y-3">
-            <div className="mb-2">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-sm font-medium text-green-800">Progression de la session</span>
-                <Badge variant="outline" className="bg-white text-green-800">
-                  {progressPercent}%
-                </Badge>
-              </div>
-              <Progress value={progressPercent} className="h-2" />
-              <div className="flex items-center justify-between mt-1 text-xs text-green-800">
-                <span>Jour {Math.floor(elapsedDays)}/{Math.ceil(totalDuration)}</span>
-                <div className="flex items-center">
-                  <Timer className="h-3 w-3 mr-1" />
-                  <span>{daysRemaining} jour{daysRemaining > 1 ? 's' : ''} restant{daysRemaining > 1 ? 's' : ''}</span>
-                </div>
-              </div>
-            </div>
+            <SessionProgressBar 
+              progressPercent={progressPercent}
+              elapsedDays={elapsedDays}
+              totalDuration={totalDuration}
+              daysRemaining={daysRemaining}
+            />
             
-            <div className="bg-white rounded-lg p-3 border border-green-200 shadow-sm">
-              <div className="flex items-center justify-center gap-2">
-                <Timer className="h-5 w-5 text-green-700" />
-                <span className={`${isMobile ? 'text-base' : 'text-lg'} font-bold text-green-800`}>
-                  {daysRemaining} jour{daysRemaining > 1 ? 's' : ''} avant récolte
-                </span>
-              </div>
-              <div className="text-center text-xs text-green-600 mt-1">
-                Date estimée: {formatDateToLocale(maxHarvestDate)}
-              </div>
-            </div>
+            <HarvestCountdown 
+              daysRemaining={daysRemaining}
+              formatDateToLocale={formatDateToLocale}
+              maxHarvestDate={maxHarvestDate}
+            />
             
-            <div className={`${isMobile ? 'h-40' : 'h-48'} mt-4 mb-6`}>
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={chartData} margin={isMobile ? { top: 5, right: 5, left: -15, bottom: 5 } : {}}>
-                  <defs>
-                    {currentSession.selectedVarieties?.map((varietyId, index) => {
-                      const variety = varieties.find(v => v.id === varietyId);
-                      if (!variety) return null;
-                      return (
-                        <linearGradient key={varietyId} id={`color${varietyId}`} x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor={variety.color} stopOpacity={0.8}/>
-                          <stop offset="95%" stopColor={variety.color} stopOpacity={0.2}/>
-                        </linearGradient>
-                      );
-                    })}
-                  </defs>
-                  <XAxis 
-                    dataKey="day" 
-                    tick={{fontSize: isMobile ? 8 : 10}}
-                    tickFormatter={(day) => {
-                      if (day === 0 || day === Math.floor(totalDuration) || day === currentDayMarker) {
-                        const date = new Date(startDate);
-                        date.setDate(date.getDate() + Number(day));
-                        return formatDateToLocale(date).split('/').slice(0, 2).join('/');
-                      }
-                      return '';
-                    }}
-                  />
-                  <YAxis 
-                    tick={{fontSize: isMobile ? 8 : 10}} 
-                    domain={[0, 100]}
-                    tickFormatter={(value) => {
-                      if (value === 0) return 'Début';
-                      if (value === 25) return 'Germ.';
-                      if (value === 50) return 'Croiss.';
-                      if (value === 75) return 'Floraison';
-                      if (value === 100) return 'Récolte';
-                      return '';
-                    }}
-                    width={isMobile ? 40 : 50}
-                  />
-                  <Tooltip 
-                    formatter={(value, name) => {
-                      const numValue = Number(value);
-                      const phase = 
-                        numValue <= 25 ? "Germination" :
-                        numValue <= 50 ? "Croissance" :
-                        numValue <= 75 ? "Floraison" : "Récolte";
-                      return [phase, name];
-                    }}
-                    labelFormatter={(day) => {
-                      const date = new Date(startDate);
-                      date.setDate(date.getDate() + Number(day));
-                      return `Jour ${day}: ${formatDateToLocale(date)}`;
-                    }}
-                  />
-                  
-                  {currentSession.selectedVarieties?.map((varietyId) => {
-                    const variety = varieties.find(v => v.id === varietyId);
-                    if (!variety) return null;
-                    return (
-                      <Area 
-                        key={varietyId}
-                        type="monotone" 
-                        dataKey={variety.name}
-                        stroke={variety.color} 
-                        fillOpacity={1}
-                        fill={`url(#color${varietyId})`}
-                      />
-                    );
-                  })}
-                  
-                  <XAxis 
-                    dataKey="day"
-                    xAxisId="current-day"
-                    axisLine={false} 
-                    tickLine={false}
-                    tick={false}
-                    height={0}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
+            <SessionChart 
+              chartData={chartData}
+              currentSession={currentSession}
+              varieties={varieties}
+              currentDayMarker={currentDayMarker}
+              totalDuration={totalDuration}
+              startDate={startDate}
+              formatDateToLocale={formatDateToLocale}
+            />
             
-            <div className="flex flex-wrap gap-2 mt-1 mb-3">
-              {currentSession.selectedVarieties?.map((varietyId) => {
-                const variety = varieties.find(v => v.id === varietyId);
-                if (!variety) return null;
-                return (
-                  <div key={varietyId} className="flex items-center gap-1">
-                    <div 
-                      className="w-3 h-3 rounded-full" 
-                      style={{ backgroundColor: variety.color }}
-                    />
-                    <span className="text-xs text-green-800">{variety.name}</span>
-                  </div>
-                );
-              })}
-            </div>
-            
-            {currentSession.selectedVarieties && currentSession.selectedVarieties.length > 0 ? (
-              <>
-                <div className={`flex items-center ${isMobile ? 'flex-col items-start' : 'justify-between'}`}>
-                  <span className="text-sm font-medium text-green-800">Variétés cultivées</span>
-                  {!isMobile && <span className="text-sm text-green-800">Date de récolte estimée</span>}
-                </div>
-                <div className="space-y-2">
-                  {currentSession.selectedVarieties.map(varietyId => {
-                    const variety = varieties.find(v => v.id === varietyId);
-                    if (!variety) return null;
-
-                    const harvestDate = getEstimatedHarvestDateForVariety(varietyId);
-                    
-                    return (
-                      <div key={varietyId} className={`flex ${isMobile ? 'flex-col gap-1' : 'items-center justify-between'}`}>
-                        <div className="flex items-center gap-2">
-                          <div 
-                            className="w-3 h-3 rounded-full" 
-                            style={{ backgroundColor: variety.color }}
-                          />
-                          <span className="text-sm text-green-800">{variety.name}</span>
-                        </div>
-                        <Badge variant="outline" className="bg-white text-green-800">
-                          {formatDateToLocale(harvestDate)}
-                        </Badge>
-                      </div>
-                    );
-                  })}
-                </div>
-                <div className={`pt-2 border-t border-green-200 flex ${isMobile ? 'flex-col gap-1' : 'justify-between items-center'}`}>
-                  <div className="flex items-center gap-1 text-green-800">
-                    <InfoIcon className="h-4 w-4" />
-                    <span className="text-sm font-medium">Fin de récolte estimée</span>
-                  </div>
-                  <Badge className="bg-green-700">
-                    {formatDateToLocale(getMaxHarvestDateForSession(currentSession))}
-                  </Badge>
-                </div>
-              </>
-            ) : (
-              <p className="text-sm text-green-800">Aucune variété sélectionnée pour cette session.</p>
-            )}
+            <SessionVarietyList 
+              currentSession={currentSession}
+              varieties={varieties}
+              getEstimatedHarvestDateForVariety={getEstimatedHarvestDateForVariety}
+              getMaxHarvestDateForSession={getMaxHarvestDateForSession}
+              formatDateToLocale={formatDateToLocale}
+            />
           </div>
         </CardContent>
       </Card>
