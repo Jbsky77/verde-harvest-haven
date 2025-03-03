@@ -1,5 +1,5 @@
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import SideNavigation from "@/components/SideNavigation";
 import Dashboard from "@/components/Dashboard";
 import { useCultivation } from "@/context/CultivationContext";
@@ -12,7 +12,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 const Index = () => {
   const { spaces, selectedSpaceId } = useCultivation();
-  const [alertPanelOpen, setAlertPanelOpen] = useState(false);
   
   const selectedSpace = useMemo(() => {
     return spaces.find(space => space.id === selectedSpaceId) || spaces[0];
@@ -23,7 +22,7 @@ const Index = () => {
       <SideNavigation />
       
       <main className="flex-1 flex flex-col">
-        <div className="container py-6 space-y-6 flex-1 overflow-hidden">
+        <div className="container py-6 space-y-6 flex-1">
           <Dashboard />
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -40,7 +39,7 @@ const Index = () => {
             </div>
             
             <div className="space-y-6">
-              <AlertPanel onClose={() => setAlertPanelOpen(false)} />
+              <AlertPanel onClose={() => {}} />
               {selectedSpace && <PlantGrid space={selectedSpace} />}
             </div>
           </div>

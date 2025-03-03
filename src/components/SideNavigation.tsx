@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import { useCultivation } from "@/context/CultivationContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Link, useLocation } from "react-router-dom";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 type NavItemProps = {
   icon: React.ReactNode;
@@ -53,7 +54,7 @@ const SpaceItem = ({ spaceId, label, onClick, active }: SpaceItemProps) => {
     <Button
       variant={active ? "secondary" : "ghost"}
       className={cn(
-        "h-9 gap-2 mb-1",
+        "h-9 gap-2 mb-1 w-full justify-start",
         active ? "bg-gray-100" : ""
       )}
       onClick={onClick}
@@ -69,7 +70,6 @@ const SpaceItem = ({ spaceId, label, onClick, active }: SpaceItemProps) => {
 const SideNavigation = () => {
   const { selectedSpaceId, setSelectedSpaceId, spaces } = useCultivation();
   const isMobile = useIsMobile();
-  const [spacesExpanded, setSpacesExpanded] = useState(false);
   const location = useLocation();
   const currentPath = location.pathname;
   
@@ -89,7 +89,7 @@ const SideNavigation = () => {
     <header className="w-full bg-white border-b shadow-sm z-40 sticky top-0">
       <div className="container mx-auto">
         <div className="flex items-center h-16">
-          <div className="flex space-x-1 overflow-x-auto hide-scrollbar">
+          <nav className="flex space-x-1 overflow-x-auto hide-scrollbar">
             <NavItem
               icon={<Home className="h-4 w-4" />}
               label="Accueil"
@@ -126,40 +126,35 @@ const SideNavigation = () => {
               to="/settings"
               active={page === "settings"}
             />
-          </div>
+          </nav>
 
           {page === "spaces" && (
-            <div className="ml-auto relative">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="flex items-center gap-1"
-                onClick={() => setSpacesExpanded(!spacesExpanded)}
-              >
-                Espaces
-                {spacesExpanded ? (
-                  <ChevronUp className="h-4 w-4" />
-                ) : (
-                  <ChevronDown className="h-4 w-4" />
-                )}
-              </Button>
-              
-              {spacesExpanded && (
-                <div className="absolute right-0 mt-1 bg-white border rounded-md shadow-md p-2 w-48 z-50">
-                  {spaces.map((space) => (
-                    <SpaceItem
-                      key={space.id}
-                      spaceId={space.id}
-                      label={space.name}
-                      onClick={() => {
-                        setSelectedSpaceId(space.id);
-                        setSpacesExpanded(false);
-                      }}
-                      active={selectedSpaceId === space.id}
-                    />
-                  ))}
-                </div>
-              )}
+            <div className="ml-auto">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="flex items-center gap-1"
+                  >
+                    Espaces
+                    <ChevronDown className="h-4 w-4" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent align="end" className="w-48 p-2">
+                  <div className="space-y-1">
+                    {spaces.map((space) => (
+                      <SpaceItem
+                        key={space.id}
+                        spaceId={space.id}
+                        label={space.name}
+                        onClick={() => setSelectedSpaceId(space.id)}
+                        active={selectedSpaceId === space.id}
+                      />
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
             </div>
           )}
         </div>
