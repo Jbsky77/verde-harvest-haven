@@ -1,73 +1,74 @@
 
-import React from 'react';
-import {
-  Sidebar,
-  SidebarHeader,
-  SidebarContent,
-  SidebarFooter,
-  SidebarNavigation,
-  SidebarItem,
-  SidebarActions,
-  SidebarButton,
-  useSidebar,
+import React, { useState } from 'react';
+import { 
+  Sidebar, 
+  Menu as ProSidebarMenu,
+  MenuItem,
+  useProSidebar
 } from 'react-pro-sidebar';
-import { Menu, Home, Leaf, Sprout, LayoutDashboard } from 'lucide-react';
+import { Menu, Home, Leaf, Sprout, LayoutDashboard, User, LogOut } from 'lucide-react';
 import { Logo } from './Logo';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
-import { User, LogOut } from 'lucide-react';
 
 export default function SideNavigation() {
-  const { collapseSidebar, collapsed } = useSidebar();
+  const { collapseSidebar, collapsed } = useProSidebar();
   const isMobile = useMediaQuery('(max-width: 768px)');
   const { profile, signOut } = useAuth();
 
   return (
-    <Sidebar collapsed={isMobile ? true : collapsed}>
-      <SidebarHeader>
-        <Logo collapsed={collapsed} />
-        {!isMobile && (
-          <div
-            className={`p-3 transition-all duration-300 ease-linear ${
-              collapsed ? 'rotate-180' : ''
-            }`}
-          >
-            <Menu onClick={() => collapseSidebar()} />
+    <div className="flex h-screen">
+      <Sidebar collapsed={isMobile ? true : collapsed}>
+        <div className="flex justify-between items-center py-2">
+          <Logo collapsed={collapsed} />
+          {!isMobile && (
+            <button
+              className={`p-3 transition-all duration-300 ease-linear ${
+                collapsed ? 'rotate-180' : ''
+              }`}
+              onClick={() => collapseSidebar()}
+            >
+              <Menu size={18} />
+            </button>
+          )}
+        </div>
+        
+        <div className="flex flex-col justify-between h-full">
+          <ProSidebarMenu>
+            <MenuItem icon={<LayoutDashboard />} component={<Link to="/" />}>
+              Dashboard
+            </MenuItem>
+            <MenuItem icon={<Home />} component={<Link to="/spaces" />}>
+              Espaces
+            </MenuItem>
+            <MenuItem icon={<Leaf />} component={<Link to="/plants" />}>
+              Plantes
+            </MenuItem>
+            <MenuItem icon={<Sprout />} component={<Link to="/varieties" />}>
+              Variétés
+            </MenuItem>
+          </ProSidebarMenu>
+          
+          <div className="mb-8">
+            <ProSidebarMenu>
+              <MenuItem 
+                icon={<User className="h-4 w-4" />} 
+                component={<Link to="/profile" />}
+              >
+                {!collapsed && 'Profil'}
+              </MenuItem>
+              
+              <MenuItem 
+                icon={<LogOut className="h-4 w-4" />}
+                onClick={() => signOut()}
+              >
+                {!collapsed && 'Déconnexion'}
+              </MenuItem>
+            </ProSidebarMenu>
           </div>
-        )}
-      </SidebarHeader>
-      <SidebarContent>
-        <SidebarNavigation>
-          <SidebarItem icon={<LayoutDashboard />} label="Dashboard" href="/" />
-          <SidebarItem icon={<Home />} label="Espaces" href="/spaces" />
-          <SidebarItem icon={<Leaf />} label="Plantes" href="/plants" />
-          <SidebarItem icon={<Sprout />} label="Variétés" href="/varieties" />
-        </SidebarNavigation>
-      </SidebarContent>
-      <SidebarFooter>
-        <SidebarActions>
-          {/* Profile button */}
-          <Link to="/profile">
-            <SidebarButton>
-              <User className="h-4 w-4" />
-              <span>{!collapsed && 'Profil'}</span>
-            </SidebarButton>
-          </Link>
-
-          {/* Logout button */}
-          <SidebarButton onClick={() => signOut()}>
-            <LogOut className="h-4 w-4" />
-            <span>{!collapsed && 'Déconnexion'}</span>
-          </SidebarButton>
-
-          {/* Settings button */}
-          {/* <SidebarButton>
-            <Settings className="h-4 w-4" />
-            <span>{!collapsed && 'Settings'}</span>
-          </SidebarButton> */}
-        </SidebarActions>
-      </SidebarFooter>
-    </Sidebar>
+        </div>
+      </Sidebar>
+    </div>
   );
 }
