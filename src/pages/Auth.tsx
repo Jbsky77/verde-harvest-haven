@@ -7,30 +7,51 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { SignupForm } from '@/components/auth/SignupForm';
+import { toast } from 'sonner';
 
 export default function Auth() {
   const [activeTab, setActiveTab] = useState<'login' | 'signup'>('login');
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const navigate = useNavigate();
+
+  console.log("Auth page - User state:", !!user, "Loading:", loading);
 
   // Redirect if already authenticated
   useEffect(() => {
     if (user) {
       console.log("User authenticated, redirecting to home page");
-      navigate('/', { replace: true });
+      // Adding a slight delay to ensure all auth context is properly updated
+      setTimeout(() => {
+        navigate('/', { replace: true });
+      }, 100);
     }
   }, [user, navigate]);
 
   const handleLoginSuccess = () => {
+    console.log("Login success handler called");
+    toast.success('Connexion réussie!');
     // The redirection is now handled by the useEffect
   };
 
   const handleSignupSuccess = () => {
+    console.log("Signup success handler called");
     setActiveTab('login');
   };
 
+  // Show loading state while auth state is being determined
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-background">
+        <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
+      </div>
+    );
+  }
+  
   // Render null if user is already authenticated
-  if (user) return null;
+  if (user) {
+    console.log("User exists, rendering null");
+    return null;
+  }
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-background p-4">

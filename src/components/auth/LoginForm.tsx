@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
+import { useState } from 'react';
 
 const loginSchema = z.object({
   email: z.string().email({ message: 'Email invalide' }),
@@ -20,7 +22,9 @@ interface LoginFormProps {
 }
 
 export function LoginForm({ onSuccess }: LoginFormProps) {
-  const { signIn, loading } = useAuth();
+  const { signIn, loading: authLoading } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -32,19 +36,33 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
 
   const onSubmit = async (values: LoginFormValues) => {
     try {
+      setLoading(true);
+      setErrorMessage(null);
+      console.log("Attempting to sign in with:", values.email);
       await signIn(values.email, values.password);
       console.log("Login successful");
       if (onSuccess) {
         onSuccess();
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erreur de connexion:', error);
+      setErrorMessage(error.message || 'Échec de connexion. Veuillez vérifier vos informations.');
+      toast.error(error.message || 'Échec de connexion');
+    } finally {
+      setLoading(false);
     }
   };
+
+  const isSubmitting = loading || authLoading;
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        {errorMessage && (
+          <div className="bg-destructive/15 text-destructive text-sm p-3 rounded-md">
+            {errorMessage}
+          </div>
+        )}
         <FormField
           control={form.control}
           name="email"
@@ -52,7 +70,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder="votre@email.com" {...field} />
+                <Input placeholder="votre@email.com" type="email" autoComplete="email" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -65,14 +83,14 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
             <FormItem>
               <FormLabel>Mot de passe</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="••••••••" {...field} />
+                <Input type="password" placeholder="••••••••" autoComplete="current-password" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full" disabled={loading}>
-          {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+        <Button type="submit" className="w-full" disabled={isSubmitting}>
+          {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
           Connexion
         </Button>
       </form>
