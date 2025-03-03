@@ -1,22 +1,19 @@
 
 import { Plant, PlantState, CultivationSpace } from '@/types';
-import { CultivationContextType } from './types';
+import { CultivationContextType } from '@/context/types';
 
-export const getPlantOperations = (
+export const getPlantUpdateOperations = (
   spaces: CultivationSpace[],
   setSpaces: React.Dispatch<React.SetStateAction<CultivationSpace[]>>,
   addAlert: CultivationContextType['addAlert']
 ) => {
+  // Helper function to find a plant by ID
   const getPlantById = (id: string): Plant | undefined => {
     for (const space of spaces) {
       const plant = space.plants.find(p => p.id === id);
       if (plant) return plant;
     }
     return undefined;
-  };
-
-  const getSpaceById = (id: number): CultivationSpace | undefined => {
-    return spaces.find(space => space.id === id);
   };
 
   const updatePlant = (updatedPlant: Plant) => {
@@ -35,44 +32,12 @@ export const getPlantOperations = (
     );
   };
 
-  const updatePlantBatch = (updatedPlants: Plant[]) => {
-    const plantIds = new Set(updatedPlants.map(p => p.id));
-    
-    setSpaces(prevSpaces => 
-      prevSpaces.map(space => ({
-        ...space,
-        plants: space.plants.map(plant => {
-          if (plantIds.has(plant.id)) {
-            const updatedPlant = updatedPlants.find(p => p.id === plant.id);
-            return updatedPlant || plant;
-          }
-          return plant;
-        })
-      }))
-    );
-  };
-
   const updatePlantState = (plantId: string, state: PlantState) => {
     setSpaces(prevSpaces => 
       prevSpaces.map(space => ({
         ...space,
         plants: space.plants.map(plant => 
           plant.id === plantId 
-            ? { ...plant, state, lastUpdated: new Date() } 
-            : plant
-        )
-      }))
-    );
-  };
-
-  const updatePlantsBatchState = (plantIds: string[], state: PlantState) => {
-    const plantIdSet = new Set(plantIds);
-    
-    setSpaces(prevSpaces => 
-      prevSpaces.map(space => ({
-        ...space,
-        plants: space.plants.map(plant => 
-          plantIdSet.has(plant.id) 
             ? { ...plant, state, lastUpdated: new Date() } 
             : plant
         )
@@ -130,52 +95,10 @@ export const getPlantOperations = (
     }
   };
 
-  const updatePlantsInSpace = (spaceId: number, updates: Partial<Plant>) => {
-    setSpaces(prevSpaces => 
-      prevSpaces.map(space => {
-        if (space.id === spaceId) {
-          return {
-            ...space,
-            plants: space.plants.map(plant => ({
-              ...plant,
-              ...updates,
-              lastUpdated: new Date()
-            }))
-          };
-        }
-        return space;
-      })
-    );
-  };
-
-  const updatePlantsInRow = (spaceId: number, row: number, updates: Partial<Plant>) => {
-    setSpaces(prevSpaces => 
-      prevSpaces.map(space => {
-        if (space.id === spaceId) {
-          return {
-            ...space,
-            plants: space.plants.map(plant => 
-              plant.position.row === row 
-                ? { ...plant, ...updates, lastUpdated: new Date() } 
-                : plant
-            )
-          };
-        }
-        return space;
-      })
-    );
-  };
-
   return {
-    getPlantById,
-    getSpaceById,
     updatePlant,
-    updatePlantBatch,
     updatePlantState,
-    updatePlantsBatchState,
     updatePlantEC,
-    updatePlantPH,
-    updatePlantsInSpace,
-    updatePlantsInRow
+    updatePlantPH
   };
 };
