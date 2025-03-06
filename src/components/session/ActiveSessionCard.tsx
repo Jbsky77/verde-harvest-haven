@@ -1,3 +1,4 @@
+
 import { useCultivation } from "@/context/CultivationContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -144,9 +145,14 @@ const ActiveSessionCard = ({ formatDateToLocale }: ActiveSessionCardProps) => {
             {/* Progress indicator */}
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-green-800">Progression globale</span>
-              <Badge variant="outline" className="bg-white text-green-800">
-                {progressPercent}%
-              </Badge>
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="bg-white text-green-800">
+                  {progressPercent}%
+                </Badge>
+                <span className="text-xs text-green-700">
+                  Fin estimée: {formatDateToLocale(maxHarvestDate)}
+                </span>
+              </div>
             </div>
             
             {/* Growth phase chart */}
