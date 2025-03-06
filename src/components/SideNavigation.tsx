@@ -1,3 +1,4 @@
+
 import { 
   Home, 
   Grid3X3, 
@@ -5,7 +6,9 @@ import {
   Droplet, 
   Sprout, 
   Settings,
-  ChevronDown
+  ChevronDown,
+  Flower,
+  Seedling
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -13,6 +16,8 @@ import { useCultivation } from "@/context/CultivationContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Link, useLocation } from "react-router-dom";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { RoomType } from "@/types";
 
 type NavItemProps = {
   icon: React.ReactNode;
@@ -65,7 +70,15 @@ const SpaceItem = ({ spaceId, label, onClick, active }: SpaceItemProps) => {
 };
 
 const SideNavigation = () => {
-  const { selectedSpaceId, setSelectedSpaceId, spaces } = useCultivation();
+  const { 
+    selectedSpaceId, 
+    setSelectedSpaceId, 
+    spaces, 
+    selectedRoomType, 
+    setSelectedRoomType,
+    getSpacesByRoomType
+  } = useCultivation();
+  
   const isMobile = useIsMobile();
   const location = useLocation();
   const currentPath = location.pathname;
@@ -81,6 +94,21 @@ const SideNavigation = () => {
   };
 
   const page = getActivePage();
+  
+  // Get spaces for the currently selected room type
+  const filteredSpaces = getSpacesByRoomType(selectedRoomType);
+
+  // Handle room type change
+  const handleRoomTypeChange = (value: string) => {
+    const roomType = value as RoomType;
+    setSelectedRoomType(roomType);
+    
+    // Set the first space of the new room type as selected
+    const firstSpace = getSpacesByRoomType(roomType)[0];
+    if (firstSpace) {
+      setSelectedSpaceId(firstSpace.id);
+    }
+  };
 
   return (
     <header className="w-full bg-white border-b shadow-sm z-40 sticky top-0">
@@ -126,7 +154,26 @@ const SideNavigation = () => {
           </nav>
 
           {page === "spaces" && (
-            <div className="ml-auto">
+            <div className="ml-auto flex items-center gap-4">
+              <Tabs 
+                value={selectedRoomType} 
+                onValueChange={handleRoomTypeChange}
+                className="bg-gray-100 rounded-md p-1"
+              >
+                <TabsList>
+                  <TabsTrigger value="growth" className="flex items-center gap-2">
+                    <Seedling className="h-4 w-4" />
+                    <span className="hidden sm:inline">Salle de Croissance</span>
+                    <span className="sm:hidden">Croissance</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="flowering" className="flex items-center gap-2">
+                    <Flower className="h-4 w-4" />
+                    <span className="hidden sm:inline">Salle de Floraison</span>
+                    <span className="sm:hidden">Floraison</span>
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+              
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -140,7 +187,7 @@ const SideNavigation = () => {
                 </PopoverTrigger>
                 <PopoverContent align="end" className="w-48 p-2">
                   <div className="space-y-1">
-                    {spaces.map((space) => (
+                    {filteredSpaces.map((space) => (
                       <SpaceItem
                         key={space.id}
                         spaceId={space.id}

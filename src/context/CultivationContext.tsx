@@ -1,6 +1,6 @@
 
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import { Alert, Plant, PlantState, PlantVariety } from '@/types';
+import { Alert, Plant, PlantState, PlantVariety, RoomType } from '@/types';
 import { SessionService } from '@/services/SessionService';
 import { CultivationContextType, CultivationSession } from './types';
 import { generateInitialSpaces, initialVarieties, initialFertilizers } from './initialData';
@@ -22,6 +22,7 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
   const [selectedPlantIds, setSelectedPlantIds] = useState<string[]>([]);
   const [sessions, setSessions] = useState<CultivationSession[]>([]);
   const [currentSession, setCurrentSessionState] = useState<CultivationSession | null>(null);
+  const [selectedRoomType, setSelectedRoomType] = useState<RoomType>("flowering");
 
   // Get alert operations
   const alertOps = getAlertOperations(alerts, setAlerts);
@@ -86,6 +87,11 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
   
   const getEstimatedHarvestDate = (plantId: string) => 
     sessionOps.getEstimatedHarvestDate(plantId, getPlantById);
+
+  // Get spaces by room type
+  const getSpacesByRoomType = (roomType: RoomType) => {
+    return spaces.filter(space => space.roomType === roomType);
+  };
 
   // Automatic plant state transitions
   const checkAndUpdatePlantStates = () => {
@@ -170,8 +176,11 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
         selectedPlantIds,
         sessions,
         currentSession,
+        selectedRoomType,
         setSelectedSpaceId,
         setSelectedPlantIds,
+        setSelectedRoomType,
+        getSpacesByRoomType,
         getPlantById,
         getSpaceById,
         updatePlant,

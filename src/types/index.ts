@@ -43,12 +43,15 @@ export type Fertilizer = {
   isCustom?: boolean;
 };
 
+export type RoomType = "flowering" | "growth";
+
 export type CultivationSpace = {
   id: number;
   name: string;
   rows: number;
   plantsPerRow: number;
   plants: Plant[];
+  roomType: RoomType;
 };
 
 export type Alert = {

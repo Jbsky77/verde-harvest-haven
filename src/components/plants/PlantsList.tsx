@@ -3,11 +3,12 @@ import { useState } from "react";
 import { Plant, CultivationSpace } from "@/types";
 import { useCultivation } from "@/context/CultivationContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Leaf, Filter } from "lucide-react";
+import { Leaf, Filter, Seedling, Flower } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PlantDetails from "@/components/PlantDetails";
 import PlantRow from "./PlantRow";
 import SpaceNavigation from "./SpaceNavigation";
+import { cn } from "@/lib/utils";
 
 type PlantsListProps = {
   space: CultivationSpace;
@@ -57,13 +58,19 @@ const PlantsList = ({ space }: PlantsListProps) => {
     return acc;
   }, {} as Record<number, Plant[]>);
   
+  const RoomIcon = space.roomType === "growth" ? Seedling : Flower;
+  const roomLabel = space.roomType === "growth" ? "Croissance" : "Floraison";
+  
   return (
     <div className="space-y-4">
       <div className="flex flex-col space-y-4">
         <div className="flex justify-between items-center">
           <h2 className="text-xl font-semibold flex items-center gap-2">
-            <Leaf className="h-5 w-5 text-primary" />
-            Plantes de l'espace {space.name}
+            <RoomIcon className={cn(
+              "h-5 w-5",
+              space.roomType === "growth" ? "text-green-600" : "text-purple-600"
+            )} />
+            Plantes de {roomLabel} - {space.name}
           </h2>
           <Button variant="outline" size="sm" className="flex items-center gap-1">
             <Filter className="h-4 w-4" />

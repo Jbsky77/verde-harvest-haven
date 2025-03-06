@@ -4,7 +4,7 @@ import { CultivationSpace, Plant, PlantState } from "@/types";
 import { useCultivation } from "@/context/CultivationContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Leaf, Filter, ArrowLeft, ArrowRight } from "lucide-react";
+import { Leaf, Filter, ArrowLeft, ArrowRight, Seedling, Flower } from "lucide-react";
 import PlantDetails from "@/components/PlantDetails";
 import { cn } from "@/lib/utils";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -55,7 +55,12 @@ type PlantGridProps = {
 
 const PlantGrid = ({ space }: PlantGridProps) => {
   const [selectedPlant, setSelectedPlant] = useState<Plant | null>(null);
-  const { updatePlant, spaces, setSelectedSpaceId } = useCultivation();
+  const { 
+    updatePlant, 
+    getSpacesByRoomType, 
+    setSelectedSpaceId,
+    selectedRoomType
+  } = useCultivation();
   
   const handlePlantClick = (plant: Plant) => {
     setSelectedPlant(plant);
@@ -69,6 +74,8 @@ const PlantGrid = ({ space }: PlantGridProps) => {
     setSelectedPlant(null);
   };
 
+  const spaces = getSpacesByRoomType(selectedRoomType);
+  
   const navigateToSpace = (spaceId: number) => {
     setSelectedSpaceId(spaceId);
   };
@@ -85,15 +92,19 @@ const PlantGrid = ({ space }: PlantGridProps) => {
     navigateToSpace(spaces[prevIndex].id);
   };
   
-  const allSpaces = [...spaces].sort((a, b) => a.id - b.id);
+  const RoomIcon = space.roomType === "growth" ? Seedling : Flower;
+  const roomLabel = space.roomType === "growth" ? "Croissance" : "Floraison";
   
   return (
     <div className="space-y-4">
       <div className="flex flex-col space-y-4">
         <div className="flex justify-between items-center">
           <h2 className="text-xl font-semibold flex items-center gap-2">
-            <Leaf className="h-5 w-5 text-primary" />
-            Vue d'ensemble des espaces
+            <RoomIcon className={cn(
+              "h-5 w-5",
+              space.roomType === "growth" ? "text-green-600" : "text-purple-600"
+            )} />
+            Plantes de {roomLabel}
           </h2>
           <Button variant="outline" size="sm" className="flex items-center gap-1">
             <Filter className="h-4 w-4" />

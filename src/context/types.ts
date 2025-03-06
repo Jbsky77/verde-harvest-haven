@@ -1,5 +1,5 @@
 
-import { Plant, PlantVariety, CultivationSpace, Alert, PlantState, Fertilizer } from '@/types';
+import { Plant, PlantVariety, CultivationSpace, Alert, PlantState, Fertilizer, RoomType } from '@/types';
 import { SessionWithVarieties } from '@/services/SessionService';
 
 export type CultivationSession = SessionWithVarieties;
@@ -13,8 +13,11 @@ export type CultivationContextType = {
   selectedPlantIds: string[];
   sessions: CultivationSession[];
   currentSession: CultivationSession | null;
+  selectedRoomType: RoomType;
   setSelectedSpaceId: (id: number | null) => void;
   setSelectedPlantIds: (ids: string[]) => void;
+  setSelectedRoomType: (type: RoomType) => void;
+  getSpacesByRoomType: (roomType: RoomType) => CultivationSpace[];
   getPlantById: (id: string) => Plant | undefined;
   getSpaceById: (id: number) => CultivationSpace | undefined;
   updatePlant: (plant: Plant) => void;
