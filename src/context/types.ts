@@ -28,6 +28,7 @@ export type CultivationContextType = {
   updatePlantPH: (plantId: string, ph: number) => void;
   updatePlantsInSpace: (spaceId: number, updates: Partial<Plant>) => void;
   updatePlantsInRow: (spaceId: number, row: number, updates: Partial<Plant>) => void;
+  transferPlantToFlowering: (plantId: string, targetSpaceId: number) => void;
   addAlert: (alert: Omit<Alert, 'id' | 'timestamp' | 'read'>) => void;
   markAlertAsRead: (id: string) => void;
   clearAllAlerts: () => void;

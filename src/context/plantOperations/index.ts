@@ -29,7 +29,8 @@ export const getPlantOperations = (
     updatePlantBatch, 
     updatePlantsBatchState, 
     updatePlantsInSpace, 
-    updatePlantsInRow 
+    updatePlantsInRow,
+    transferPlantToFlowering
   } = batchOps;
 
   return {
@@ -47,6 +48,7 @@ export const getPlantOperations = (
     updatePlantBatch,
     updatePlantsBatchState,
     updatePlantsInSpace,
-    updatePlantsInRow
+    updatePlantsInRow,
+    transferPlantToFlowering
   };
 };

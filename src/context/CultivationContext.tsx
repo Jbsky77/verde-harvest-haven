@@ -1,6 +1,5 @@
-
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import { Alert, Plant, PlantState, PlantVariety, RoomType } from '@/types';
+import { Alert, Plant, PlantState, PlantVariety, RoomType, CultivationSpace } from '@/types';
 import { SessionService } from '@/services/SessionService';
 import { CultivationContextType, CultivationSession } from './types';
 import { generateInitialSpaces, initialVarieties, initialFertilizers } from './initialData';
@@ -9,7 +8,10 @@ import { getAlertOperations } from './alertOperations';
 import { getFertilizerOperations } from './fertilizerOperations';
 import { getVarietyOperations } from './varietyOperations';
 import { getSessionOperations } from './sessionOperations';
-import { findPlantsNeedingStateUpdate } from '@/utils/plantStateTransitions';
+import { 
+  findPlantsNeedingStateUpdate, 
+  findPlantsForFloweringTransfer 
+} from '@/utils/plantStateTransitions';
 
 const CultivationContext = createContext<CultivationContextType | undefined>(undefined);
 
@@ -24,11 +26,9 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
   const [currentSession, setCurrentSessionState] = useState<CultivationSession | null>(null);
   const [selectedRoomType, setSelectedRoomType] = useState<RoomType>("flowering");
 
-  // Get alert operations
   const alertOps = getAlertOperations(alerts, setAlerts);
   const { addAlert, markAlertAsRead, clearAllAlerts } = alertOps;
 
-  // Get plant operations
   const plantOps = getPlantOperations(spaces, setSpaces, addAlert);
   const { 
     getPlantById, 
@@ -40,10 +40,10 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
     updatePlantEC,
     updatePlantPH, 
     updatePlantsInSpace,
-    updatePlantsInRow
+    updatePlantsInRow,
+    transferPlantToFlowering
   } = plantOps;
 
-  // Get fertilizer operations
   const fertilizerOps = getFertilizerOperations(fertilizers, setFertilizers, addAlert);
   const { 
     addFertilizer, 
@@ -52,7 +52,6 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
     getFertilizerById 
   } = fertilizerOps;
 
-  // Get variety operations
   const varietyOps = getVarietyOperations(varieties, setVarieties, spaces, setSpaces, addAlert);
   const { 
     addVariety, 
@@ -60,7 +59,6 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
     deleteVariety 
   } = varietyOps;
 
-  // Get session operations
   const sessionOps = getSessionOperations(
     sessions, 
     setSessions, 
@@ -81,34 +79,27 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
     getMaxHarvestDateForSession
   } = sessionOps;
 
-  // Create wrapper functions that pass the required dependencies
   const getEstimatedFloweringDate = (plantId: string) => 
     sessionOps.getEstimatedFloweringDate(plantId, getPlantById);
   
   const getEstimatedHarvestDate = (plantId: string) => 
     sessionOps.getEstimatedHarvestDate(plantId, getPlantById);
 
-  // Get spaces by room type
   const getSpacesByRoomType = (roomType: RoomType) => {
     return spaces.filter(space => space.roomType === roomType);
   };
 
-  // Automatic plant state transitions
   const checkAndUpdatePlantStates = () => {
     if (!currentSession || !currentSession.isActive) return;
     
-    // Collect all plants
     const allPlants = spaces.flatMap(space => space.plants);
     
-    // Find plants that need updates
     const plantsNeedingUpdate = findPlantsNeedingStateUpdate(allPlants, currentSession);
     
-    // Update plant states if needed
     if (plantsNeedingUpdate.length > 0) {
       plantsNeedingUpdate.forEach(({ plant, newState }) => {
         updatePlantState(plant.id, newState);
         
-        // Add alert for state change
         addAlert({
           type: "info",
           message: `${plant.variety.name} en Espace ${plant.position.space}, L${plant.position.row}-C${plant.position.column} est passée à l'état: ${newState}`,
@@ -119,7 +110,30 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // Load sessions on initialization
+  const checkAndTransferPlants = () => {
+    if (!currentSession || !currentSession.isActive) return;
+    
+    const plantsForTransfer = findPlantsForFloweringTransfer(spaces, currentSession);
+    
+    if (plantsForTransfer.length > 0) {
+      plantsForTransfer.forEach(plant => {
+        const floweringSpaces = getSpacesByRoomType("flowering");
+        if (floweringSpaces.length === 0) return;
+        
+        const targetSpace = floweringSpaces[0];
+        
+        transferPlantToFlowering(plant.id, targetSpace.id);
+        
+        addAlert({
+          type: "success",
+          message: `${plant.variety.name} transférée de l'Espace ${plant.position.space} (Croissance) vers l'Espace ${targetSpace.id} (Floraison)`,
+          plantId: plant.id,
+          spaceId: targetSpace.id
+        });
+      });
+    }
+  };
+
   useEffect(() => {
     const loadSessions = async () => {
       try {
@@ -144,7 +158,6 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
     loadSessions();
   }, []);
 
-  // Initial welcome alert
   useEffect(() => {
     addAlert({
       type: "info",
@@ -152,14 +165,13 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
     });
   }, []);
 
-  // Check plant states every hour and on session/spaces changes
   useEffect(() => {
-    // Check immediately on load
     checkAndUpdatePlantStates();
+    checkAndTransferPlants();
     
-    // Set up interval for periodic checks (every hour)
     const intervalId = setInterval(() => {
       checkAndUpdatePlantStates();
+      checkAndTransferPlants();
     }, 60 * 60 * 1000);
     
     return () => clearInterval(intervalId);
@@ -211,6 +223,7 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
         getEstimatedHarvestDate,
         getEstimatedHarvestDateForVariety,
         getMaxHarvestDateForSession,
+        transferPlantToFlowering,
       }}
     >
       {children}

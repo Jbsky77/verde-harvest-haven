@@ -19,6 +19,11 @@ export const initialFertilizers: Fertilizer[] = [
 
 export const createPlant = (spaceId: number, row: number, col: number, varietyId: string, roomType: RoomType): Plant => {
   const variety = initialVarieties.find(v => v.id === varietyId) || initialVarieties[0];
+  
+  // Set plant state based on room type - growth room plants start in growth state,
+  // flowering room plants start in flowering state
+  const state = roomType === "growth" ? "growth" : "flowering";
+  
   return {
     id: `plant-${roomType}-${spaceId}-${row}-${col}`,
     position: {
@@ -27,7 +32,7 @@ export const createPlant = (spaceId: number, row: number, col: number, varietyId
       column: col
     },
     variety,
-    state: roomType === "growth" ? "germination" : "flowering",
+    state,
     ec: 1.2,
     ph: 6.0,
     lastUpdated: new Date()

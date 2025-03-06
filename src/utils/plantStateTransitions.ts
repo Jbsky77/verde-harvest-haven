@@ -1,18 +1,20 @@
 
-import { Plant, PlantState } from "@/types";
+import { Plant, PlantState, RoomType, CultivationSpace } from "@/types";
 import { CultivationSession } from "@/context/types";
 
 /**
- * Determines the expected state of a plant based on the current date and session start date
+ * Determines if a plant needs to be moved from growth room to flowering room
+ * based on its growth time and the current session
  */
-export const determineExpectedPlantState = (
+export const shouldTransferToFlowering = (
   plant: Plant,
   currentSession: CultivationSession | null,
-): PlantState | null => {
-  if (!currentSession || !currentSession.isActive) return null;
+): boolean => {
+  if (!currentSession || !currentSession.isActive) return false;
+  if (plant.state !== "growth" || plant.position.roomType !== "growth") return false;
   
   const { variety } = plant;
-  if (!variety.germinationTime || !variety.growthTime || !variety.floweringTime) return null;
+  if (!variety.germinationTime || !variety.growthTime) return false;
   
   const startDate = new Date(currentSession.startDate);
   const currentDate = new Date();
@@ -22,16 +24,29 @@ export const determineExpectedPlantState = (
     (currentDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
   );
   
-  // Determine state based on elapsed time
-  if (daysElapsed <= variety.germinationTime) {
-    return "germination";
-  } else if (daysElapsed <= variety.germinationTime + variety.growthTime) {
+  // Plant should be transferred to flowering if it has completed its growth time
+  return daysElapsed >= (variety.germinationTime + variety.growthTime);
+};
+
+/**
+ * Determines the expected state of a plant based on room type
+ */
+export const determineExpectedPlantState = (
+  plant: Plant,
+  currentSession: CultivationSession | null,
+): PlantState | null => {
+  if (!currentSession || !currentSession.isActive) return null;
+  
+  // For growth room, state should be "growth"
+  if (plant.position.roomType === "growth") {
     return "growth";
-  } else if (daysElapsed <= variety.germinationTime + variety.growthTime + variety.floweringTime) {
+  } 
+  // For flowering room, state should be "flowering"
+  else if (plant.position.roomType === "flowering") {
     return "flowering";
-  } else {
-    return "harvested";
   }
+  
+  return null;
 };
 
 /**
@@ -58,4 +73,24 @@ export const findPlantsNeedingStateUpdate = (
   });
   
   return plantsToUpdate;
+};
+
+/**
+ * Identifies plants that need to be transferred to the flowering room
+ */
+export const findPlantsForFloweringTransfer = (
+  spaces: CultivationSpace[],
+  currentSession: CultivationSession | null
+): Plant[] => {
+  if (!currentSession || !currentSession.isActive) return [];
+  
+  // Get all plants from growth rooms
+  const growthRoomPlants = spaces
+    .filter(space => space.roomType === "growth")
+    .flatMap(space => space.plants);
+  
+  // Return plants that should be transferred to flowering
+  return growthRoomPlants.filter(plant => 
+    shouldTransferToFlowering(plant, currentSession)
+  );
 };
