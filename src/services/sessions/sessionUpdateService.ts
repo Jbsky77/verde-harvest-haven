@@ -6,14 +6,16 @@ export class SessionUpdateService {
   // Mettre à jour une session existante
   static async updateSession(session: SessionWithVarieties): Promise<boolean> {
     try {
+      console.log("Updating session:", session);
+      
       // Mettre à jour la session
       const { error: sessionError } = await supabase
         .from('cultivation_sessions')
         .update({
           name: session.name,
-          start_date: session.startDate.toISOString(),
+          start_date: new Date(session.startDate).toISOString(),
           is_active: session.isActive,
-          end_date: session.endDate ? session.endDate.toISOString() : null
+          end_date: session.endDate ? new Date(session.endDate).toISOString() : null
         })
         .eq('id', session.id);
 
@@ -50,6 +52,7 @@ export class SessionUpdateService {
         }
       }
 
+      console.log("Session successfully updated");
       return true;
     } catch (error) {
       console.error("Erreur inattendue lors de la mise à jour de la session:", error);
@@ -60,6 +63,8 @@ export class SessionUpdateService {
   // Terminer une session
   static async endSession(sessionId: string): Promise<boolean> {
     try {
+      console.log("Ending session with ID:", sessionId);
+      
       const { error } = await supabase
         .from('cultivation_sessions')
         .update({
@@ -73,6 +78,7 @@ export class SessionUpdateService {
         return false;
       }
 
+      console.log("Session successfully ended");
       return true;
     } catch (error) {
       console.error("Erreur inattendue lors de la terminaison de la session:", error);

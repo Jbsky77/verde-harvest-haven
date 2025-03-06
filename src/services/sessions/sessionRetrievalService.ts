@@ -6,6 +6,8 @@ export class SessionRetrievalService {
   // Récupérer toutes les sessions
   static async getSessions(): Promise<SessionWithVarieties[]> {
     try {
+      console.log("Retrieving all sessions");
+      
       const { data: sessions, error } = await supabase
         .from('cultivation_sessions')
         .select('*')
@@ -25,7 +27,7 @@ export class SessionRetrievalService {
             .eq('session_id', session.id);
 
           if (varietiesError) {
-            console.error("Erreur lors de la récupération des variétés de session:", varietiesError);
+            console.error("Erreur lors de la récupération des variétés de session:", varietiesError, "pour la session:", session.id);
             return {
               id: session.id,
               name: session.name,
@@ -47,6 +49,7 @@ export class SessionRetrievalService {
         })
       );
 
+      console.log(`Retrieved ${sessionsWithVarieties.length} sessions`);
       return sessionsWithVarieties;
     } catch (error) {
       console.error("Erreur inattendue lors de la récupération des sessions:", error);
@@ -57,6 +60,8 @@ export class SessionRetrievalService {
   // Récupérer une session par ID
   static async getSessionById(sessionId: string): Promise<SessionWithVarieties | null> {
     try {
+      console.log("Retrieving session with ID:", sessionId);
+      
       const { data: session, error } = await supabase
         .from('cultivation_sessions')
         .select('*')
@@ -86,6 +91,7 @@ export class SessionRetrievalService {
         };
       }
 
+      console.log("Session retrieved successfully");
       return {
         id: session.id,
         name: session.name,

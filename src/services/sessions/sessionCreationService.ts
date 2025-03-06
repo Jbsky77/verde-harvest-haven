@@ -11,7 +11,7 @@ export class SessionCreationService {
     try {
       console.log("Creating new session:", { name, startDate, selectedVarieties });
       
-      // Insérer la session avec disable de la RLS policy
+      // Insérer la session
       const { data: sessionData, error: sessionError } = await supabase
         .from('cultivation_sessions')
         .insert({
@@ -27,7 +27,7 @@ export class SessionCreationService {
         throw new Error(`Erreur lors de la création de la session: ${sessionError.message}`);
       }
 
-      if (!sessionData) {
+      if (!sessionData || !sessionData.id) {
         console.error("Aucune donnée retournée lors de la création de la session");
         throw new Error("Erreur lors de la création de la session: aucune donnée retournée");
       }
@@ -49,7 +49,7 @@ export class SessionCreationService {
 
         if (varietiesError) {
           console.error("Erreur lors de l'association des variétés à la session:", varietiesError);
-          // La session est quand même créée, donc on continue
+          // On continue quand même, la session est créée
         }
       }
 

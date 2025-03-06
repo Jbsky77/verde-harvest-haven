@@ -5,6 +5,8 @@ export class SessionDeletionService {
   // Supprimer une session
   static async deleteSession(sessionId: string): Promise<boolean> {
     try {
+      console.log("Deleting session with ID:", sessionId);
+      
       // Supprimer d'abord les variétés associées
       const { error: varietiesError } = await supabase
         .from('session_varieties')
@@ -27,6 +29,7 @@ export class SessionDeletionService {
         return false;
       }
 
+      console.log("Session successfully deleted");
       return true;
     } catch (error) {
       console.error("Erreur inattendue lors de la suppression de la session:", error);
