@@ -9,6 +9,8 @@ import { useCultivation } from "@/context/CultivationContext";
 import { Slider } from "@/components/ui/slider";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { InfoIcon } from "lucide-react";
 
 type PlantDetailsProps = {
   plant: Plant;
@@ -24,7 +26,7 @@ const stateOptions: { value: PlantState; label: string }[] = [
 ];
 
 const PlantDetails = ({ plant, onUpdate }: PlantDetailsProps) => {
-  const { varieties, getEstimatedFloweringDate, getEstimatedHarvestDate } = useCultivation();
+  const { varieties, getEstimatedFloweringDate, getEstimatedHarvestDate, currentSession } = useCultivation();
   const [formState, setFormState] = useState<Plant>(plant);
   
   const handleChange = (field: keyof Plant, value: any) => {
@@ -59,8 +61,21 @@ const PlantDetails = ({ plant, onUpdate }: PlantDetailsProps) => {
     return format(date, "PPP", { locale: fr });
   };
   
+  // Show automated state transition info only if we have an active session
+  const showAutomationInfo = currentSession && currentSession.isActive;
+  
   return (
     <form onSubmit={handleSubmit} className="space-y-4 pt-2">
+      {showAutomationInfo && (
+        <Alert className="bg-blue-50 border-blue-200">
+          <InfoIcon className="h-4 w-4 text-blue-600" />
+          <AlertTitle className="text-blue-800">Transitions automatiques</AlertTitle>
+          <AlertDescription className="text-blue-700 text-sm">
+            Les états de la plante passeront automatiquement de germination à croissance puis à floraison en fonction des temps définis pour cette variété.
+          </AlertDescription>
+        </Alert>
+      )}
+      
       <div className="grid grid-cols-2 gap-4 mb-4">
         <div>
           <Label htmlFor="space">Espace</Label>

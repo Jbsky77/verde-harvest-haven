@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { Alert, Plant, PlantState, PlantVariety } from '@/types';
 import { SessionService } from '@/services/SessionService';
@@ -8,6 +9,7 @@ import { getAlertOperations } from './alertOperations';
 import { getFertilizerOperations } from './fertilizerOperations';
 import { getVarietyOperations } from './varietyOperations';
 import { getSessionOperations } from './sessionOperations';
+import { findPlantsNeedingStateUpdate } from '@/utils/plantStateTransitions';
 
 const CultivationContext = createContext<CultivationContextType | undefined>(undefined);
 
@@ -85,6 +87,33 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
   const getEstimatedHarvestDate = (plantId: string) => 
     sessionOps.getEstimatedHarvestDate(plantId, getPlantById);
 
+  // Automatic plant state transitions
+  const checkAndUpdatePlantStates = () => {
+    if (!currentSession || !currentSession.isActive) return;
+    
+    // Collect all plants
+    const allPlants = spaces.flatMap(space => space.plants);
+    
+    // Find plants that need updates
+    const plantsNeedingUpdate = findPlantsNeedingStateUpdate(allPlants, currentSession);
+    
+    // Update plant states if needed
+    if (plantsNeedingUpdate.length > 0) {
+      plantsNeedingUpdate.forEach(({ plant, newState }) => {
+        updatePlantState(plant.id, newState);
+        
+        // Add alert for state change
+        addAlert({
+          type: "info",
+          message: `${plant.variety.name} en Espace ${plant.position.space}, L${plant.position.row}-C${plant.position.column} est passée à l'état: ${newState}`,
+          plantId: plant.id,
+          spaceId: plant.position.space
+        });
+      });
+    }
+  };
+
+  // Load sessions on initialization
   useEffect(() => {
     const loadSessions = async () => {
       try {
@@ -109,12 +138,26 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
     loadSessions();
   }, []);
 
+  // Initial welcome alert
   useEffect(() => {
     addAlert({
       type: "info",
       message: "Bienvenue dans votre application de gestion de culture de CBD en aéroponie"
     });
   }, []);
+
+  // Check plant states every hour and on session/spaces changes
+  useEffect(() => {
+    // Check immediately on load
+    checkAndUpdatePlantStates();
+    
+    // Set up interval for periodic checks (every hour)
+    const intervalId = setInterval(() => {
+      checkAndUpdatePlantStates();
+    }, 60 * 60 * 1000);
+    
+    return () => clearInterval(intervalId);
+  }, [currentSession, spaces]);
 
   return (
     <CultivationContext.Provider
