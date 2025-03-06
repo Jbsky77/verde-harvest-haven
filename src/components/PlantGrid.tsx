@@ -1,10 +1,9 @@
-
 import { useState } from "react";
 import { CultivationSpace, Plant, PlantState } from "@/types";
 import { useCultivation } from "@/context/CultivationContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Leaf, Filter, ArrowLeft, ArrowRight, Seedling, Flower } from "lucide-react";
+import { Leaf, Filter, ArrowLeft, ArrowRight, Sprout, Flower } from "lucide-react";
 import PlantDetails from "@/components/PlantDetails";
 import { cn } from "@/lib/utils";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -92,7 +91,7 @@ const PlantGrid = ({ space }: PlantGridProps) => {
     navigateToSpace(spaces[prevIndex].id);
   };
   
-  const RoomIcon = space.roomType === "growth" ? Seedling : Flower;
+  const RoomIcon = space.roomType === "growth" ? Sprout : Flower;
   const roomLabel = space.roomType === "growth" ? "Croissance" : "Floraison";
   
   return (

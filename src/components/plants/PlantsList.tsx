@@ -1,9 +1,8 @@
-
 import { useState } from "react";
 import { Plant, CultivationSpace } from "@/types";
 import { useCultivation } from "@/context/CultivationContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Leaf, Filter, Seedling, Flower } from "lucide-react";
+import { Leaf, Filter, Sprout, Flower } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PlantDetails from "@/components/PlantDetails";
 import PlantRow from "./PlantRow";
@@ -35,7 +34,6 @@ const PlantsList = ({ space }: PlantsListProps) => {
     setSelectedSpaceId(spaceId);
   };
   
-  // Toggle row expansion
   const toggleRow = (row: number) => {
     setExpandedRows(prev => 
       prev.includes(row) 
@@ -44,13 +42,10 @@ const PlantsList = ({ space }: PlantsListProps) => {
     );
   };
   
-  // Check if row is expanded
   const isRowExpanded = (row: number) => expandedRows.includes(row);
   
-  // Get unique rows from plants
   const rows = [...new Set(space.plants.map(plant => plant.position.row))].sort((a, b) => a - b);
   
-  // Group plants by row
   const plantsByRow = rows.reduce((acc, row) => {
     acc[row] = space.plants
       .filter(plant => plant.position.row === row)
@@ -58,7 +53,7 @@ const PlantsList = ({ space }: PlantsListProps) => {
     return acc;
   }, {} as Record<number, Plant[]>);
   
-  const RoomIcon = space.roomType === "growth" ? Seedling : Flower;
+  const RoomIcon = space.roomType === "growth" ? Sprout : Flower;
   const roomLabel = space.roomType === "growth" ? "Croissance" : "Floraison";
   
   return (
@@ -78,7 +73,6 @@ const PlantsList = ({ space }: PlantsListProps) => {
           </Button>
         </div>
 
-        {/* Space navigation controls */}
         <SpaceNavigation 
           spaces={spaces} 
           currentSpace={space} 

@@ -1,4 +1,3 @@
-
 import { 
   Home, 
   Grid3X3, 
@@ -7,8 +6,7 @@ import {
   Sprout, 
   Settings,
   ChevronDown,
-  Flower,
-  Seedling
+  Flower
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -95,15 +93,12 @@ const SideNavigation = () => {
 
   const page = getActivePage();
   
-  // Get spaces for the currently selected room type
   const filteredSpaces = getSpacesByRoomType(selectedRoomType);
 
-  // Handle room type change
   const handleRoomTypeChange = (value: string) => {
     const roomType = value as RoomType;
     setSelectedRoomType(roomType);
     
-    // Set the first space of the new room type as selected
     const firstSpace = getSpacesByRoomType(roomType)[0];
     if (firstSpace) {
       setSelectedSpaceId(firstSpace.id);
@@ -162,7 +157,7 @@ const SideNavigation = () => {
               >
                 <TabsList>
                   <TabsTrigger value="growth" className="flex items-center gap-2">
-                    <Seedling className="h-4 w-4" />
+                    <Sprout className="h-4 w-4" />
                     <span className="hidden sm:inline">Salle de Croissance</span>
                     <span className="sm:hidden">Croissance</span>
                   </TabsTrigger>

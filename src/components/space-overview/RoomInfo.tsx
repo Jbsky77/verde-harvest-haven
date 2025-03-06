@@ -1,5 +1,5 @@
 
-import { Flower, Seedling } from "lucide-react";
+import { Flower, Sprout } from "lucide-react";
 import { RoomType } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -18,7 +18,7 @@ export const RoomInfo = ({ roomType, spaceCount, plantCount }: RoomInfoProps) =>
         <CardTitle className="flex items-center gap-2 text-lg">
           {isGrowthRoom ? (
             <>
-              <Seedling className="h-5 w-5 text-green-600" />
+              <Sprout className="h-5 w-5 text-green-600" />
               Salle de Croissance
             </>
           ) : (

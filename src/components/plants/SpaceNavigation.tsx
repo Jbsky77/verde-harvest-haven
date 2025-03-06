@@ -1,6 +1,5 @@
-
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ArrowRight, Seedling, Flower } from "lucide-react";
+import { ArrowLeft, ArrowRight, Sprout, Flower } from "lucide-react";
 import { CultivationSpace, RoomType } from "@/types";
 import { cn } from "@/lib/utils";
 
@@ -27,7 +26,7 @@ const SpaceNavigation = ({ spaces, currentSpace, onNavigate }: SpaceNavigationPr
     onNavigate(roomSpaces[prevIndex].id);
   };
   
-  const RoomIcon = roomType === "growth" ? Seedling : Flower;
+  const RoomIcon = roomType === "growth" ? Sprout : Flower;
   const roomLabel = roomType === "growth" ? "Croissance" : "Floraison";
 
   return (
