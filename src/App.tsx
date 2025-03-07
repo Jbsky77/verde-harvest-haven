@@ -10,6 +10,7 @@ import Auth from "@/pages/Auth";
 import Profile from "@/pages/Profile";
 import NotFound from "@/pages/NotFound";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import PlantDetails from "@/components/PlantDetails";
 
 // Optimize by creating the query client outside of component render
 const queryClient = new QueryClient({
@@ -70,6 +71,13 @@ const App = () => (
             <Route path="/settings" element={
               <ProtectedRoute>
                 <Index />
+              </ProtectedRoute>
+            } />
+            
+            {/* Add route for individual plant details */}
+            <Route path="/plant/:plantId" element={
+              <ProtectedRoute>
+                <PlantDetails standalone={true} />
               </ProtectedRoute>
             } />
             

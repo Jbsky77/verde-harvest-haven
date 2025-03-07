@@ -1,3 +1,4 @@
+
 import { 
   Home, 
   Grid3X3, 
@@ -12,10 +13,11 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useCultivation } from "@/context/CultivationContext";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RoomType } from "@/types";
+import { useEffect } from "react";
 
 type NavItemProps = {
   icon: React.ReactNode;
@@ -79,15 +81,16 @@ const SideNavigation = () => {
   
   const isMobile = useIsMobile();
   const location = useLocation();
+  const navigate = useNavigate();
   const currentPath = location.pathname;
   
   const getActivePage = () => {
     if (currentPath === "/") return "home";
-    if (currentPath === "/spaces") return "spaces";
-    if (currentPath === "/analytics") return "analytics";
-    if (currentPath === "/fertilizers") return "fertilizers";
-    if (currentPath === "/plants") return "plants";
-    if (currentPath.includes("/settings")) return "settings";
+    if (currentPath === "/spaces" || currentPath.startsWith("/spaces")) return "spaces";
+    if (currentPath === "/analytics" || currentPath.startsWith("/analytics")) return "analytics";
+    if (currentPath === "/fertilizers" || currentPath.startsWith("/fertilizers")) return "fertilizers";
+    if (currentPath === "/plants" || currentPath.startsWith("/plants")) return "plants";
+    if (currentPath === "/settings" || currentPath.startsWith("/settings")) return "settings";
     return "spaces"; // default
   };
 
@@ -104,6 +107,21 @@ const SideNavigation = () => {
       setSelectedSpaceId(firstSpace.id);
     }
   };
+
+  // When a space is selected, ensure we're on the spaces page
+  const handleSpaceSelect = (spaceId: number) => {
+    setSelectedSpaceId(spaceId);
+    if (currentPath !== "/spaces") {
+      navigate("/spaces");
+    }
+  };
+
+  // Update space selection when filtered spaces change
+  useEffect(() => {
+    if (filteredSpaces.length > 0 && !selectedSpaceId) {
+      setSelectedSpaceId(filteredSpaces[0].id);
+    }
+  }, [filteredSpaces, selectedSpaceId, setSelectedSpaceId]);
 
   return (
     <header className="w-full bg-white border-b shadow-sm z-40 sticky top-0">
@@ -148,7 +166,7 @@ const SideNavigation = () => {
             />
           </nav>
 
-          {page === "spaces" && (
+          {(page === "spaces" || page === "analytics") && (
             <div className="ml-auto flex items-center gap-4">
               <Tabs 
                 value={selectedRoomType} 
@@ -187,7 +205,7 @@ const SideNavigation = () => {
                         key={space.id}
                         spaceId={space.id}
                         label={space.name}
-                        onClick={() => setSelectedSpaceId(space.id)}
+                        onClick={() => handleSpaceSelect(space.id)}
                         active={selectedSpaceId === space.id}
                       />
                     ))}
