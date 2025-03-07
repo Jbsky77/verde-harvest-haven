@@ -5,7 +5,7 @@ import { PlantVariety } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus, Edit, Trash2 } from "lucide-react";
+import { Plus, Edit, Trash2, Search } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
   Dialog,
@@ -22,10 +22,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import SeedfinderSearch from "@/components/varieties/SeedfinderSearch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const VarietyManagementTab = () => {
   const { varieties, addVariety, updateVariety, deleteVariety } = useCultivation();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isSeedfinderDialogOpen, setIsSeedfinderDialogOpen] = useState(false);
   const [editingVariety, setEditingVariety] = useState<PlantVariety | null>(null);
   const [newVarietyName, setNewVarietyName] = useState("");
   const [newVarietyColor, setNewVarietyColor] = useState("#9b87f5");
@@ -107,14 +110,24 @@ const VarietyManagementTab = () => {
     }
   };
 
+  const openSeedfinderDialog = () => {
+    setIsSeedfinderDialogOpen(true);
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-medium">Liste des variétés</h2>
-        <Button onClick={openCreateDialog}>
-          <Plus className="mr-2 h-4 w-4" />
-          Nouvelle variété
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={openSeedfinderDialog} variant="outline">
+            <Search className="mr-2 h-4 w-4" />
+            Rechercher Seedfinder
+          </Button>
+          <Button onClick={openCreateDialog}>
+            <Plus className="mr-2 h-4 w-4" />
+            Nouvelle variété
+          </Button>
+        </div>
       </div>
 
       <Table>
@@ -164,6 +177,7 @@ const VarietyManagementTab = () => {
         </TableBody>
       </Table>
 
+      {/* Dialog pour l'ajout/édition manuelle d'une variété */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
           <DialogHeader>
@@ -248,6 +262,16 @@ const VarietyManagementTab = () => {
               {editingVariety ? "Mettre à jour" : "Créer"}
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog pour la recherche Seedfinder */}
+      <Dialog open={isSeedfinderDialogOpen} onOpenChange={setIsSeedfinderDialogOpen} className="max-w-4xl">
+        <DialogContent className="min-w-[350px] sm:min-w-[600px] sm:max-w-[900px]">
+          <DialogHeader>
+            <DialogTitle>Recherche de variétés sur Seedfinder.eu</DialogTitle>
+          </DialogHeader>
+          <SeedfinderSearch />
         </DialogContent>
       </Dialog>
     </div>

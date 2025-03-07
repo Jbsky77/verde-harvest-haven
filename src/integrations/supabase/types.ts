@@ -135,6 +135,60 @@ export type Database = {
         }
         Relationships: []
       }
+      seedfinder_varieties: {
+        Row: {
+          breeder: string | null
+          cbd_content: string | null
+          created_at: string
+          description: string | null
+          effects: string | null
+          external_id: string | null
+          flowering_time: number | null
+          genetics: string | null
+          germination_time: number | null
+          growth_time: number | null
+          id: string
+          image_url: string | null
+          name: string
+          thc_content: string | null
+          updated_at: string
+        }
+        Insert: {
+          breeder?: string | null
+          cbd_content?: string | null
+          created_at?: string
+          description?: string | null
+          effects?: string | null
+          external_id?: string | null
+          flowering_time?: number | null
+          genetics?: string | null
+          germination_time?: number | null
+          growth_time?: number | null
+          id?: string
+          image_url?: string | null
+          name: string
+          thc_content?: string | null
+          updated_at?: string
+        }
+        Update: {
+          breeder?: string | null
+          cbd_content?: string | null
+          created_at?: string
+          description?: string | null
+          effects?: string | null
+          external_id?: string | null
+          flowering_time?: number | null
+          genetics?: string | null
+          germination_time?: number | null
+          growth_time?: number | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          thc_content?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       session_varieties: {
         Row: {
           created_at: string
