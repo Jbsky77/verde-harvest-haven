@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useCultivation } from "@/context/CultivationContext";
 import { PlantVariety } from "@/types";
@@ -177,7 +176,6 @@ const VarietyManagementTab = () => {
         </TableBody>
       </Table>
 
-      {/* Dialog pour l'ajout/édition manuelle d'une variété */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
           <DialogHeader>
@@ -265,8 +263,7 @@ const VarietyManagementTab = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Dialog pour la recherche Seedfinder */}
-      <Dialog open={isSeedfinderDialogOpen} onOpenChange={setIsSeedfinderDialogOpen} className="max-w-4xl">
+      <Dialog open={isSeedfinderDialogOpen} onOpenChange={setIsSeedfinderDialogOpen}>
         <DialogContent className="min-w-[350px] sm:min-w-[600px] sm:max-w-[900px]">
           <DialogHeader>
             <DialogTitle>Recherche de variétés sur Seedfinder.eu</DialogTitle>
