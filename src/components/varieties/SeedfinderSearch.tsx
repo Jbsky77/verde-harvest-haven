@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,7 +11,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Search, Plus, CheckCircle, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
-// Types pour les variétés de Seedfinder
+// Types for Seedfinder varieties
 interface SeedfinderVariety {
   name: string;
   breeder: string;
@@ -34,12 +35,13 @@ const SeedfinderSearch = () => {
   const [selectedVariety, setSelectedVariety] = useState<SeedfinderVariety | null>(null);
   const [addingVariety, setAddingVariety] = useState(false);
   const [addedVarieties, setAddedVarieties] = useState<string[]>([]);
-  const { toast } = useToast();
+  const [searchError, setSearchError] = useState<string | null>(null);
+  const { toast: uiToast } = useToast();
 
-  // Fonction pour rechercher des variétés
+  // Search for varieties
   const handleSearch = async () => {
     if (!searchTerm.trim()) {
-      toast({
+      uiToast({
         title: "Terme de recherche requis",
         description: "Veuillez entrer un terme de recherche",
         variant: "destructive",
@@ -50,67 +52,69 @@ const SeedfinderSearch = () => {
     setIsSearching(true);
     setSearchResults([]);
     setSelectedVariety(null);
+    setSearchError(null);
 
     try {
+      console.log("Searching for:", searchTerm);
       const { data, error } = await supabase.functions.invoke("search-seedfinder", {
         body: { searchTerm: searchTerm },
       });
 
       if (error) {
-        throw error;
+        console.error("Supabase function error:", error);
+        throw new Error(`Erreur de l'API: ${error.message}`);
       }
 
-      if (data && data.success && data.data) {
+      if (data && data.success && Array.isArray(data.data)) {
+        console.log("Search results:", data.data.length);
         setSearchResults(data.data);
         if (data.data.length === 0) {
-          toast({
-            title: "Aucun résultat",
-            description: "Aucune variété trouvée pour ce terme de recherche",
-          });
+          toast("Aucun résultat trouvé pour ce terme de recherche");
         }
+      } else if (data && data.error) {
+        throw new Error(data.error);
       } else {
         throw new Error("Format de réponse invalide");
       }
     } catch (error) {
-      console.error("Erreur lors de la recherche:", error);
-      toast({
-        title: "Erreur de recherche",
-        description: "Une erreur s'est produite lors de la recherche de variétés",
-        variant: "destructive",
-      });
+      console.error("Error during search:", error);
+      setSearchError(error instanceof Error ? error.message : "Erreur pendant la recherche");
+      toast.error("Erreur de recherche: " + (error instanceof Error ? error.message : "Erreur inconnue"));
     } finally {
       setIsSearching(false);
     }
   };
 
-  // Fonction pour ajouter une variété à ma collection
+  // Add a variety to my collection
   const handleAddVariety = async (variety: SeedfinderVariety) => {
     setAddingVariety(true);
     try {
+      console.log("Adding variety:", variety.name);
       const { data, error } = await supabase.functions.invoke("add-seedfinder-variety", {
         body: { variety },
       });
 
       if (error) {
-        throw error;
+        console.error("Supabase function error:", error);
+        throw new Error(`Erreur de l'API: ${error.message}`);
       }
 
       if (data && data.success) {
         setAddedVarieties(prev => [...prev, variety.externalId]);
-        toast({
-          title: "Variété ajoutée",
-          description: `La variété "${variety.name}" a été ajoutée à votre collection`,
-        });
+        toast.success(`La variété "${variety.name}" a été ajoutée à votre collection`);
+        
+        // Force reload the app context to refresh varieties
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+      } else if (data && data.error) {
+        throw new Error(data.error);
       } else {
         throw new Error("Format de réponse invalide");
       }
     } catch (error) {
-      console.error("Erreur lors de l'ajout de la variété:", error);
-      toast({
-        title: "Erreur",
-        description: "Une erreur s'est produite lors de l'ajout de la variété",
-        variant: "destructive",
-      });
+      console.error("Error adding variety:", error);
+      toast.error("Erreur: " + (error instanceof Error ? error.message : "Erreur lors de l'ajout de la variété"));
     } finally {
       setAddingVariety(false);
     }
@@ -156,6 +160,12 @@ const SeedfinderSearch = () => {
                 Rechercher
               </Button>
             </div>
+
+            {searchError && (
+              <div className="p-3 bg-red-50 border border-red-200 rounded-md text-red-600 text-sm">
+                {searchError}
+              </div>
+            )}
 
             {searchResults.length > 0 && (
               <div>

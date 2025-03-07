@@ -2,21 +2,21 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.21.0';
 import { parse } from 'https://esm.sh/node-html-parser@6.1.4';
 
-// Définition des en-têtes CORS pour permettre les requêtes cross-origin
+// CORS headers
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Gestionnaire de requêtes
+// Handle OPTIONS requests for CORS
 Deno.serve(async (req) => {
-  // Gérer les requêtes OPTIONS (pré-vérification CORS)
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    // Récupérer et valider les paramètres de la requête
+    // Get search term from request
     const { searchTerm } = await req.json();
     if (!searchTerm) {
       return new Response(
@@ -25,16 +25,18 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Récupérer les données depuis Seedfinder.eu
+    console.log(`Searching for varieties with term: ${searchTerm}`);
+    
+    // Search Seedfinder
     const results = await searchSeedfinderVarieties(searchTerm);
 
-    // Retourner les résultats
+    // Return results
     return new Response(
       JSON.stringify({ success: true, data: results }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {
-    console.error('Erreur:', error);
+    console.error('Error:', error);
     return new Response(
       JSON.stringify({ error: error.message || 'Une erreur s\'est produite' }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
@@ -42,15 +44,12 @@ Deno.serve(async (req) => {
   }
 });
 
-// Fonction pour rechercher des variétés sur Seedfinder.eu
-async function searchSeedfinderVarieties(searchTerm: string) {
-  console.log(`Recherche de variétés pour: ${searchTerm}`);
-  
+// Function to search for varieties on Seedfinder.eu
+async function searchSeedfinderVarieties(searchTerm) {
   try {
-    // Construction de l'URL de recherche
     const searchUrl = `https://en.seedfinder.eu/search/database/results.php?q=${encodeURIComponent(searchTerm)}`;
     
-    // Récupération de la page de résultats
+    // Fetch search results page
     const response = await fetch(searchUrl, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (compatible; CBD Cultivation App/1.0)'
@@ -58,21 +57,26 @@ async function searchSeedfinderVarieties(searchTerm: string) {
     });
     
     if (!response.ok) {
-      throw new Error(`Erreur HTTP: ${response.status}`);
+      throw new Error(`HTTP error: ${response.status}`);
     }
     
     const html = await response.text();
     
-    // Extraction des résultats de recherche
+    // Extract search results
     const results = extractSearchResults(html);
-    console.log(`${results.length} variétés trouvées`);
+    console.log(`Found ${results.length} varieties`);
     
-    // Pour chaque résultat, récupérer les détails si l'ID est disponible
+    // Get details for each result
     const detailedResults = await Promise.all(
       results.map(async (result) => {
         if (result.externalId) {
-          const details = await getStrainDetails(result.externalId);
-          return { ...result, ...details };
+          try {
+            const details = await getStrainDetails(result.externalId);
+            return { ...result, ...details };
+          } catch (detailError) {
+            console.error(`Error getting details for ${result.externalId}:`, detailError);
+            return result;
+          }
         }
         return result;
       })
@@ -80,20 +84,20 @@ async function searchSeedfinderVarieties(searchTerm: string) {
     
     return detailedResults;
   } catch (error) {
-    console.error('Erreur lors de la recherche:', error);
+    console.error('Search error:', error);
     throw error;
   }
 }
 
-// Fonction pour extraire les résultats de recherche du HTML
-function extractSearchResults(html: string) {
+// Extract search results from HTML
+function extractSearchResults(html) {
   const root = parse(html);
   const results = [];
   
-  // Sélectionner les éléments de résultat dans le HTML
+  // Select result elements
   const resultElements = root.querySelectorAll('.sortable tr');
   
-  // Ignorer l'en-tête du tableau
+  // Skip header row
   for (let i = 1; i < resultElements.length; i++) {
     const row = resultElements[i];
     const nameElement = row.querySelector('td:nth-child(1) a');
@@ -102,7 +106,7 @@ function extractSearchResults(html: string) {
       const name = nameElement.text.trim();
       const href = nameElement.getAttribute('href');
       
-      // Extraire l'ID externe de l'URL
+      // Extract external ID from URL
       let externalId = null;
       if (href) {
         const match = href.match(/\/database\/strains\/([^\/]+)\//);
@@ -126,9 +130,9 @@ function extractSearchResults(html: string) {
   return results;
 }
 
-// Fonction pour obtenir les détails d'une variété spécifique
-async function getStrainDetails(strainId: string) {
-  console.log(`Récupération des détails pour la variété: ${strainId}`);
+// Get details for a specific strain
+async function getStrainDetails(strainId) {
+  console.log(`Getting details for variety: ${strainId}`);
   
   try {
     const url = `https://en.seedfinder.eu/database/strains/${strainId}/`;
@@ -139,13 +143,13 @@ async function getStrainDetails(strainId: string) {
     });
     
     if (!response.ok) {
-      throw new Error(`Erreur HTTP: ${response.status}`);
+      throw new Error(`HTTP error: ${response.status}`);
     }
     
     const html = await response.text();
     const root = parse(html);
     
-    // Extraction des informations détaillées
+    // Extract detailed information
     let flowering = null;
     let growthTime = null;
     let genetics = '';
@@ -155,7 +159,7 @@ async function getStrainDetails(strainId: string) {
     let description = '';
     let imageUrl = '';
     
-    // Extraction de l'image
+    // Extract image
     const imageElement = root.querySelector('.mainimage img');
     if (imageElement) {
       const src = imageElement.getAttribute('src');
@@ -164,13 +168,13 @@ async function getStrainDetails(strainId: string) {
       }
     }
     
-    // Extraction de la description
+    // Extract description
     const descElement = root.querySelector('.straininfo');
     if (descElement) {
       description = descElement.text.trim();
     }
     
-    // Extraction des informations techniques
+    // Extract technical information
     const infoElements = root.querySelectorAll('.techinfo tr');
     infoElements.forEach(row => {
       const label = row.querySelector('td:first-child')?.text.trim().toLowerCase();
@@ -178,7 +182,7 @@ async function getStrainDetails(strainId: string) {
       
       if (label && value) {
         if (label.includes('flowering')) {
-          // Extraction du temps de floraison (en jours)
+          // Extract flowering time (in days)
           const match = value.match(/(\d+)/);
           if (match) {
             flowering = parseInt(match[1], 10);
@@ -195,9 +199,9 @@ async function getStrainDetails(strainId: string) {
       }
     });
     
-    // Estimation du temps de croissance si non spécifié (généralement 3-4 semaines)
+    // Estimate growth time if not specified (usually 3-4 weeks)
     if (!growthTime) {
-      growthTime = 28; // Valeur par défaut de 4 semaines
+      growthTime = 28; // Default: 4 weeks
     }
     
     return {
@@ -211,7 +215,7 @@ async function getStrainDetails(strainId: string) {
       image_url: imageUrl
     };
   } catch (error) {
-    console.error(`Erreur lors de la récupération des détails pour ${strainId}:`, error);
+    console.error(`Error getting details for ${strainId}:`, error);
     return {};
   }
 }

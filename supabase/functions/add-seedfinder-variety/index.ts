@@ -1,35 +1,26 @@
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.21.0';
 
-// Définition des en-têtes CORS pour permettre les requêtes cross-origin
+// CORS headers
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Configuration du client Supabase
+// Supabase client setup
 const supabaseUrl = Deno.env.get('SUPABASE_URL') || '';
 const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY') || '';
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// Gestionnaire de requêtes
+// Request handler
 Deno.serve(async (req) => {
-  // Gérer les requêtes OPTIONS (pré-vérification CORS)
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    // Vérifier l'authentification
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader) {
-      return new Response(
-        JSON.stringify({ error: 'Authentification requise' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
-      );
-    }
-
-    // Récupérer les données de la variété à ajouter
+    // Get variety data from request
     const { variety } = await req.json();
     if (!variety || !variety.name) {
       return new Response(
@@ -38,7 +29,9 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Vérifier si la variété existe déjà dans la base de données
+    console.log(`Processing variety: ${variety.name}`);
+
+    // Check if variety already exists
     const { data: existingVariety, error: checkError } = await supabase
       .from('seedfinder_varieties')
       .select('id')
@@ -49,11 +42,11 @@ Deno.serve(async (req) => {
       throw checkError;
     }
 
-    let savedVarietyId;
+    let seedfinderVarietyId;
 
     if (existingVariety) {
-      // Mettre à jour la variété existante
-      console.log(`Mise à jour de la variété existante: ${variety.name}`);
+      // Update existing variety
+      console.log(`Updating existing variety: ${variety.name}`);
       const { data, error } = await supabase
         .from('seedfinder_varieties')
         .update({
@@ -74,10 +67,10 @@ Deno.serve(async (req) => {
         .single();
 
       if (error) throw error;
-      savedVarietyId = data.id;
+      seedfinderVarietyId = data.id;
     } else {
-      // Insérer une nouvelle variété
-      console.log(`Insertion d'une nouvelle variété: ${variety.name}`);
+      // Insert new variety
+      console.log(`Inserting new variety: ${variety.name}`);
       const { data, error } = await supabase
         .from('seedfinder_varieties')
         .insert({
@@ -98,10 +91,10 @@ Deno.serve(async (req) => {
         .single();
 
       if (error) throw error;
-      savedVarietyId = data.id;
+      seedfinderVarietyId = data.id;
     }
 
-    // Créer une variété locale à partir des données Seedfinder
+    // Create a local variety from Seedfinder data
     const localVariety = {
       name: variety.name,
       color: generateRandomColor(),
@@ -110,7 +103,7 @@ Deno.serve(async (req) => {
       flowering_time: variety.flowering_time
     };
 
-    // Ajouter la variété à la table des variétés de plantes
+    // Add variety to plant_varieties table
     const { data: plantVariety, error: plantVarietyError } = await supabase
       .from('plant_varieties')
       .insert(localVariety)
@@ -119,16 +112,18 @@ Deno.serve(async (req) => {
 
     if (plantVarietyError) throw plantVarietyError;
 
+    console.log(`Successfully added variety: ${variety.name} with ID: ${plantVariety.id}`);
+
     return new Response(
       JSON.stringify({ 
         success: true, 
-        seedfinderVarietyId: savedVarietyId,
+        seedfinderVarietyId,
         plantVarietyId: plantVariety.id 
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {
-    console.error('Erreur:', error);
+    console.error('Error:', error);
     return new Response(
       JSON.stringify({ error: error.message || 'Une erreur s\'est produite' }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
@@ -136,8 +131,8 @@ Deno.serve(async (req) => {
   }
 });
 
-// Fonction pour générer une couleur aléatoire
-function generateRandomColor(): string {
+// Generate a random color for variety
+function generateRandomColor() {
   const colors = [
     '#9b87f5', '#6FD08C', '#F58A87', '#87ACF5', '#F5D787', 
     '#D787F5', '#87F5E9', '#F5879B', '#B7F587', '#F5C287'
