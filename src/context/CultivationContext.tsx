@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { Alert, Plant, PlantState, PlantVariety, RoomType, CultivationSpace } from '@/types';
 import { SessionService } from '@/services/SessionService';
@@ -94,7 +95,7 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
     
     const allPlants = spaces.flatMap(space => space.plants);
     
-    const plantsNeedingUpdate = findPlantsNeedingStateUpdate(allPlants, currentSession);
+    const plantsNeedingUpdate = findPlantsNeedingStateUpdate(allPlants, currentSession, spaces);
     
     if (plantsNeedingUpdate.length > 0) {
       plantsNeedingUpdate.forEach(({ plant, newState }) => {

@@ -9,9 +9,15 @@ import { CultivationSession } from "@/context/types";
 export const shouldTransferToFlowering = (
   plant: Plant,
   currentSession: CultivationSession | null,
+  spaces: CultivationSpace[]
 ): boolean => {
   if (!currentSession || !currentSession.isActive) return false;
-  if (plant.state !== "growth" || plant.position.roomType !== "growth") return false;
+  
+  // Get the space for this plant
+  const space = spaces.find(s => s.id === plant.position.space);
+  if (!space || space.roomType !== "growth") return false;
+  
+  if (plant.state !== "growth") return false;
   
   const { variety } = plant;
   if (!variety.germinationTime || !variety.growthTime) return false;
@@ -34,15 +40,20 @@ export const shouldTransferToFlowering = (
 export const determineExpectedPlantState = (
   plant: Plant,
   currentSession: CultivationSession | null,
+  spaces: CultivationSpace[]
 ): PlantState | null => {
   if (!currentSession || !currentSession.isActive) return null;
   
+  // Get the space for this plant
+  const space = spaces.find(s => s.id === plant.position.space);
+  if (!space) return null;
+  
   // For growth room, state should be "growth"
-  if (plant.position.roomType === "growth") {
+  if (space.roomType === "growth") {
     return "growth";
   } 
   // For flowering room, state should be "flowering"
-  else if (plant.position.roomType === "flowering") {
+  else if (space.roomType === "flowering") {
     return "flowering";
   }
   
@@ -54,14 +65,15 @@ export const determineExpectedPlantState = (
  */
 export const findPlantsNeedingStateUpdate = (
   plants: Plant[],
-  currentSession: CultivationSession | null
+  currentSession: CultivationSession | null,
+  spaces: CultivationSpace[]
 ): { plant: Plant; newState: PlantState }[] => {
   if (!currentSession || !currentSession.isActive) return [];
   
   const plantsToUpdate: { plant: Plant; newState: PlantState }[] = [];
   
   plants.forEach(plant => {
-    const expectedState = determineExpectedPlantState(plant, currentSession);
+    const expectedState = determineExpectedPlantState(plant, currentSession, spaces);
     
     // Only update if the expected state exists and is different from current state
     if (expectedState && expectedState !== plant.state) {
@@ -91,6 +103,6 @@ export const findPlantsForFloweringTransfer = (
   
   // Return plants that should be transferred to flowering
   return growthRoomPlants.filter(plant => 
-    shouldTransferToFlowering(plant, currentSession)
+    shouldTransferToFlowering(plant, currentSession, spaces)
   );
 };
