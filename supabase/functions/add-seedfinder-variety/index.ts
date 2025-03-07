@@ -36,9 +36,9 @@ Deno.serve(async (req) => {
       .from('seedfinder_varieties')
       .select('id')
       .eq('external_id', variety.externalId)
-      .single();
+      .maybeSingle();
 
-    if (checkError && checkError.code !== 'PGRST116') {
+    if (checkError) {
       throw checkError;
     }
 

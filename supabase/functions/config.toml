@@ -3,4 +3,4 @@ project_id = "dytvesqswrviedmojbdb"
 [functions.search-seedfinder]
 verify_jwt = false
 [functions.add-seedfinder-variety]
-verify_jwt = true
+verify_jwt = false

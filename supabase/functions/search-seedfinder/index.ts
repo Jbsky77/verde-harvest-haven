@@ -49,6 +49,8 @@ async function searchSeedfinderVarieties(searchTerm) {
   try {
     const searchUrl = `https://en.seedfinder.eu/search/database/results.php?q=${encodeURIComponent(searchTerm)}`;
     
+    console.log(`Fetching search results from: ${searchUrl}`);
+    
     // Fetch search results page
     const response = await fetch(searchUrl, {
       headers: {
@@ -66,11 +68,14 @@ async function searchSeedfinderVarieties(searchTerm) {
     const results = extractSearchResults(html);
     console.log(`Found ${results.length} varieties`);
     
-    // Get details for each result
+    // Get details for each result (but limit to 5 to avoid timeouts)
+    const limitedResults = results.slice(0, 5);
+    
     const detailedResults = await Promise.all(
-      results.map(async (result) => {
+      limitedResults.map(async (result) => {
         if (result.externalId) {
           try {
+            console.log(`Getting details for variety: ${result.name}`);
             const details = await getStrainDetails(result.externalId);
             return { ...result, ...details };
           } catch (detailError) {

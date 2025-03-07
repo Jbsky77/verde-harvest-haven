@@ -56,6 +56,7 @@ const SeedfinderSearch = () => {
 
     try {
       console.log("Searching for:", searchTerm);
+      
       const { data, error } = await supabase.functions.invoke("search-seedfinder", {
         body: { searchTerm: searchTerm },
       });
@@ -167,7 +168,14 @@ const SeedfinderSearch = () => {
               </div>
             )}
 
-            {searchResults.length > 0 && (
+            {isSearching && (
+              <div className="flex justify-center py-8">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <span className="ml-2">Recherche en cours...</span>
+              </div>
+            )}
+
+            {!isSearching && searchResults.length > 0 && (
               <div>
                 <Label className="block mb-2">Résultats ({searchResults.length})</Label>
                 <ScrollArea className="h-64 border rounded-md p-2">
