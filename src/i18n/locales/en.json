@@ -6,20 +6,6 @@
     "showAllSpaces": "Show all spaces",
     "newSession": "New session"
   },
-  "navigation": {
-    "home": "Home",
-    "spaces": "Spaces",
-    "analytics": "Analytics",
-    "fertilizers": "Fertilizers",
-    "varieties": "Varieties",
-    "settings": "Settings"
-  },
-  "rooms": {
-    "growth": "Growth Room",
-    "flowering": "Flowering Room",
-    "growthShort": "Growth",
-    "floweringShort": "Flowering"
-  },
   "tabs": {
     "actions": "Actions",
     "fertilizers": "Fertilizers",

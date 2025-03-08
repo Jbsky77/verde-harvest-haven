@@ -6,20 +6,6 @@
     "showAllSpaces": "Alle Räume anzeigen",
     "newSession": "Neue Sitzung"
   },
-  "navigation": {
-    "home": "Startseite",
-    "spaces": "Räume",
-    "analytics": "Analysen",
-    "fertilizers": "Düngemittel",
-    "varieties": "Sorten",
-    "settings": "Einstellungen"
-  },
-  "rooms": {
-    "growth": "Wachstumsraum",
-    "flowering": "Blütenraum",
-    "growthShort": "Wachstum",
-    "floweringShort": "Blüte"
-  },
   "tabs": {
     "actions": "Aktionen",
     "fertilizers": "Düngemittel",

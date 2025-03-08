@@ -7,8 +7,7 @@ import {
   Sprout, 
   Settings,
   ChevronDown,
-  Flower,
-  Globe
+  Flower
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -19,8 +18,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RoomType } from "@/types";
 import { useEffect } from "react";
-import { useTranslation } from "react-i18next";
-import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 type NavItemProps = {
   icon: React.ReactNode;
@@ -85,7 +82,6 @@ const SideNavigation = () => {
   const isMobile = useIsMobile();
   const location = useLocation();
   const navigate = useNavigate();
-  const { t } = useTranslation();
   const currentPath = location.pathname;
   
   const getActivePage = () => {
@@ -112,6 +108,7 @@ const SideNavigation = () => {
     }
   };
 
+  // When a space is selected, ensure we're on the spaces page
   const handleSpaceSelect = (spaceId: number) => {
     setSelectedSpaceId(spaceId);
     if (currentPath !== "/spaces") {
@@ -119,6 +116,7 @@ const SideNavigation = () => {
     }
   };
 
+  // Update space selection when filtered spaces change
   useEffect(() => {
     if (filteredSpaces.length > 0 && !selectedSpaceId) {
       setSelectedSpaceId(filteredSpaces[0].id);
@@ -132,94 +130,90 @@ const SideNavigation = () => {
           <nav className="flex space-x-1 overflow-x-auto hide-scrollbar">
             <NavItem
               icon={<Home className="h-4 w-4" />}
-              label={t("navigation.home")}
+              label="Accueil"
               to="/"
               active={page === "home"}
             />
             <NavItem
               icon={<Grid3X3 className="h-4 w-4" />}
-              label={t("navigation.spaces")}
+              label="Espaces"
               to="/spaces"
               active={page === "spaces"}
             />
             <NavItem
               icon={<BarChart3 className="h-4 w-4" />}
-              label={t("navigation.analytics")}
+              label="Analyses"
               to="/analytics"
               active={page === "analytics"}
             />
             <NavItem
               icon={<Droplet className="h-4 w-4" />}
-              label={t("navigation.fertilizers")}
+              label="Fertilisants"
               to="/fertilizers"
               active={page === "fertilizers"}
             />
             <NavItem
               icon={<Sprout className="h-4 w-4" />}
-              label={t("navigation.varieties")}
+              label="Variétés"
               to="/plants"
               active={page === "plants"}
             />
             <NavItem
               icon={<Settings className="h-4 w-4" />}
-              label={t("navigation.settings")}
+              label="Paramètres"
               to="/settings"
               active={page === "settings"}
             />
           </nav>
 
-          <div className="ml-auto flex items-center gap-4">
-            <LanguageSwitcher />
-            
-            {(page === "spaces" || page === "analytics") && (
-              <>
-                <Tabs 
-                  value={selectedRoomType} 
-                  onValueChange={handleRoomTypeChange}
-                  className="bg-gray-100 rounded-md p-1"
-                >
-                  <TabsList>
-                    <TabsTrigger value="growth" className="flex items-center gap-2">
-                      <Sprout className="h-4 w-4" />
-                      <span className="hidden sm:inline">{t("rooms.growth")}</span>
-                      <span className="sm:hidden">{t("rooms.growthShort")}</span>
-                    </TabsTrigger>
-                    <TabsTrigger value="flowering" className="flex items-center gap-2">
-                      <Flower className="h-4 w-4" />
-                      <span className="hidden sm:inline">{t("rooms.flowering")}</span>
-                      <span className="sm:hidden">{t("rooms.floweringShort")}</span>
-                    </TabsTrigger>
-                  </TabsList>
-                </Tabs>
-                
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="flex items-center gap-1"
-                    >
-                      {t("navigation.spaces")}
-                      <ChevronDown className="h-4 w-4" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent align="end" className="w-48 p-2">
-                    <div className="space-y-1">
-                      {filteredSpaces.map((space) => (
-                        <SpaceItem
-                          key={space.id}
-                          spaceId={space.id}
-                          label={space.name}
-                          onClick={() => handleSpaceSelect(space.id)}
-                          active={selectedSpaceId === space.id}
-                        />
-                      ))}
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              </>
-            )}
-          </div>
+          {(page === "spaces" || page === "analytics") && (
+            <div className="ml-auto flex items-center gap-4">
+              <Tabs 
+                value={selectedRoomType} 
+                onValueChange={handleRoomTypeChange}
+                className="bg-gray-100 rounded-md p-1"
+              >
+                <TabsList>
+                  <TabsTrigger value="growth" className="flex items-center gap-2">
+                    <Sprout className="h-4 w-4" />
+                    <span className="hidden sm:inline">Salle de Croissance</span>
+                    <span className="sm:hidden">Croissance</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="flowering" className="flex items-center gap-2">
+                    <Flower className="h-4 w-4" />
+                    <span className="hidden sm:inline">Salle de Floraison</span>
+                    <span className="sm:hidden">Floraison</span>
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+              
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="flex items-center gap-1"
+                  >
+                    Espaces
+                    <ChevronDown className="h-4 w-4" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent align="end" className="w-48 p-2">
+                  <div className="space-y-1">
+                    {filteredSpaces.map((space) => (
+                      <SpaceItem
+                        key={space.id}
+                        spaceId={space.id}
+                        label={space.name}
+                        onClick={() => handleSpaceSelect(space.id)}
+                        active={selectedSpaceId === space.id}
+                      />
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </div>
+          )}
         </div>
       </div>
     </header>
