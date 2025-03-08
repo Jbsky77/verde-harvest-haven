@@ -1,0 +1,105 @@
+
+{
+  "common": {
+    "dashboard": "Dashboard",
+    "management": "Managing your aeroponic cultivation",
+    "home": "Home",
+    "spaces": "Spaces",
+    "analytics": "Analytics",
+    "fertilizers": "Fertilizers",
+    "varieties": "Varieties",
+    "settings": "Settings",
+    "growth": "Growth",
+    "flowering": "Flowering",
+    "growthRoom": "Growth Room",
+    "floweringRoom": "Flowering Room",
+    "showAllSpaces": "Show all spaces",
+    "newSession": "New session",
+    "actions": "Actions",
+    "next": "Next",
+    "previous": "Previous",
+    "space": "Space",
+    "plants": "Plants"
+  },
+  "dashboard": {
+    "tabs": {
+      "batch": "Actions",
+      "fertilizers": "Fertilizers",
+      "varieties": "Varieties",
+      "settings": "Settings"
+    }
+  },
+  "rooms": {
+    "growth": {
+      "title": "Growth Room",
+      "spaces": "Spaces",
+      "plants": "Plants",
+      "configuration": "3 spaces of 12 trays (100 plants/tray)"
+    },
+    "flowering": {
+      "title": "Flowering Room",
+      "spaces": "Spaces",
+      "plants": "Plants",
+      "configuration": "6 spaces of 4 rows (143 plants/row)"
+    }
+  },
+  "space": {
+    "overview": "Overview",
+    "selectSpecific": "Select a specific space to view its grid and plant list",
+    "allSpacesMode": "In \"All spaces\" mode, only global statistics are displayed.",
+    "accessInstructions": "To access the grid or plant list, please disable the \"Show all spaces\" option or select a specific space.",
+    "grid": "Grid",
+    "list": "List",
+    "gridView": "Grid view",
+    "rowsOf": "rows of",
+    "plantsPerRow": "plants",
+    "plantsList": "Plants list",
+    "totalPlants": "plants in total",
+    "prevSpace": "Previous space",
+    "nextSpace": "Next space"
+  },
+  "metrics": {
+    "averages": "EC & pH Averages",
+    "globalValues": "Global average values",
+    "spaceValues": "Average values for this space"
+  },
+  "plantState": {
+    "title": "Plant states",
+    "distribution": "Distribution by state",
+    "states": {
+      "germination": "Germination",
+      "growth": "Growth",
+      "flowering": "Flowering",
+      "drying": "Drying",
+      "harvested": "Harvested"
+    }
+  },
+  "varieties": {
+    "distribution": "Variety distribution",
+    "topVarieties": "Top varieties",
+    "allSpaces": "across all spaces"
+  },
+  "plant": {
+    "details": "Plant details",
+    "back": "Back",
+    "notFound": "Plant not found",
+    "notFoundDesc": "The plant you are looking for was not found. Check the URL or return to the previous page.",
+    "automation": "Automatic transitions",
+    "automationDesc": "Plant states will automatically transition from germination to growth and then to flowering based on the times defined for this variety.",
+    "position": "Position",
+    "variety": "Variety",
+    "state": "State",
+    "selectVariety": "Select a variety",
+    "selectState": "Select a state",
+    "notes": "Notes",
+    "estimatedFlowering": "Estimated flowering",
+    "estimatedHarvest": "Estimated harvest",
+    "notAvailable": "Not available",
+    "save": "Save",
+    "qrCode": "QR Code"
+  },
+  "language": {
+    "fr": "Français",
+    "en": "English"
+  }
+}

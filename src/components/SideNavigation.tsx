@@ -18,6 +18,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RoomType } from "@/types";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 type NavItemProps = {
   icon: React.ReactNode;
@@ -79,6 +81,7 @@ const SideNavigation = () => {
     getSpacesByRoomType
   } = useCultivation();
   
+  const { t } = useTranslation();
   const isMobile = useIsMobile();
   const location = useLocation();
   const navigate = useNavigate();
@@ -130,90 +133,94 @@ const SideNavigation = () => {
           <nav className="flex space-x-1 overflow-x-auto hide-scrollbar">
             <NavItem
               icon={<Home className="h-4 w-4" />}
-              label="Accueil"
+              label={t('common.home')}
               to="/"
               active={page === "home"}
             />
             <NavItem
               icon={<Grid3X3 className="h-4 w-4" />}
-              label="Espaces"
+              label={t('common.spaces')}
               to="/spaces"
               active={page === "spaces"}
             />
             <NavItem
               icon={<BarChart3 className="h-4 w-4" />}
-              label="Analyses"
+              label={t('common.analytics')}
               to="/analytics"
               active={page === "analytics"}
             />
             <NavItem
               icon={<Droplet className="h-4 w-4" />}
-              label="Fertilisants"
+              label={t('common.fertilizers')}
               to="/fertilizers"
               active={page === "fertilizers"}
             />
             <NavItem
               icon={<Sprout className="h-4 w-4" />}
-              label="Variétés"
+              label={t('common.varieties')}
               to="/plants"
               active={page === "plants"}
             />
             <NavItem
               icon={<Settings className="h-4 w-4" />}
-              label="Paramètres"
+              label={t('common.settings')}
               to="/settings"
               active={page === "settings"}
             />
           </nav>
 
-          {(page === "spaces" || page === "analytics") && (
-            <div className="ml-auto flex items-center gap-4">
-              <Tabs 
-                value={selectedRoomType} 
-                onValueChange={handleRoomTypeChange}
-                className="bg-gray-100 rounded-md p-1"
-              >
-                <TabsList>
-                  <TabsTrigger value="growth" className="flex items-center gap-2">
-                    <Sprout className="h-4 w-4" />
-                    <span className="hidden sm:inline">Salle de Croissance</span>
-                    <span className="sm:hidden">Croissance</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="flowering" className="flex items-center gap-2">
-                    <Flower className="h-4 w-4" />
-                    <span className="hidden sm:inline">Salle de Floraison</span>
-                    <span className="sm:hidden">Floraison</span>
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
-              
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="flex items-center gap-1"
-                  >
-                    Espaces
-                    <ChevronDown className="h-4 w-4" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent align="end" className="w-48 p-2">
-                  <div className="space-y-1">
-                    {filteredSpaces.map((space) => (
-                      <SpaceItem
-                        key={space.id}
-                        spaceId={space.id}
-                        label={space.name}
-                        onClick={() => handleSpaceSelect(space.id)}
-                        active={selectedSpaceId === space.id}
-                      />
-                    ))}
-                  </div>
-                </PopoverContent>
-              </Popover>
-            </div>
-          )}
+          <div className="ml-auto flex items-center gap-2">
+            <LanguageSwitcher />
+            
+            {(page === "spaces" || page === "analytics") && (
+              <div className="flex items-center gap-4">
+                <Tabs 
+                  value={selectedRoomType} 
+                  onValueChange={handleRoomTypeChange}
+                  className="bg-gray-100 rounded-md p-1"
+                >
+                  <TabsList>
+                    <TabsTrigger value="growth" className="flex items-center gap-2">
+                      <Sprout className="h-4 w-4" />
+                      <span className="hidden sm:inline">{t('common.growthRoom')}</span>
+                      <span className="sm:hidden">{t('common.growth')}</span>
+                    </TabsTrigger>
+                    <TabsTrigger value="flowering" className="flex items-center gap-2">
+                      <Flower className="h-4 w-4" />
+                      <span className="hidden sm:inline">{t('common.floweringRoom')}</span>
+                      <span className="sm:hidden">{t('common.flowering')}</span>
+                    </TabsTrigger>
+                  </TabsList>
+                </Tabs>
+                
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="flex items-center gap-1"
+                    >
+                      {t('common.spaces')}
+                      <ChevronDown className="h-4 w-4" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent align="end" className="w-48 p-2">
+                    <div className="space-y-1">
+                      {filteredSpaces.map((space) => (
+                        <SpaceItem
+                          key={space.id}
+                          spaceId={space.id}
+                          label={space.name}
+                          onClick={() => handleSpaceSelect(space.id)}
+                          active={selectedSpaceId === space.id}
+                        />
+                      ))}
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </header>

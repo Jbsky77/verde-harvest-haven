@@ -2,6 +2,7 @@
 import { Flower, Sprout } from "lucide-react";
 import { RoomType } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useTranslation } from "react-i18next";
 
 type RoomInfoProps = {
   roomType: RoomType;
@@ -11,6 +12,7 @@ type RoomInfoProps = {
 
 export const RoomInfo = ({ roomType, spaceCount, plantCount }: RoomInfoProps) => {
   const isGrowthRoom = roomType === "growth";
+  const { t } = useTranslation();
   
   return (
     <Card className="shadow-sm">
@@ -19,12 +21,12 @@ export const RoomInfo = ({ roomType, spaceCount, plantCount }: RoomInfoProps) =>
           {isGrowthRoom ? (
             <>
               <Sprout className="h-5 w-5 text-green-600" />
-              Salle de Croissance
+              {t('rooms.growth.title')}
             </>
           ) : (
             <>
               <Flower className="h-5 w-5 text-purple-600" />
-              Salle de Floraison
+              {t('rooms.flowering.title')}
             </>
           )}
         </CardTitle>
@@ -32,19 +34,19 @@ export const RoomInfo = ({ roomType, spaceCount, plantCount }: RoomInfoProps) =>
       <CardContent>
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1">
-            <p className="text-sm text-muted-foreground">Espaces</p>
+            <p className="text-sm text-muted-foreground">{t('rooms.growth.spaces')}</p>
             <p className="text-2xl font-semibold">{spaceCount}</p>
           </div>
           <div className="space-y-1">
-            <p className="text-sm text-muted-foreground">Plants</p>
+            <p className="text-sm text-muted-foreground">{t('rooms.growth.plants')}</p>
             <p className="text-2xl font-semibold">{plantCount}</p>
           </div>
           <div className="col-span-2">
-            <p className="text-sm text-muted-foreground">Configuration</p>
+            <p className="text-sm text-muted-foreground">{t('common.settings')}</p>
             {isGrowthRoom ? (
-              <p className="text-sm">3 espaces de 12 bacs (100 plants/bac)</p>
+              <p className="text-sm">{t('rooms.growth.configuration')}</p>
             ) : (
-              <p className="text-sm">6 espaces de 4 rangées (143 plants/rangée)</p>
+              <p className="text-sm">{t('rooms.flowering.configuration')}</p>
             )}
           </div>
         </div>

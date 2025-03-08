@@ -1,6 +1,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, LabelList, ResponsiveContainer } from "recharts";
+import { useTranslation } from "react-i18next";
 
 interface VarietyDistributionChartProps {
   varietyDistributionData: Array<{ name: string; count: number }>;
@@ -8,14 +9,18 @@ interface VarietyDistributionChartProps {
 }
 
 export const VarietyDistributionChart = ({ varietyDistributionData, showAllSpaces = false }: VarietyDistributionChartProps) => {
+  const { t } = useTranslation();
+  
   return (
     <Card className="shadow-sm hover:shadow-md transition-shadow border-t-4" style={{ borderTopColor: "#f43f5e" }}>
       <CardHeader className="pb-2">
         <CardTitle className="text-lg flex items-center gap-2">
           <span className="h-3 w-3 rounded-full bg-[#f43f5e]"></span>
-          Distribution des variétés
+          {t('varieties.distribution')}
         </CardTitle>
-        <CardDescription>Top variétés{showAllSpaces ? " tous espaces confondus" : ""}</CardDescription>
+        <CardDescription>
+          {t('varieties.topVarieties')}{showAllSpaces ? ` ${t('varieties.allSpaces')}` : ""}
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="h-52">

@@ -1,7 +1,9 @@
+
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, Sprout, Flower } from "lucide-react";
 import { CultivationSpace, RoomType } from "@/types";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 type SpaceNavigationProps = {
   spaces: CultivationSpace[];
@@ -10,6 +12,8 @@ type SpaceNavigationProps = {
 };
 
 const SpaceNavigation = ({ spaces, currentSpace, onNavigate }: SpaceNavigationProps) => {
+  const { t } = useTranslation();
+  
   // Filter spaces by the current room type
   const roomType = currentSpace.roomType;
   const roomSpaces = spaces.filter(space => space.roomType === roomType);
@@ -27,7 +31,7 @@ const SpaceNavigation = ({ spaces, currentSpace, onNavigate }: SpaceNavigationPr
   };
   
   const RoomIcon = roomType === "growth" ? Sprout : Flower;
-  const roomLabel = roomType === "growth" ? "Croissance" : "Floraison";
+  const roomLabel = roomType === "growth" ? t('common.growth') : t('common.flowering');
 
   return (
     <div className="flex flex-col space-y-2">
@@ -36,7 +40,7 @@ const SpaceNavigation = ({ spaces, currentSpace, onNavigate }: SpaceNavigationPr
           "h-5 w-5",
           roomType === "growth" ? "text-green-600" : "text-purple-600"
         )} />
-        <span className="font-medium">Salle de {roomLabel}</span>
+        <span className="font-medium">{t('common.growthRoom')}</span>
       </div>
       
       <div className="flex items-center justify-between bg-muted/50 rounded-lg p-3">
@@ -47,7 +51,7 @@ const SpaceNavigation = ({ spaces, currentSpace, onNavigate }: SpaceNavigationPr
           className="flex items-center gap-1"
         >
           <ArrowLeft className="h-4 w-4" />
-          Espace précédent
+          {t('space.prevSpace')}
         </Button>
         
         <div className="flex gap-2">
@@ -70,7 +74,7 @@ const SpaceNavigation = ({ spaces, currentSpace, onNavigate }: SpaceNavigationPr
           onClick={nextSpace}
           className="flex items-center gap-1"
         >
-          Espace suivant
+          {t('space.nextSpace')}
           <ArrowRight className="h-4 w-4" />
         </Button>
       </div>

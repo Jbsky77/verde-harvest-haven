@@ -1,6 +1,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, LabelList, ResponsiveContainer } from "recharts";
+import { useTranslation } from "react-i18next";
 
 interface MetricsChartProps {
   averageEC: number;
@@ -9,14 +10,18 @@ interface MetricsChartProps {
 }
 
 export const MetricsChart = ({ averageEC, averagePH, showAllSpaces = false }: MetricsChartProps) => {
+  const { t } = useTranslation();
+  
   return (
     <Card className="shadow-sm hover:shadow-md transition-shadow border-t-4" style={{ borderTopColor: "#06b6d4" }}>
       <CardHeader className="pb-2">
         <CardTitle className="text-lg flex items-center gap-2">
           <span className="h-3 w-3 rounded-full bg-[#06b6d4]"></span>
-          Moyennes EC & pH
+          {t('metrics.averages')}
         </CardTitle>
-        <CardDescription>Valeurs moyennes{showAllSpaces ? " globales" : " pour cet espace"}</CardDescription>
+        <CardDescription>
+          {showAllSpaces ? t('metrics.globalValues') : t('metrics.spaceValues')}
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="h-52">

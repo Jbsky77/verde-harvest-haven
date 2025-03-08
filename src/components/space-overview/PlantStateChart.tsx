@@ -2,15 +2,18 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { PlantState } from "@/types";
-import { stateColors, stateNames } from "./utils";
+import { stateColors } from "./utils";
+import { useTranslation } from "react-i18next";
 
 interface PlantStateChartProps {
   plantsByState: Record<PlantState, number>;
 }
 
 export const PlantStateChart = ({ plantsByState }: PlantStateChartProps) => {
+  const { t } = useTranslation();
+  
   const plantStateData = Object.entries(plantsByState).map(([state, count]) => ({
-    name: stateNames[state as PlantState],
+    name: t(`plantState.states.${state}`),
     value: count,
     color: stateColors[state as PlantState]
   }));
@@ -20,9 +23,9 @@ export const PlantStateChart = ({ plantsByState }: PlantStateChartProps) => {
       <CardHeader className="pb-2">
         <CardTitle className="text-lg flex items-center gap-2">
           <span className="h-3 w-3 rounded-full bg-[#9b87f5]"></span>
-          État des plantes
+          {t('plantState.title')}
         </CardTitle>
-        <CardDescription>Distribution par état</CardDescription>
+        <CardDescription>{t('plantState.distribution')}</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="h-52">
