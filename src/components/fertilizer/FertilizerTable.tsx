@@ -5,6 +5,7 @@ import { Pencil, Trash2 } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Fertilizer } from "@/types";
 import { FertilizerTypeLabels } from "./FertilizerForm";
+import { useTranslation } from "react-i18next";
 
 interface FertilizerTableProps {
   fertilizers: Fertilizer[];
@@ -13,15 +14,17 @@ interface FertilizerTableProps {
 }
 
 const FertilizerTable = ({ fertilizers, onEdit, onDelete }: FertilizerTableProps) => {
+  const { t } = useTranslation();
+  
   return (
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Couleur</TableHead>
-          <TableHead>Nom</TableHead>
-          <TableHead>Type</TableHead>
-          <TableHead>Dosage</TableHead>
-          <TableHead className="w-20">Actions</TableHead>
+          <TableHead>{t('fertilizers.color')}</TableHead>
+          <TableHead>{t('fertilizers.name')}</TableHead>
+          <TableHead>{t('fertilizers.type')}</TableHead>
+          <TableHead>{t('fertilizers.dosage')}</TableHead>
+          <TableHead className="w-20">{t('plants.actions')}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -34,7 +37,7 @@ const FertilizerTable = ({ fertilizers, onEdit, onDelete }: FertilizerTableProps
               />
             </TableCell>
             <TableCell>{fertilizer.name}</TableCell>
-            <TableCell>{FertilizerTypeLabels[fertilizer.type]}</TableCell>
+            <TableCell>{t(`fertilizers.types.${fertilizer.type}`)}</TableCell>
             <TableCell>{fertilizer.recommendedDosage.toFixed(2)} {fertilizer.unitType}</TableCell>
             <TableCell>
               <div className="flex items-center gap-2">

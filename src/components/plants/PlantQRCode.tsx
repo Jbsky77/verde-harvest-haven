@@ -5,6 +5,7 @@ import { Plant } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Printer } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface PlantQRCodeProps {
   plant: Plant;
@@ -13,6 +14,7 @@ interface PlantQRCodeProps {
 
 const PlantQRCode = ({ plant, baseUrl }: PlantQRCodeProps) => {
   const qrCodeRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
   
   const qrCodeUrl = `${baseUrl}/plant/${plant.id}`;
   
@@ -74,10 +76,10 @@ const PlantQRCode = ({ plant, baseUrl }: PlantQRCodeProps) => {
           <div class="qr-container">
             <div class="variety-name">${plant.variety.name}</div>
             <div class="plant-info">
-              Espace ${plant.position.space} | Position L${plant.position.row} - C${plant.position.column}
+              ${t('qrcode.space')} ${plant.position.space} | ${t('qrcode.position')} L${plant.position.row} - C${plant.position.column}
             </div>
             <div class="qrcode">${printContent}</div>
-            <div>Scannez pour plus d'informations</div>
+            <div>${t('qrcode.scan')}</div>
           </div>
           <script>
             window.onload = function() {
@@ -96,7 +98,7 @@ const PlantQRCode = ({ plant, baseUrl }: PlantQRCodeProps) => {
     <Card className="w-full">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg flex justify-between items-center">
-          QR Code
+          {t('qrcode.title')}
           <Button 
             variant="outline" 
             size="sm" 
@@ -104,13 +106,13 @@ const PlantQRCode = ({ plant, baseUrl }: PlantQRCodeProps) => {
             className="flex items-center gap-1"
           >
             <Printer className="h-4 w-4" /> 
-            Imprimer
+            {t('qrcode.print')}
           </Button>
         </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col items-center">
         <div className="mb-3">
-          Scannez ce code pour accéder aux détails de la plante
+          {t('qrcode.scan')}
         </div>
         <div ref={qrCodeRef} className="border p-4 rounded-lg bg-white">
           <QRCodeSVG 
@@ -123,7 +125,7 @@ const PlantQRCode = ({ plant, baseUrl }: PlantQRCodeProps) => {
           />
         </div>
         <div className="text-sm text-muted-foreground mt-3 text-center">
-          {plant.variety.name} - Espace {plant.position.space} | L{plant.position.row} - C{plant.position.column}
+          {plant.variety.name} - {t('qrcode.space')} {plant.position.space} | L{plant.position.row} - C{plant.position.column}
         </div>
       </CardContent>
     </Card>

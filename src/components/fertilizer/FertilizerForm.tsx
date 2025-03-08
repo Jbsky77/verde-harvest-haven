@@ -4,6 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Fertilizer, FertilizerType } from "@/types";
+import { useTranslation } from "react-i18next";
 
 interface FertilizerFormProps {
   name: string;
@@ -38,10 +39,12 @@ const FertilizerForm = ({
   color,
   setColor
 }: FertilizerFormProps) => {
+  const { t } = useTranslation();
+  
   return (
     <div className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="name">Nom de l'engrais</Label>
+        <Label htmlFor="name">{t('fertilizers.name')}</Label>
         <Input 
           id="name" 
           value={name} 
@@ -51,7 +54,7 @@ const FertilizerForm = ({
       </div>
       
       <div className="space-y-2">
-        <Label htmlFor="type">Type d'engrais</Label>
+        <Label htmlFor="type">{t('fertilizers.type')}</Label>
         <Select 
           value={type} 
           onValueChange={(value) => setType(value as FertilizerType)}
@@ -60,18 +63,18 @@ const FertilizerForm = ({
             <SelectValue placeholder="Sélectionner un type" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="base">Base</SelectItem>
-            <SelectItem value="growth">Croissance</SelectItem>
-            <SelectItem value="bloom">Floraison</SelectItem>
-            <SelectItem value="booster">Booster</SelectItem>
-            <SelectItem value="custom">Personnalisé</SelectItem>
+            <SelectItem value="base">{t('fertilizers.types.base')}</SelectItem>
+            <SelectItem value="growth">{t('fertilizers.types.growth')}</SelectItem>
+            <SelectItem value="bloom">{t('fertilizers.types.bloom')}</SelectItem>
+            <SelectItem value="booster">{t('fertilizers.types.booster')}</SelectItem>
+            <SelectItem value="custom">{t('fertilizers.types.custom')}</SelectItem>
           </SelectContent>
         </Select>
       </div>
       
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="dosage">Dosage recommandé</Label>
+          <Label htmlFor="dosage">{t('fertilizers.dosage')}</Label>
           <Input 
             id="dosage" 
             type="number"
@@ -83,7 +86,7 @@ const FertilizerForm = ({
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="unit">Unité</Label>
+          <Label htmlFor="unit">{t('fertilizers.unit')}</Label>
           <Select 
             value={unitType} 
             onValueChange={(value) => setUnitType(value as "ml/L" | "g/L")}
@@ -100,7 +103,7 @@ const FertilizerForm = ({
       </div>
       
       <div className="space-y-2">
-        <Label htmlFor="color">Couleur</Label>
+        <Label htmlFor="color">{t('fertilizers.color')}</Label>
         <div className="flex items-center gap-3">
           <div 
             className="w-10 h-10 rounded-full border border-gray-200" 

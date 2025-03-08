@@ -1,0 +1,75 @@
+
+{
+  "dashboard": {
+    "title": "Tableau de bord",
+    "subtitle": "Gestion de votre culture en aéroponie",
+    "showAllSpaces": "Afficher tous les espaces",
+    "newSession": "Nouvelle session"
+  },
+  "tabs": {
+    "actions": "Actions",
+    "fertilizers": "Engrais",
+    "varieties": "Variétés",
+    "settings": "Paramètres"
+  },
+  "plants": {
+    "title": "Plantes de",
+    "growth": "Croissance",
+    "flowering": "Floraison",
+    "filters": "Filtres",
+    "position": "Position",
+    "variety": "Variété",
+    "state": "État",
+    "actions": "Actions",
+    "plantDetails": "Détails de la plante"
+  },
+  "states": {
+    "germination": "Germination",
+    "growth": "Croissance",
+    "flowering": "Floraison",
+    "drying": "Séchage",
+    "harvested": "Récolté"
+  },
+  "varieties": {
+    "list": "Liste des variétés",
+    "search": "Rechercher Seedfinder",
+    "new": "Nouvelle variété",
+    "edit": "Modifier",
+    "color": "Couleur",
+    "name": "Nom",
+    "germTime": "Germination (jours)",
+    "growthTime": "Croissance (jours)",
+    "floweringTime": "Floraison (jours)",
+    "actions": "Actions",
+    "cancel": "Annuler",
+    "create": "Créer",
+    "update": "Mettre à jour"
+  },
+  "fertilizers": {
+    "name": "Nom de l'engrais",
+    "type": "Type d'engrais",
+    "dosage": "Dosage recommandé",
+    "unit": "Unité",
+    "color": "Couleur",
+    "types": {
+      "base": "Base",
+      "growth": "Croissance",
+      "bloom": "Floraison",
+      "booster": "Booster",
+      "custom": "Personnalisé"
+    }
+  },
+  "qrcode": {
+    "title": "QR Code",
+    "print": "Imprimer",
+    "scan": "Scannez ce code pour accéder aux détails de la plante",
+    "space": "Espace",
+    "position": "Position"
+  },
+  "common": {
+    "delete": "Supprimer",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "confirm": "Confirmer"
+  }
+}
