@@ -4,8 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useCultivation } from "@/context/CultivationContext";
-import { useTranslation } from "react-i18next";
-import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 interface DashboardHeaderProps {
   showAllSpaces: boolean;
@@ -19,21 +17,18 @@ const DashboardHeader = ({
   onNewSessionClick 
 }: DashboardHeaderProps) => {
   const { currentSession } = useCultivation();
-  const { t } = useTranslation();
   
   return (
     <div className="bg-white border-b px-6 py-4 sticky top-0 z-10">
       <div className="flex flex-wrap justify-between items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">{t('dashboard.title')}</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Tableau de bord</h1>
           <p className="text-muted-foreground">
-            {t('dashboard.subtitle')}
+            Gestion de votre culture en aéroponie
           </p>
         </div>
         
         <div className="flex flex-wrap items-center gap-4">
-          <LanguageSwitcher />
-          
           <div className="flex items-center space-x-2">
             <Switch
               id="show-all-spaces"
@@ -42,7 +37,7 @@ const DashboardHeader = ({
             />
             <Label htmlFor="show-all-spaces" className="flex items-center gap-1">
               <Building className="h-4 w-4" />
-              {t('dashboard.showAllSpaces')}
+              Afficher tous les espaces
             </Label>
           </div>
           
@@ -52,7 +47,7 @@ const DashboardHeader = ({
             className="whitespace-nowrap"
           >
             <Plus className="h-4 w-4 mr-2" />
-            {t('dashboard.newSession')}
+            Nouvelle session
           </Button>
         </div>
       </div>

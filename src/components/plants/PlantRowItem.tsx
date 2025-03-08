@@ -5,7 +5,15 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Edit2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useTranslation } from "react-i18next";
+
+// Define the state label constants
+const stateLabels = {
+  germination: "Germination",
+  growth: "Croissance",
+  flowering: "Floraison",
+  drying: "Séchage",
+  harvested: "Récolté"
+};
 
 // Define the state color constants
 const stateColors = {
@@ -22,8 +30,6 @@ type PlantRowItemProps = {
 };
 
 const PlantRowItem = ({ plant, onPlantClick }: PlantRowItemProps) => {
-  const { t } = useTranslation();
-  
   return (
     <TableRow 
       key={plant.id} 
@@ -43,7 +49,7 @@ const PlantRowItem = ({ plant, onPlantClick }: PlantRowItemProps) => {
       </TableCell>
       <TableCell>
         <Badge variant="outline" className={cn("transition-colors", stateColors[plant.state])}>
-          {t(`states.${plant.state}`)}
+          {stateLabels[plant.state]}
         </Badge>
       </TableCell>
       <TableCell className="font-medium">{plant.ec.toFixed(2)}</TableCell>
