@@ -6,6 +6,20 @@
     "showAllSpaces": "Afficher tous les espaces",
     "newSession": "Nouvelle session"
   },
+  "navigation": {
+    "home": "Accueil",
+    "spaces": "Espaces",
+    "analytics": "Analyses",
+    "fertilizers": "Engrais",
+    "varieties": "Variétés",
+    "settings": "Paramètres"
+  },
+  "rooms": {
+    "growth": "Salle de Croissance",
+    "flowering": "Salle de Floraison",
+    "growthShort": "Croissance",
+    "floweringShort": "Floraison"
+  },
   "tabs": {
     "actions": "Actions",
     "fertilizers": "Engrais",

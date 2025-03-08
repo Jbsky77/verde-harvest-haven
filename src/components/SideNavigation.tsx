@@ -1,3 +1,4 @@
+
 import { 
   Home, 
   Grid3X3, 
@@ -6,7 +7,8 @@ import {
   Sprout, 
   Settings,
   ChevronDown,
-  Flower
+  Flower,
+  Globe
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -17,8 +19,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RoomType } from "@/types";
 import { useEffect } from "react";
-import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { useTranslation } from "react-i18next";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 type NavItemProps = {
   icon: React.ReactNode;
