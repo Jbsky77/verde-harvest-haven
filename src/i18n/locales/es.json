@@ -1,0 +1,106 @@
+
+{
+  "common": {
+    "dashboard": "Panel de control",
+    "management": "Gestión de su cultivo aeropónico",
+    "home": "Inicio",
+    "spaces": "Espacios",
+    "analytics": "Análisis",
+    "fertilizers": "Fertilizantes",
+    "varieties": "Variedades",
+    "settings": "Ajustes",
+    "growth": "Crecimiento",
+    "flowering": "Floración",
+    "growthRoom": "Sala de Crecimiento",
+    "floweringRoom": "Sala de Floración",
+    "showAllSpaces": "Mostrar todos los espacios",
+    "newSession": "Nueva sesión",
+    "actions": "Acciones",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "space": "Espacio",
+    "plants": "Plantas"
+  },
+  "dashboard": {
+    "tabs": {
+      "batch": "Acciones",
+      "fertilizers": "Fertilizantes",
+      "varieties": "Variedades",
+      "settings": "Ajustes"
+    }
+  },
+  "rooms": {
+    "growth": {
+      "title": "Sala de Crecimiento",
+      "spaces": "Espacios",
+      "plants": "Plantas",
+      "configuration": "3 espacios de 12 bandejas (100 plantas/bandeja)"
+    },
+    "flowering": {
+      "title": "Sala de Floración",
+      "spaces": "Espacios",
+      "plants": "Plantas",
+      "configuration": "6 espacios de 4 filas (143 plantas/fila)"
+    }
+  },
+  "space": {
+    "overview": "Vista general",
+    "selectSpecific": "Seleccione un espacio específico para ver su cuadrícula y lista de plantas",
+    "allSpacesMode": "En el modo \"Todos los espacios\", solo se muestran las estadísticas globales.",
+    "accessInstructions": "Para acceder a la cuadrícula o lista de plantas, desactive la opción \"Mostrar todos los espacios\" o seleccione un espacio específico.",
+    "grid": "Cuadrícula",
+    "list": "Lista",
+    "gridView": "Vista de cuadrícula",
+    "rowsOf": "filas de",
+    "plantsPerRow": "plantas",
+    "plantsList": "Lista de plantas",
+    "totalPlants": "plantas en total",
+    "prevSpace": "Espacio anterior",
+    "nextSpace": "Espacio siguiente"
+  },
+  "metrics": {
+    "averages": "Promedios de EC y pH",
+    "globalValues": "Valores medios globales",
+    "spaceValues": "Valores medios para este espacio"
+  },
+  "plantState": {
+    "title": "Estado de las plantas",
+    "distribution": "Distribución por estado",
+    "states": {
+      "germination": "Germinación",
+      "growth": "Crecimiento",
+      "flowering": "Floración",
+      "drying": "Secado",
+      "harvested": "Cosechado"
+    }
+  },
+  "varieties": {
+    "distribution": "Distribución de variedades",
+    "topVarieties": "Principales variedades",
+    "allSpaces": "en todos los espacios"
+  },
+  "plant": {
+    "details": "Detalles de la planta",
+    "back": "Volver",
+    "notFound": "Planta no encontrada",
+    "notFoundDesc": "La planta que está buscando no se ha encontrado. Compruebe la URL o vuelva a la página anterior.",
+    "automation": "Transiciones automáticas",
+    "automationDesc": "Los estados de la planta pasarán automáticamente de germinación a crecimiento y luego a floración según los tiempos definidos para esta variedad.",
+    "position": "Posición",
+    "variety": "Variedad",
+    "state": "Estado",
+    "selectVariety": "Seleccionar una variedad",
+    "selectState": "Seleccionar un estado",
+    "notes": "Notas",
+    "estimatedFlowering": "Floración estimada",
+    "estimatedHarvest": "Cosecha estimada",
+    "notAvailable": "No disponible",
+    "save": "Guardar",
+    "qrCode": "Código QR"
+  },
+  "language": {
+    "fr": "Français",
+    "en": "English",
+    "es": "Español"
+  }
+}

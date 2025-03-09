@@ -6,6 +6,7 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 // Import des traductions
 import fr from './locales/fr.json';
 import en from './locales/en.json';
+import es from './locales/es.json';
 
 // Configuration i18next
 i18n
@@ -15,6 +16,7 @@ i18n
     resources: {
       fr: fr,
       en: en,
+      es: es,
     },
     fallbackLng: 'fr', // Langue par défaut
     debug: false, // Désactiver en production

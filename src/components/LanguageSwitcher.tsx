@@ -25,6 +25,9 @@ const LanguageSwitcher = () => {
         <DropdownMenuItem onClick={() => changeLanguage('en')}>
           {t('language.en')}
         </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => changeLanguage('es')}>
+          {t('language.es')}
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
