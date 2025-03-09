@@ -141,5 +141,35 @@
     "column": {
       "title": "Column Title"
     }
+  },
+  "plants": {
+    "title": "Plants",
+    "list": "Plant List",
+    "row": "Row",
+    "column": "Column",
+    "variety": "Variety",
+    "state": "State",
+    "selectedCount": "Selected plants: {count}",
+    "selectRow": "Select row",
+    "selectVariety": "Select variety",
+    "selectState": "Select state",
+    "byRow": "By Row",
+    "selection": "Selection",
+    "applyToRow": "Apply to Row {row}",
+    "applyToSpace": "Apply to Entire Space",
+    "applyToSelected": "Apply to Selected Plants",
+    "rowNumber": "Row {number}",
+    "batchActions": "Batch Actions",
+    "details": "Plant Details",
+    "errors": {
+      "noSelection": "No plants selected",
+      "selectPlants": "Please select plants first"
+    },
+    "alerts": {
+      "spaceUpdated": "All plants in Space {spaceId} updated",
+      "rowUpdated": "Plants in Row {row} of Space {spaceId} updated",
+      "selectionUpdated": "{count} plants updated"
+    },
+    "keepCurrentVariety": "Keep current variety"
   }
 }

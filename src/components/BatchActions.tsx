@@ -33,6 +33,7 @@ const BatchActions = ({ space }: BatchActionsProps) => {
   const [ph, setPh] = useState<number>(6.0);
   const [state, setState] = useState<PlantState>("germination");
   const [varietyId, setVarietyId] = useState<string>("");
+  const [rowVarietyId, setRowVarietyId] = useState<string>("");
   
   // Update selected row when space changes to make sure it's valid
   useEffect(() => {
@@ -47,6 +48,7 @@ const BatchActions = ({ space }: BatchActionsProps) => {
     setPh(6.0);
     setState("germination");
     setVarietyId("");
+    setRowVarietyId("");
   }, [selectedSpaceId]);
   
   if (!selectedSpaceId) return null;
@@ -81,10 +83,20 @@ const BatchActions = ({ space }: BatchActionsProps) => {
   const handleApplyToRow = () => {
     if (!selectedRow) return;
     
-    updatePlantsInRow(selectedSpaceId, selectedRow, {
+    const updates: Partial<any> = {
       ec,
       ph
-    });
+    };
+    
+    // Add variety update if selected
+    if (rowVarietyId) {
+      const selectedVariety = varieties.find(v => v.id === rowVarietyId);
+      if (selectedVariety) {
+        updates.variety = selectedVariety;
+      }
+    }
+    
+    updatePlantsInRow(selectedSpaceId, selectedRow, updates);
     
     addAlert({
       type: "success",
@@ -97,6 +109,9 @@ const BatchActions = ({ space }: BatchActionsProps) => {
       description: t('plants.alerts.rowUpdated', { row: selectedRow, spaceId: selectedSpaceId }),
       variant: "success"
     });
+    
+    // Reset variety selection after applying
+    setRowVarietyId("");
   };
   
   const handleUpdateSelectedPlants = () => {
@@ -109,7 +124,23 @@ const BatchActions = ({ space }: BatchActionsProps) => {
       return;
     }
     
+    // Update plant state
     updatePlantsBatchState(selectedPlantIds, state);
+    
+    // Update plant variety if selected
+    if (varietyId) {
+      const selectedVariety = varieties.find(v => v.id === varietyId);
+      if (selectedVariety) {
+        const plantsToUpdate = space.plants
+          .filter(plant => selectedPlantIds.includes(plant.id))
+          .map(plant => ({
+            ...plant,
+            variety: selectedVariety
+          }));
+          
+        updatePlantBatch(plantsToUpdate);
+      }
+    }
     
     addAlert({
       type: "success",
@@ -124,6 +155,7 @@ const BatchActions = ({ space }: BatchActionsProps) => {
     });
     
     setSelectedPlantIds([]);
+    setVarietyId("");
   };
   
   const rowOptions = Array.from({ length: space.rows }, (_, i) => i + 1);
@@ -189,6 +221,37 @@ const BatchActions = ({ space }: BatchActionsProps) => {
                 {rowOptions.map((row) => (
                   <SelectItem key={row} value={row.toString()}>
                     {t('plants.rowNumber', { number: row })}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div>
+            <Label htmlFor="row-variety" className="mb-2 block">{t('plants.variety')}</Label>
+            <Select
+              value={rowVarietyId}
+              onValueChange={setRowVarietyId}
+            >
+              <SelectTrigger id="row-variety">
+                <SelectValue placeholder={t('plants.selectVariety')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">
+                  {t('plants.keepCurrentVariety')}
+                </SelectItem>
+                {varieties.map(variety => (
+                  <SelectItem 
+                    key={variety.id} 
+                    value={variety.id}
+                  >
+                    <div className="flex items-center gap-2">
+                      <div 
+                        className="w-3 h-3 rounded-full" 
+                        style={{ backgroundColor: variety.color }} 
+                      />
+                      <span>{variety.name}</span>
+                    </div>
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -269,6 +332,9 @@ const BatchActions = ({ space }: BatchActionsProps) => {
                 <SelectValue placeholder={t('plants.selectVariety')} />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="">
+                  {t('plants.keepCurrentVariety')}
+                </SelectItem>
                 {varieties.map(variety => (
                   <SelectItem 
                     key={variety.id} 
