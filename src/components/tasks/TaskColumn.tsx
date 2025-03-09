@@ -5,6 +5,7 @@ import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Plus, MoreHorizontal } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { Droppable, Draggable } from 'react-beautiful-dnd';
 import TaskCard from './TaskCard';
 import { 
   DropdownMenu, 
@@ -67,22 +68,40 @@ const TaskColumn: React.FC<TaskColumnProps> = ({
           </div>
         </div>
       </CardHeader>
-      <CardContent className="p-3 pt-0">
-        {column.tasks.length > 0 ? (
-          column.tasks.map((task) => (
-            <TaskCard
-              key={task.id}
-              task={task}
-              onEdit={() => onEditTask(task)}
-              onDelete={(taskId) => onDeleteTask(taskId, column.id)}
-            />
-          ))
-        ) : (
-          <div className="text-xs text-gray-500 text-center py-4">
-            {t('tasks.emptyColumn')}
-          </div>
+      <Droppable droppableId={column.id}>
+        {(provided) => (
+          <CardContent 
+            className="p-3 pt-0 min-h-[200px]"
+            {...provided.droppableProps}
+            ref={provided.innerRef}
+          >
+            {column.tasks.length > 0 ? (
+              column.tasks.map((task, index) => (
+                <Draggable key={task.id} draggableId={task.id} index={index}>
+                  {(provided) => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                    >
+                      <TaskCard
+                        task={task}
+                        onEdit={() => onEditTask(task)}
+                        onDelete={(taskId) => onDeleteTask(taskId, column.id)}
+                      />
+                    </div>
+                  )}
+                </Draggable>
+              ))
+            ) : (
+              <div className="text-xs text-gray-500 text-center py-4">
+                {t('tasks.emptyColumn')}
+              </div>
+            )}
+            {provided.placeholder}
+          </CardContent>
         )}
-      </CardContent>
+      </Droppable>
     </Card>
   );
 };

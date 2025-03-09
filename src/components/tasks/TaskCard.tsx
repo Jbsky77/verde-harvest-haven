@@ -2,7 +2,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { Task, TaskPriority } from '@/types/tasks';
-import { Calendar, Clock, Edit, Trash2 } from 'lucide-react';
+import { Calendar, Clock, Edit, Trash2, GripVertical } from 'lucide-react';
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -31,9 +31,12 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDelete }) => {
   const { t } = useTranslation();
   
   return (
-    <Card className="mb-2 cursor-pointer hover:shadow-md transition-shadow">
-      <CardHeader className="pb-2 pt-3 px-3">
-        <div className="text-sm font-medium">{task.title}</div>
+    <Card className="mb-2 hover:shadow-md transition-shadow bg-white border border-gray-100">
+      <CardHeader className="pb-2 pt-3 px-3 flex flex-row items-start">
+        <div className="text-sm font-medium flex-1">{task.title}</div>
+        <div className="text-gray-400 cursor-move">
+          <GripVertical className="h-4 w-4" />
+        </div>
       </CardHeader>
       
       {task.description && (

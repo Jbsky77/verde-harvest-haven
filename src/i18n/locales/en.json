@@ -1,4 +1,3 @@
-
 {
   "common": {
     "dashboard": "Dashboard",
@@ -105,31 +104,42 @@
     "es": "Español"
   },
   "tasks": {
-    "title": "Task Management",
-    "addColumn": "Add Column",
+    "title": "Tasks",
     "addTask": "Add Task",
     "editTask": "Edit Task",
     "deleteTask": "Delete Task",
+    "addColumn": "Add Column",
     "editColumn": "Edit Column",
     "deleteColumn": "Delete Column",
-    "taskTitle": "Task Title",
-    "taskDescription": "Description",
-    "taskPriority": "Priority",
-    "taskDueDate": "Due Date",
-    "taskLabels": "Labels",
-    "save": "Save",
-    "cancel": "Cancel",
+    "emptyBoard": "No columns. Add one to get started.",
+    "emptyColumn": "No tasks. Add one to get started.",
+    "taskUpdated": "Task updated successfully",
+    "taskAdded": "New task added",
+    "taskDeleted": "Task deleted",
+    "taskMoved": "Task moved",
+    "columnUpdated": "Column updated",
+    "columnAdded": "New column added",
+    "columnDeleted": "Column deleted",
+    "columns": {
+      "todo": "To Do",
+      "inProgress": "In Progress",
+      "done": "Done"
+    },
     "priorities": {
       "low": "Low",
       "medium": "Medium",
       "high": "High"
     },
-    "statuses": {
-      "todo": "To Do",
-      "inProgress": "In Progress",
-      "done": "Done"
+    "newTask": {
+      "title": "Task Title",
+      "description": "Description",
+      "priority": "Priority",
+      "dueDate": "Due Date",
+      "labels": "Labels",
+      "addLabel": "Add Label"
     },
-    "emptyBoard": "No tasks yet. Start by adding a column.",
-    "emptyColumn": "No tasks in this column."
+    "column": {
+      "title": "Column Title"
+    }
   }
 }

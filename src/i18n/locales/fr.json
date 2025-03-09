@@ -1,135 +1,149 @@
-
 {
-  "common": {
-    "dashboard": "Tableau de bord",
-    "management": "Gestion de votre culture en aéroponie",
-    "home": "Accueil",
-    "spaces": "Espaces",
-    "analytics": "Analyses",
-    "fertilizers": "Fertilisants",
-    "varieties": "Variétés",
-    "settings": "Paramètres",
-    "growth": "Croissance",
-    "flowering": "Floraison",
-    "growthRoom": "Salle de Croissance",
-    "floweringRoom": "Salle de Floraison",
-    "showAllSpaces": "Afficher tous les espaces",
-    "newSession": "Nouvelle session",
-    "actions": "Actions",
-    "next": "Suivant",
-    "previous": "Précédent",
-    "space": "Espace",
-    "plants": "Plants",
-    "tasks": "Tâches"
+  "header": {
+    "search": "Recherche",
+    "menu": "Menu"
   },
-  "dashboard": {
-    "tabs": {
-      "batch": "Actions",
-      "fertilizers": "Engrais",
-      "varieties": "Variétés",
-      "settings": "Paramètres"
-    }
-  },
-  "rooms": {
-    "growth": {
-      "title": "Salle de Croissance",
-      "spaces": "Espaces",
-      "plants": "Plants",
-      "configuration": "3 espaces de 12 bacs (100 plants/bac)"
-    },
-    "flowering": {
-      "title": "Salle de Floraison",
-      "spaces": "Espaces",
-      "plants": "Plants",
-      "configuration": "6 espaces de 4 rangées (143 plants/rangée)"
-    }
+  "home": {
+    "title": "Tableau de bord",
+    "overview": "Aperçu",
+    "cultivationSpaces": "Espaces de culture",
+    "alerts": "Alertes",
+    "tasks": "Tâches",
+    "spaceDetails": "Détails de l'espace",
+    "plantDetails": "Détails de la plante",
+    "noAlerts": "Aucune alerte pour le moment.",
+    "ec": "EC",
+    "ph": "PH"
   },
   "space": {
-    "overview": "Vue d'ensemble",
-    "selectSpecific": "Sélectionnez un espace spécifique pour voir sa grille et sa liste de plantes",
-    "allSpacesMode": "En mode \"Tous les espaces\", seules les statistiques globales sont affichées.",
-    "accessInstructions": "Pour accéder à la grille ou à la liste des plantes, veuillez désactiver l'option \"Afficher tous les espaces\" ou sélectionner un espace spécifique.",
-    "grid": "Grille",
-    "list": "Liste",
-    "gridView": "Vue en grille",
-    "rowsOf": "lignes de",
-    "plantsPerRow": "plantes",
-    "plantsList": "Liste des plantes",
-    "totalPlants": "plantes au total",
-    "prevSpace": "Espace précédent",
-    "nextSpace": "Espace suivant"
+    "growthRoom": "Salle de croissance",
+    "floweringRoom": "Salle de floraison",
+    "filters": "Filtres"
   },
-  "metrics": {
-    "averages": "Moyennes EC & pH",
-    "globalValues": "Valeurs moyennes globales",
-    "spaceValues": "Valeurs moyennes pour cet espace"
-  },
-  "plantState": {
-    "title": "État des plantes",
-    "distribution": "Distribution par état",
-    "states": {
-      "germination": "Germination",
-      "growth": "Croissance",
-      "flowering": "Floraison",
-      "drying": "Séchage",
-      "harvested": "Récolté"
-    }
-  },
-  "varieties": {
-    "distribution": "Distribution des variétés",
-    "topVarieties": "Top variétés",
-    "allSpaces": "tous espaces confondus"
-  },
-  "plant": {
+  "plants": {
     "details": "Détails de la plante",
-    "back": "Retour",
-    "notFound": "Plante non trouvée",
-    "notFoundDesc": "La plante que vous recherchez n'a pas été trouvée. Vérifiez l'URL ou retournez à la page précédente.",
-    "automation": "Transitions automatiques",
-    "automationDesc": "Les états de la plante passeront automatiquement de germination à croissance puis à floraison en fonction des temps définis pour cette variété.",
-    "position": "Position",
+    "name": "Nom",
     "variety": "Variété",
     "state": "État",
-    "selectVariety": "Sélectionner une variété",
-    "selectState": "Sélectionner un état",
+    "ec": "EC (Conductivité Électrique)",
+    "ph": "PH",
+    "position": "Position",
+    "row": "Rangée",
+    "column": "Colonne",
     "notes": "Notes",
-    "estimatedFlowering": "Floraison estimée",
-    "estimatedHarvest": "Récolte estimée",
-    "notAvailable": "Non disponible",
-    "save": "Enregistrer",
-    "qrCode": "QR Code"
+    "actions": "Actions",
+    "update": "Mettre à jour",
+    "transferToFlowering": "Transférer vers la salle de floraison",
+    "states": {
+      "seedling": "Jeune plant",
+      "vegetative": "Végétatif",
+      "flowering": "Floraison",
+      "harvest": "Récolte"
+    }
   },
-  "language": {
-    "fr": "Français",
-    "en": "English",
-    "es": "Español"
+  "alertsPanel": {
+    "title": "Alertes",
+    "markAllAsRead": "Tout marquer comme lu",
+    "clearAll": "Tout effacer",
+    "types": {
+      "ecHigh": "EC trop élevé",
+      "ecLow": "EC trop bas",
+      "phHigh": "PH trop élevé",
+      "phLow": "PH trop bas"
+    }
+  },
+  "batchActions": {
+    "title": "Actions groupées",
+    "updateEC": "Mettre à jour l'EC",
+    "updatePH": "Mettre à jour le PH",
+    "updateState": "Mettre à jour l'état",
+    "apply": "Appliquer"
+  },
+  "fertilizers": {
+    "title": "Engrais",
+    "addFertilizer": "Ajouter un engrais",
+    "name": "Nom",
+    "npk": "NPK",
+    "description": "Description",
+    "createdAt": "Créé le",
+    "actions": "Actions",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "editFertilizer": "Modifier l'engrais",
+    "createFertilizer": "Créer un engrais"
+  },
+  "varieties": {
+    "title": "Variétés",
+    "addVariety": "Ajouter une variété",
+    "name": "Nom",
+    "type": "Type",
+    "floweringTime": "Temps de floraison (jours)",
+    "expectedHarvest": "Récolte prévue (g)",
+    "description": "Description",
+    "actions": "Actions",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "createVariety": "Créer une variété",
+    "editVariety": "Modifier la variété"
+  },
+  "cultivationSessions": {
+    "title": "Sessions de culture",
+    "startSession": "Démarrer une session",
+    "endSession": "Terminer la session",
+    "name": "Nom",
+    "startDate": "Date de début",
+    "endDate": "Date de fin",
+    "varieties": "Variétés",
+    "actions": "Actions",
+    "details": "Détails",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "selectVarieties": "Sélectionner les variétés",
+    "sessionDetails": "Détails de la session",
+    "estimatedHarvest": "Récolte estimée",
+    "noVarietiesSelected": "Aucune variété sélectionnée",
+    "sessionEnded": "Session terminée",
+    "sessionActive": "Session active",
+    "createSession": "Créer une session",
+    "editSession": "Modifier la session"
   },
   "tasks": {
-    "title": "Gestion des tâches",
-    "addColumn": "Ajouter une colonne",
+    "title": "Tâches",
     "addTask": "Ajouter une tâche",
     "editTask": "Modifier la tâche",
     "deleteTask": "Supprimer la tâche",
+    "addColumn": "Ajouter une colonne",
     "editColumn": "Modifier la colonne",
     "deleteColumn": "Supprimer la colonne",
-    "taskTitle": "Titre de la tâche",
-    "taskDescription": "Description",
-    "taskPriority": "Priorité",
-    "taskDueDate": "Date d'échéance",
-    "taskLabels": "Étiquettes",
-    "save": "Enregistrer",
-    "cancel": "Annuler",
+    "emptyBoard": "Aucune colonne. Ajoutez-en une pour commencer.",
+    "emptyColumn": "Aucune tâche. Ajoutez-en une pour commencer.",
+    "taskUpdated": "Tâche mise à jour avec succès",
+    "taskAdded": "Nouvelle tâche ajoutée",
+    "taskDeleted": "Tâche supprimée",
+    "taskMoved": "Tâche déplacée",
+    "columnUpdated": "Colonne mise à jour",
+    "columnAdded": "Nouvelle colonne ajoutée",
+    "columnDeleted": "Colonne supprimée",
+    "columns": {
+      "todo": "À faire",
+      "inProgress": "En cours",
+      "done": "Terminé"
+    },
     "priorities": {
       "low": "Faible",
       "medium": "Moyenne",
       "high": "Élevée"
     },
-    "statuses": {
-      "todo": "À faire",
-      "inProgress": "En cours",
-      "done": "Terminé"
+    "newTask": {
+      "title": "Titre de la tâche",
+      "description": "Description",
+      "priority": "Priorité",
+      "dueDate": "Date d'échéance",
+      "labels": "Étiquettes",
+      "addLabel": "Ajouter une étiquette"
     },
-    "emptyBoard": "Aucune tâche pour le moment. Commencez par ajouter une colonne.",
-    "emptyColumn": "Aucune tâche dans cette colonne."
+    "column": {
+      "title": "Titre de la colonne"
+    }
   }
 }

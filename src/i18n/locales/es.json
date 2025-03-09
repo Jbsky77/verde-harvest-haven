@@ -1,4 +1,3 @@
-
 {
   "common": {
     "dashboard": "Panel de control",
@@ -105,31 +104,42 @@
     "es": "Español"
   },
   "tasks": {
-    "title": "Gestión de tareas",
-    "addColumn": "Añadir columna",
+    "title": "Tareas",
     "addTask": "Añadir tarea",
     "editTask": "Editar tarea",
     "deleteTask": "Eliminar tarea",
+    "addColumn": "Añadir columna",
     "editColumn": "Editar columna",
     "deleteColumn": "Eliminar columna",
-    "taskTitle": "Título de la tarea",
-    "taskDescription": "Descripción",
-    "taskPriority": "Prioridad",
-    "taskDueDate": "Fecha de vencimiento",
-    "taskLabels": "Etiquetas",
-    "save": "Guardar",
-    "cancel": "Cancelar",
+    "emptyBoard": "No hay columnas. Añade una para empezar.",
+    "emptyColumn": "No hay tareas. Añade una para empezar.",
+    "taskUpdated": "Tarea actualizada con éxito",
+    "taskAdded": "Nueva tarea añadida",
+    "taskDeleted": "Tarea eliminada",
+    "taskMoved": "Tarea movida",
+    "columnUpdated": "Columna actualizada",
+    "columnAdded": "Nueva columna añadida",
+    "columnDeleted": "Columna eliminada",
+    "columns": {
+      "todo": "Por hacer",
+      "inProgress": "En progreso",
+      "done": "Terminado"
+    },
     "priorities": {
       "low": "Baja",
       "medium": "Media",
       "high": "Alta"
     },
-    "statuses": {
-      "todo": "Por hacer",
-      "inProgress": "En progreso",
-      "done": "Completada"
+    "newTask": {
+      "title": "Título de la tarea",
+      "description": "Descripción",
+      "priority": "Prioridad",
+      "dueDate": "Fecha límite",
+      "labels": "Etiquetas",
+      "addLabel": "Añadir etiqueta"
     },
-    "emptyBoard": "No hay tareas aún. Comience añadiendo una columna.",
-    "emptyColumn": "No hay tareas en esta columna."
+    "column": {
+      "title": "Título de la columna"
+    }
   }
 }

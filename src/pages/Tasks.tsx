@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
 import { Plus } from 'lucide-react';
+import { DragDropContext, DropResult } from 'react-beautiful-dnd';
 import { TaskBoard, TaskColumn as TaskColumnType, Task } from '@/types/tasks';
 import { Button } from '@/components/ui/button';
 import SideNavigation from '@/components/SideNavigation';
@@ -107,13 +108,13 @@ const Tasks = () => {
           // Update existing task
           newBoard.columns[columnIndex].tasks[taskIndex] = task;
           toast({
-            description: "Tâche mise à jour avec succès",
+            description: t('tasks.taskUpdated'),
           });
         } else {
           // Add new task
           newBoard.columns[columnIndex].tasks.push(task);
           toast({
-            description: "Nouvelle tâche ajoutée",
+            description: t('tasks.taskAdded'),
           });
         }
       }
@@ -137,7 +138,7 @@ const Tasks = () => {
     });
     
     toast({
-      description: "Tâche supprimée",
+      description: t('tasks.taskDeleted'),
     });
   };
   
@@ -151,7 +152,7 @@ const Tasks = () => {
         if (columnIndex !== -1) {
           newBoard.columns[columnIndex].title = title;
           toast({
-            description: "Colonne mise à jour",
+            description: t('tasks.columnUpdated'),
           });
         }
       } else {
@@ -162,7 +163,7 @@ const Tasks = () => {
           tasks: []
         });
         toast({
-          description: "Nouvelle colonne ajoutée",
+          description: t('tasks.columnAdded'),
         });
       }
       
@@ -178,7 +179,67 @@ const Tasks = () => {
     });
     
     toast({
-      description: "Colonne supprimée",
+      description: t('tasks.columnDeleted'),
+    });
+  };
+
+  const handleDragEnd = (result: DropResult) => {
+    const { destination, source, draggableId } = result;
+
+    // If there's no destination or if the item was dropped in the same place
+    if (!destination || 
+        (destination.droppableId === source.droppableId && 
+         destination.index === source.index)) {
+      return;
+    }
+
+    // Find source and destination columns
+    const sourceColumn = board.columns.find(col => col.id === source.droppableId);
+    const destColumn = board.columns.find(col => col.id === destination.droppableId);
+
+    if (!sourceColumn || !destColumn) return;
+
+    // Find the task being moved
+    const task = sourceColumn.tasks.find(task => task.id === draggableId);
+    if (!task) return;
+
+    setBoard(prevBoard => {
+      const newBoard = { ...prevBoard };
+      
+      // Find column indices
+      const sourceColumnIndex = newBoard.columns.findIndex(col => col.id === source.droppableId);
+      const destColumnIndex = newBoard.columns.findIndex(col => col.id === destination.droppableId);
+      
+      if (sourceColumnIndex === -1 || destColumnIndex === -1) return prevBoard;
+      
+      // Create a new task object with updated status if moving between columns
+      const newTask = { ...task };
+      if (source.droppableId !== destination.droppableId) {
+        // Update the task status based on the destination column
+        if (destColumn.title === t('tasks.columns.todo')) {
+          newTask.status = 'todo';
+        } else if (destColumn.title === t('tasks.columns.inProgress')) {
+          newTask.status = 'inProgress';
+        } else if (destColumn.title === t('tasks.columns.done')) {
+          newTask.status = 'done';
+        }
+      }
+      
+      // Remove from source
+      newBoard.columns[sourceColumnIndex].tasks = newBoard.columns[sourceColumnIndex].tasks.filter(
+        t => t.id !== draggableId
+      );
+      
+      // Add to destination
+      const newTasks = Array.from(newBoard.columns[destColumnIndex].tasks);
+      newTasks.splice(destination.index, 0, newTask);
+      newBoard.columns[destColumnIndex].tasks = newTasks;
+      
+      return newBoard;
+    });
+
+    toast({
+      description: t('tasks.taskMoved'),
     });
   };
   
@@ -197,25 +258,27 @@ const Tasks = () => {
           </div>
           
           <ScrollArea className="h-[calc(100vh-12rem)]">
-            <div className="flex gap-4 pb-6">
-              {board.columns.length > 0 ? (
-                board.columns.map(column => (
-                  <TaskColumn
-                    key={column.id}
-                    column={column}
-                    onAddTask={openAddTaskDialog}
-                    onEditTask={openEditTaskDialog}
-                    onDeleteTask={handleDeleteTask}
-                    onEditColumn={openEditColumnDialog}
-                    onDeleteColumn={handleDeleteColumn}
-                  />
-                ))
-              ) : (
-                <div className="w-full flex justify-center items-center text-gray-500 p-8">
-                  {t('tasks.emptyBoard')}
-                </div>
-              )}
-            </div>
+            <DragDropContext onDragEnd={handleDragEnd}>
+              <div className="flex gap-4 pb-6">
+                {board.columns.length > 0 ? (
+                  board.columns.map(column => (
+                    <TaskColumn
+                      key={column.id}
+                      column={column}
+                      onAddTask={openAddTaskDialog}
+                      onEditTask={openEditTaskDialog}
+                      onDeleteTask={handleDeleteTask}
+                      onEditColumn={openEditColumnDialog}
+                      onDeleteColumn={handleDeleteColumn}
+                    />
+                  ))
+                ) : (
+                  <div className="w-full flex justify-center items-center text-gray-500 p-8">
+                    {t('tasks.emptyBoard')}
+                  </div>
+                )}
+              </div>
+            </DragDropContext>
           </ScrollArea>
         </div>
       </main>
