@@ -1,5 +1,5 @@
 
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 import SideNavigation from "@/components/SideNavigation";
 import Dashboard from "@/components/Dashboard";
 import { useCultivation } from "@/context/CultivationContext";
@@ -12,9 +12,16 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useLocation } from "react-router-dom";
 
 const Index = () => {
-  const { spaces, selectedSpaceId } = useCultivation();
+  const { spaces, selectedSpaceId, setSelectedSpaceId } = useCultivation();
   const location = useLocation();
   const isSpacesRoute = location.pathname === "/spaces";
+  
+  // Ensure we always have a selected space
+  useEffect(() => {
+    if (!selectedSpaceId && spaces.length > 0) {
+      setSelectedSpaceId(spaces[0].id);
+    }
+  }, [spaces, selectedSpaceId, setSelectedSpaceId]);
   
   const selectedSpace = useMemo(() => {
     return spaces.find(space => space.id === selectedSpaceId) || spaces[0];
@@ -39,12 +46,15 @@ const Index = () => {
               <div className="md:col-span-2 space-y-6">
                 {selectedSpace && (
                   <ScrollArea className="h-[calc(100vh-20rem)] pr-4">
-                    <PlantsList space={selectedSpace} />
+                    <PlantsList key={`plant-list-${selectedSpaceId}`} space={selectedSpace} />
                   </ScrollArea>
                 )}
               </div>
               
               <div className="space-y-6">
+                {selectedSpace && (
+                  <BatchActions space={selectedSpace} />
+                )}
                 <AlertPanel onClose={() => {}} />
               </div>
             </div>

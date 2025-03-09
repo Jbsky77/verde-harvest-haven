@@ -1,14 +1,16 @@
+
 import { useState } from "react";
 import { CultivationSpace, Plant, PlantState } from "@/types";
 import { useCultivation } from "@/context/CultivationContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Leaf, Filter, ArrowLeft, ArrowRight, Sprout, Flower } from "lucide-react";
+import { Filter, ArrowLeft, ArrowRight, Sprout, Flower } from "lucide-react";
 import PlantDetails from "@/components/PlantDetails";
 import { cn } from "@/lib/utils";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { useTranslation } from "react-i18next";
 
 type PlantCellProps = {
   plant: Plant;
@@ -53,6 +55,7 @@ type PlantGridProps = {
 };
 
 const PlantGrid = ({ space }: PlantGridProps) => {
+  const { t } = useTranslation();
   const [selectedPlant, setSelectedPlant] = useState<Plant | null>(null);
   const { 
     updatePlant, 
@@ -67,6 +70,7 @@ const PlantGrid = ({ space }: PlantGridProps) => {
   
   const handlePlantUpdate = (updatedPlant: Plant) => {
     updatePlant(updatedPlant);
+    setSelectedPlant(null); // Close dialog after update
   };
   
   const closeDialog = () => {
@@ -92,7 +96,7 @@ const PlantGrid = ({ space }: PlantGridProps) => {
   };
   
   const RoomIcon = space.roomType === "growth" ? Sprout : Flower;
-  const roomLabel = space.roomType === "growth" ? "Croissance" : "Floraison";
+  const roomLabel = space.roomType === "growth" ? t('space.growthRoom') : t('space.floweringRoom');
   
   return (
     <div className="space-y-4">
@@ -103,11 +107,11 @@ const PlantGrid = ({ space }: PlantGridProps) => {
               "h-5 w-5",
               space.roomType === "growth" ? "text-green-600" : "text-purple-600"
             )} />
-            Plantes de {roomLabel}
+            {t('plants.title')} {roomLabel}
           </h2>
           <Button variant="outline" size="sm" className="flex items-center gap-1">
             <Filter className="h-4 w-4" />
-            Filtres
+            {t('space.filters')}
           </Button>
         </div>
 
@@ -119,7 +123,7 @@ const PlantGrid = ({ space }: PlantGridProps) => {
             className="flex items-center gap-1"
           >
             <ArrowLeft className="h-4 w-4" />
-            Espace précédent
+            {t('space.previousSpace')}
           </Button>
           
           <div className="flex gap-2">
@@ -142,7 +146,7 @@ const PlantGrid = ({ space }: PlantGridProps) => {
             onClick={nextSpace}
             className="flex items-center gap-1"
           >
-            Espace suivant
+            {t('space.nextSpace')}
             <ArrowRight className="h-4 w-4" />
           </Button>
         </div>
@@ -150,20 +154,20 @@ const PlantGrid = ({ space }: PlantGridProps) => {
 
       <Card className="shadow-sm">
         <CardHeader className="py-3 px-4 bg-accent/30">
-          <CardTitle className="text-base font-medium">Liste des plantes (Espace {space.id})</CardTitle>
+          <CardTitle className="text-base font-medium">{t('plants.list')} ({t('space.space')} {space.id})</CardTitle>
         </CardHeader>
         <CardContent className="p-4">
           <ScrollArea className="h-[500px]">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Ligne</TableHead>
-                  <TableHead>Colonne</TableHead>
-                  <TableHead>Variété</TableHead>
-                  <TableHead>État</TableHead>
+                  <TableHead>{t('plants.row')}</TableHead>
+                  <TableHead>{t('plants.column')}</TableHead>
+                  <TableHead>{t('plants.variety')}</TableHead>
+                  <TableHead>{t('plants.state')}</TableHead>
                   <TableHead>EC</TableHead>
                   <TableHead>pH</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead>{t('common.actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -196,7 +200,7 @@ const PlantGrid = ({ space }: PlantGridProps) => {
                         variant="outline" 
                         onClick={() => handlePlantClick(plant)}
                       >
-                        Détails
+                        {t('common.details')}
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -210,7 +214,7 @@ const PlantGrid = ({ space }: PlantGridProps) => {
       <Dialog open={!!selectedPlant} onOpenChange={(open) => !open && closeDialog()}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Détails de la plante</DialogTitle>
+            <DialogTitle>{t('plants.details')}</DialogTitle>
           </DialogHeader>
           {selectedPlant && (
             <PlantDetails 

@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Plant, CultivationSpace } from "@/types";
 import { useCultivation } from "@/context/CultivationContext";
@@ -8,12 +9,14 @@ import PlantDetails from "@/components/PlantDetails";
 import PlantRow from "./PlantRow";
 import SpaceNavigation from "./SpaceNavigation";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 type PlantsListProps = {
   space: CultivationSpace;
 };
 
 const PlantsList = ({ space }: PlantsListProps) => {
+  const { t } = useTranslation();
   const [selectedPlant, setSelectedPlant] = useState<Plant | null>(null);
   const [expandedRows, setExpandedRows] = useState<number[]>([]);
   const { updatePlant, spaces, setSelectedSpaceId } = useCultivation();
@@ -24,6 +27,7 @@ const PlantsList = ({ space }: PlantsListProps) => {
   
   const handlePlantUpdate = (updatedPlant: Plant) => {
     updatePlant(updatedPlant);
+    setSelectedPlant(null); // Close dialog after update
   };
   
   const closeDialog = () => {
@@ -54,7 +58,7 @@ const PlantsList = ({ space }: PlantsListProps) => {
   }, {} as Record<number, Plant[]>);
   
   const RoomIcon = space.roomType === "growth" ? Sprout : Flower;
-  const roomLabel = space.roomType === "growth" ? "Croissance" : "Floraison";
+  const roomLabel = space.roomType === "growth" ? t('space.growthRoom') : t('space.floweringRoom');
   
   return (
     <div className="space-y-4">
@@ -65,11 +69,11 @@ const PlantsList = ({ space }: PlantsListProps) => {
               "h-5 w-5",
               space.roomType === "growth" ? "text-green-600" : "text-purple-600"
             )} />
-            Plantes de {roomLabel} - {space.name}
+            {roomLabel} - {space.name}
           </h2>
           <Button variant="outline" size="sm" className="flex items-center gap-1">
             <Filter className="h-4 w-4" />
-            Filtres
+            {t('space.filters')}
           </Button>
         </div>
 
@@ -94,7 +98,7 @@ const PlantsList = ({ space }: PlantsListProps) => {
       <Dialog open={!!selectedPlant} onOpenChange={(open) => !open && closeDialog()}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Détails de la plante</DialogTitle>
+            <DialogTitle>{t('plants.details')}</DialogTitle>
           </DialogHeader>
           {selectedPlant && (
             <PlantDetails 

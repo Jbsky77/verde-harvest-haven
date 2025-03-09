@@ -1,3 +1,4 @@
+
 import { useCultivation } from "@/context/CultivationContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -5,28 +6,21 @@ import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CultivationSpace, PlantState } from "@/types";
 import { toast } from "@/components/ui/use-toast";
-
-const stateOptions: { value: PlantState; label: string }[] = [
-  { value: "germination", label: "Germination" },
-  { value: "growth", label: "Croissance" },
-  { value: "flowering", label: "Floraison" },
-  { value: "drying", label: "Séchage" },
-  { value: "harvested", label: "Récolté" }
-];
+import { useTranslation } from "react-i18next";
 
 interface BatchActionsProps {
   space: CultivationSpace;
 }
 
 const BatchActions = ({ space }: BatchActionsProps) => {
+  const { t } = useTranslation();
   const { 
     selectedSpaceId, 
     updatePlantsInSpace, 
     updatePlantsInRow, 
-    getSpaceById,
     addAlert,
     setSelectedPlantIds,
     selectedPlantIds,
@@ -40,7 +34,30 @@ const BatchActions = ({ space }: BatchActionsProps) => {
   const [state, setState] = useState<PlantState>("germination");
   const [varietyId, setVarietyId] = useState<string>("");
   
+  // Update selected row when space changes to make sure it's valid
+  useEffect(() => {
+    if (space && space.rows > 0) {
+      setSelectedRow(1);
+    }
+  }, [space]);
+  
+  // Reset form values when space changes
+  useEffect(() => {
+    setEc(1.2);
+    setPh(6.0);
+    setState("germination");
+    setVarietyId("");
+  }, [selectedSpaceId]);
+  
   if (!selectedSpaceId) return null;
+  
+  const stateOptions: { value: PlantState; label: string }[] = [
+    { value: "germination", label: t('tasks.states.germination') },
+    { value: "growth", label: t('tasks.states.growth') },
+    { value: "flowering", label: t('tasks.states.flowering') },
+    { value: "drying", label: t('tasks.states.drying') },
+    { value: "harvested", label: t('tasks.states.harvested') }
+  ];
   
   const handleApplyToSpace = () => {
     updatePlantsInSpace(selectedSpaceId, {
@@ -50,13 +67,13 @@ const BatchActions = ({ space }: BatchActionsProps) => {
     
     addAlert({
       type: "success",
-      message: `EC et pH mis à jour pour toutes les plantes de l'Espace ${selectedSpaceId}`,
+      message: t('plants.alerts.spaceUpdated', { spaceId: selectedSpaceId }),
       spaceId: selectedSpaceId
     });
     
     toast({
-      title: "Mise à jour appliquée",
-      description: `EC et pH mis à jour pour toutes les plantes de l'Espace ${selectedSpaceId}`,
+      title: t('common.updateApplied'),
+      description: t('plants.alerts.spaceUpdated', { spaceId: selectedSpaceId }),
       variant: "success"
     });
   };
@@ -71,13 +88,13 @@ const BatchActions = ({ space }: BatchActionsProps) => {
     
     addAlert({
       type: "success",
-      message: `EC et pH mis à jour pour la Ligne ${selectedRow} de l'Espace ${selectedSpaceId}`,
+      message: t('plants.alerts.rowUpdated', { row: selectedRow, spaceId: selectedSpaceId }),
       spaceId: selectedSpaceId
     });
     
     toast({
-      title: "Mise à jour appliquée",
-      description: `EC et pH mis à jour pour la Ligne ${selectedRow} de l'Espace ${selectedSpaceId}`,
+      title: t('common.updateApplied'),
+      description: t('plants.alerts.rowUpdated', { row: selectedRow, spaceId: selectedSpaceId }),
       variant: "success"
     });
   };
@@ -85,8 +102,8 @@ const BatchActions = ({ space }: BatchActionsProps) => {
   const handleUpdateSelectedPlants = () => {
     if (selectedPlantIds.length === 0) {
       toast({
-        title: "Aucune plante sélectionnée",
-        description: "Veuillez sélectionner des plantes à mettre à jour",
+        title: t('plants.errors.noSelection'),
+        description: t('plants.errors.selectPlants'),
         variant: "destructive"
       });
       return;
@@ -96,13 +113,13 @@ const BatchActions = ({ space }: BatchActionsProps) => {
     
     addAlert({
       type: "success",
-      message: `État mis à jour pour ${selectedPlantIds.length} plantes sélectionnées`,
+      message: t('plants.alerts.selectionUpdated', { count: selectedPlantIds.length }),
       spaceId: selectedSpaceId
     });
     
     toast({
-      title: "Mise à jour appliquée",
-      description: `État mis à jour pour ${selectedPlantIds.length} plantes sélectionnées`,
+      title: t('common.updateApplied'),
+      description: t('plants.alerts.selectionUpdated', { count: selectedPlantIds.length }),
       variant: "success"
     });
     
@@ -113,13 +130,13 @@ const BatchActions = ({ space }: BatchActionsProps) => {
   
   return (
     <div className="p-4 border rounded-lg bg-white">
-      <h3 className="text-lg font-medium mb-4">Actions groupées</h3>
+      <h3 className="text-lg font-medium mb-4">{t('plants.batchActions')}</h3>
       
       <Tabs defaultValue="space">
         <TabsList className="grid grid-cols-3 mb-4">
-          <TabsTrigger value="space">Espace entier</TabsTrigger>
-          <TabsTrigger value="row">Par ligne</TabsTrigger>
-          <TabsTrigger value="selected">Sélection</TabsTrigger>
+          <TabsTrigger value="space">{t('space.entireSpace')}</TabsTrigger>
+          <TabsTrigger value="row">{t('plants.byRow')}</TabsTrigger>
+          <TabsTrigger value="selected">{t('plants.selection')}</TabsTrigger>
         </TabsList>
         
         <TabsContent value="space" className="space-y-4">
@@ -154,24 +171,24 @@ const BatchActions = ({ space }: BatchActionsProps) => {
           </div>
           
           <Button onClick={handleApplyToSpace} className="w-full">
-            Appliquer à tout l'espace
+            {t('plants.applyToSpace')}
           </Button>
         </TabsContent>
         
         <TabsContent value="row" className="space-y-4">
           <div>
-            <Label htmlFor="row-select" className="mb-2 block">Ligne</Label>
+            <Label htmlFor="row-select" className="mb-2 block">{t('plants.row')}</Label>
             <Select
               value={selectedRow.toString()}
               onValueChange={(value) => setSelectedRow(parseInt(value))}
             >
               <SelectTrigger id="row-select">
-                <SelectValue placeholder="Sélectionner une ligne" />
+                <SelectValue placeholder={t('plants.selectRow')} />
               </SelectTrigger>
               <SelectContent>
                 {rowOptions.map((row) => (
                   <SelectItem key={row} value={row.toString()}>
-                    Ligne {row}
+                    {t('plants.rowNumber', { number: row })}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -209,25 +226,25 @@ const BatchActions = ({ space }: BatchActionsProps) => {
           </div>
           
           <Button onClick={handleApplyToRow} className="w-full">
-            Appliquer à la ligne {selectedRow}
+            {t('plants.applyToRow', { row: selectedRow })}
           </Button>
         </TabsContent>
         
         <TabsContent value="selected" className="space-y-4">
           <div>
             <Label className="mb-2 block">
-              {selectedPlantIds.length} plantes sélectionnées
+              {t('plants.selectedCount', { count: selectedPlantIds.length })}
             </Label>
           </div>
           
           <div>
-            <Label htmlFor="selected-state" className="mb-2 block">État</Label>
+            <Label htmlFor="selected-state" className="mb-2 block">{t('plants.state')}</Label>
             <Select
               value={state}
               onValueChange={(value: PlantState) => setState(value)}
             >
               <SelectTrigger id="selected-state">
-                <SelectValue placeholder="Sélectionner un état" />
+                <SelectValue placeholder={t('plants.selectState')} />
               </SelectTrigger>
               <SelectContent>
                 {stateOptions.map(option => (
@@ -243,13 +260,13 @@ const BatchActions = ({ space }: BatchActionsProps) => {
           </div>
           
           <div>
-            <Label htmlFor="selected-variety" className="mb-2 block">Variété</Label>
+            <Label htmlFor="selected-variety" className="mb-2 block">{t('plants.variety')}</Label>
             <Select
               value={varietyId}
               onValueChange={setVarietyId}
             >
               <SelectTrigger id="selected-variety">
-                <SelectValue placeholder="Sélectionner une variété" />
+                <SelectValue placeholder={t('plants.selectVariety')} />
               </SelectTrigger>
               <SelectContent>
                 {varieties.map(variety => (
@@ -275,7 +292,7 @@ const BatchActions = ({ space }: BatchActionsProps) => {
             className="w-full"
             disabled={selectedPlantIds.length === 0}
           >
-            Appliquer aux plantes sélectionnées
+            {t('plants.applyToSelected')}
           </Button>
         </TabsContent>
       </Tabs>
