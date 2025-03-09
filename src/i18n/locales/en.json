@@ -19,7 +19,8 @@
     "next": "Next",
     "previous": "Previous",
     "space": "Space",
-    "plants": "Plants"
+    "plants": "Plants",
+    "tasks": "Tasks"
   },
   "dashboard": {
     "tabs": {
@@ -102,5 +103,33 @@
     "fr": "Français",
     "en": "English",
     "es": "Español"
+  },
+  "tasks": {
+    "title": "Task Management",
+    "addColumn": "Add Column",
+    "addTask": "Add Task",
+    "editTask": "Edit Task",
+    "deleteTask": "Delete Task",
+    "editColumn": "Edit Column",
+    "deleteColumn": "Delete Column",
+    "taskTitle": "Task Title",
+    "taskDescription": "Description",
+    "taskPriority": "Priority",
+    "taskDueDate": "Due Date",
+    "taskLabels": "Labels",
+    "save": "Save",
+    "cancel": "Cancel",
+    "priorities": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High"
+    },
+    "statuses": {
+      "todo": "To Do",
+      "inProgress": "In Progress",
+      "done": "Done"
+    },
+    "emptyBoard": "No tasks yet. Start by adding a column.",
+    "emptyColumn": "No tasks in this column."
   }
 }

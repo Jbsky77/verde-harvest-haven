@@ -19,7 +19,8 @@
     "next": "Suivant",
     "previous": "Précédent",
     "space": "Espace",
-    "plants": "Plants"
+    "plants": "Plants",
+    "tasks": "Tâches"
   },
   "dashboard": {
     "tabs": {
@@ -102,5 +103,33 @@
     "fr": "Français",
     "en": "English",
     "es": "Español"
+  },
+  "tasks": {
+    "title": "Gestion des tâches",
+    "addColumn": "Ajouter une colonne",
+    "addTask": "Ajouter une tâche",
+    "editTask": "Modifier la tâche",
+    "deleteTask": "Supprimer la tâche",
+    "editColumn": "Modifier la colonne",
+    "deleteColumn": "Supprimer la colonne",
+    "taskTitle": "Titre de la tâche",
+    "taskDescription": "Description",
+    "taskPriority": "Priorité",
+    "taskDueDate": "Date d'échéance",
+    "taskLabels": "Étiquettes",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "priorities": {
+      "low": "Faible",
+      "medium": "Moyenne",
+      "high": "Élevée"
+    },
+    "statuses": {
+      "todo": "À faire",
+      "inProgress": "En cours",
+      "done": "Terminé"
+    },
+    "emptyBoard": "Aucune tâche pour le moment. Commencez par ajouter une colonne.",
+    "emptyColumn": "Aucune tâche dans cette colonne."
   }
 }

@@ -7,7 +7,8 @@ import {
   Sprout, 
   Settings,
   ChevronDown,
-  Flower
+  Flower,
+  ListChecks
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -94,6 +95,7 @@ const SideNavigation = () => {
     if (currentPath === "/fertilizers" || currentPath.startsWith("/fertilizers")) return "fertilizers";
     if (currentPath === "/plants" || currentPath.startsWith("/plants")) return "plants";
     if (currentPath === "/settings" || currentPath.startsWith("/settings")) return "settings";
+    if (currentPath === "/tasks" || currentPath.startsWith("/tasks")) return "tasks";
     return "spaces"; // default
   };
 
@@ -160,6 +162,12 @@ const SideNavigation = () => {
               label={t('common.varieties')}
               to="/plants"
               active={page === "plants"}
+            />
+            <NavItem
+              icon={<ListChecks className="h-4 w-4" />}
+              label={t('common.tasks')}
+              to="/tasks"
+              active={page === "tasks"}
             />
             <NavItem
               icon={<Settings className="h-4 w-4" />}
