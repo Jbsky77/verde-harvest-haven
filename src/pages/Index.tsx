@@ -3,19 +3,11 @@ import { useMemo, useEffect } from "react";
 import SideNavigation from "@/components/SideNavigation";
 import Dashboard from "@/components/Dashboard";
 import { useCultivation } from "@/context/CultivationContext";
-import { PlantsList } from "@/components/plants";
-import SpaceOverview from "@/components/space-overview";
-import PlantGrid from "@/components/PlantGrid";
-import BatchActions from "@/components/BatchActions";
 import AlertPanel from "@/components/AlertPanel";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { useLocation } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const Index = () => {
   const { spaces, selectedSpaceId, setSelectedSpaceId, currentSession } = useCultivation();
-  const location = useLocation();
-  const isSpacesRoute = location.pathname === "/spaces";
   
   // Ensure we always have a selected space
   useEffect(() => {
@@ -36,25 +28,43 @@ const Index = () => {
         <div className="container py-6 space-y-6 flex-1">
           <Dashboard />
           
-          {isSpacesRoute && (
-            <div className="animate-fade-in">
-              <SpaceOverview />
-            </div>
-          )}
-          
-          {isSpacesRoute && currentSession && currentSession.isActive && selectedSpace && (
+          {currentSession && currentSession.isActive && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="md:col-span-2 space-y-6">
-                <ScrollArea className="h-[calc(100vh-20rem)] pr-4">
-                  <PlantsList key={`plant-list-${selectedSpaceId}`} space={selectedSpace} />
-                </ScrollArea>
+              <div className="md:col-span-2">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Session de culture active</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p>Nom de la session: {currentSession.name}</p>
+                    <p>Date de début: {new Date(currentSession.startDate).toLocaleDateString()}</p>
+                    {currentSession.endDate && (
+                      <p>Date de fin: {new Date(currentSession.endDate).toLocaleDateString()}</p>
+                    )}
+                  </CardContent>
+                </Card>
               </div>
               
               <div className="space-y-6">
-                <BatchActions space={selectedSpace} />
                 <AlertPanel onClose={() => {}} />
               </div>
             </div>
+          )}
+          
+          {!currentSession || !currentSession.isActive && (
+            <Card className="w-full text-center p-8 bg-gradient-to-br from-gray-50 to-gray-100">
+              <CardHeader>
+                <CardTitle>Aucune session active</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground mb-4">
+                  Vous devez démarrer une session de culture pour gérer votre application.
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Utilisez le bouton "Nouvelle session" dans le tableau de bord pour commencer.
+                </p>
+              </CardContent>
+            </Card>
           )}
         </div>
       </main>

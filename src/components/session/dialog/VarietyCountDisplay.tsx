@@ -1,5 +1,4 @@
 
-import { useState, useEffect } from 'react';
 import { VarietyCount } from "@/services/sessions/types";
 import { PlantVariety } from "@/types";
 import { Badge } from "@/components/ui/badge";
