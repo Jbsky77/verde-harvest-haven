@@ -1,15 +1,17 @@
 
 import { supabase } from "@/integrations/supabase/client";
+import { VarietyCount } from "./types";
 
 export class SessionCreationService {
   // Créer une nouvelle session
   static async createSession(
     name: string, 
     startDate: Date, 
-    selectedVarieties?: string[]
+    selectedVarieties?: string[],
+    varietyCounts?: VarietyCount[]
   ): Promise<string> {
     try {
-      console.log("Creating new session:", { name, startDate, selectedVarieties });
+      console.log("Creating new session:", { name, startDate, selectedVarieties, varietyCounts });
       
       // Insérer la session
       const { data: sessionData, error: sessionError } = await supabase
@@ -17,7 +19,8 @@ export class SessionCreationService {
         .insert({
           name,
           start_date: startDate.toISOString(),
-          is_active: true
+          is_active: true,
+          variety_counts: varietyCounts ? JSON.stringify(varietyCounts) : null
         })
         .select('id')
         .single();

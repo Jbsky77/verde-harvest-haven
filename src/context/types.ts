@@ -1,6 +1,6 @@
 
 import { Plant, PlantVariety, CultivationSpace, Alert, PlantState, Fertilizer, RoomType } from '@/types';
-import { SessionWithVarieties } from '@/services/SessionService';
+import { SessionWithVarieties, VarietyCount } from '@/services/sessions/types';
 
 export type CultivationSession = SessionWithVarieties;
 
@@ -41,7 +41,7 @@ export type CultivationContextType = {
   addVariety: (variety: Omit<PlantVariety, 'id'>) => void;
   updateVariety: (variety: PlantVariety) => void;
   deleteVariety: (id: string) => void;
-  startCultivationSession: (name: string, startDate: Date, selectedVarieties?: string[]) => Promise<string>;
+  startCultivationSession: (name: string, startDate: Date, selectedVarieties?: string[], varietyCounts?: VarietyCount[]) => Promise<string>;
   endCultivationSession: (sessionId: string) => void;
   setCurrentSession: (sessionId: string | null) => void;
   getSessionById: (id: string) => Promise<CultivationSession | undefined>;

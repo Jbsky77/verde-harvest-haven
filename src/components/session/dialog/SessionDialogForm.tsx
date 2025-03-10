@@ -6,6 +6,8 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useCultivation } from "@/context/CultivationContext";
 import { VarietySelector } from "./VarietySelector";
+import { VarietyCountInput } from "./VarietyCountInput";
+import { VarietyCount } from "@/services/sessions/types";
 
 interface SessionDialogFormProps {
   isEditing: boolean;
@@ -14,6 +16,7 @@ interface SessionDialogFormProps {
     name: string;
     startDate: Date;
     selectedVarieties?: string[];
+    varietyCounts?: VarietyCount[];
   } | null;
   onOpenChange: (open: boolean) => void;
   onSessionCreated?: (sessionId: string) => void;
@@ -28,6 +31,7 @@ export const SessionDialogForm = ({
   const [sessionName, setSessionName] = useState("");
   const [sessionDateText, setSessionDateText] = useState("");
   const [selectedVarieties, setSelectedVarieties] = useState<string[]>([]);
+  const [varietyCounts, setVarietyCounts] = useState<VarietyCount[]>([]);
   const [dateError, setDateError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
@@ -50,6 +54,7 @@ export const SessionDialogForm = ({
       setSessionDateText(`${day}/${month}/${year}`);
       
       setSelectedVarieties(currentSession.selectedVarieties || []);
+      setVarietyCounts(currentSession.varietyCounts || []);
     } else {
       // Set today's date as default for new sessions
       const today = new Date();
@@ -66,6 +71,7 @@ export const SessionDialogForm = ({
       setSessionName("");
       setSessionDateText("");
       setSelectedVarieties([]);
+      setVarietyCounts([]);
       setDateError(null);
     }
   };
@@ -100,7 +106,8 @@ export const SessionDialogForm = ({
             name: sessionName,
             startDate: sessionStartDate,
             isActive: true,
-            selectedVarieties
+            selectedVarieties,
+            varietyCounts
           });
           
           toast({
@@ -111,8 +118,8 @@ export const SessionDialogForm = ({
         } else {
           // Pour une nouvelle session
           try {
-            console.log("Starting cultivation session with:", { sessionName, sessionStartDate, selectedVarieties });
-            const sessionId = await startCultivationSession(sessionName, sessionStartDate, selectedVarieties);
+            console.log("Starting cultivation session with:", { sessionName, sessionStartDate, selectedVarieties, varietyCounts });
+            const sessionId = await startCultivationSession(sessionName, sessionStartDate, selectedVarieties, varietyCounts);
             
             toast({
               title: "Session créée",
@@ -183,6 +190,13 @@ export const SessionDialogForm = ({
           selectedVarieties={selectedVarieties}
           setSelectedVarieties={setSelectedVarieties}
           varieties={varieties}
+        />
+        
+        <VarietyCountInput
+          selectedVarieties={selectedVarieties}
+          varieties={varieties}
+          varietyCounts={varietyCounts}
+          setVarietyCounts={setVarietyCounts}
         />
       </div>
 

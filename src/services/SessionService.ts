@@ -3,9 +3,9 @@ import { SessionRetrievalService } from "./sessions/sessionRetrievalService";
 import { SessionCreationService } from "./sessions/sessionCreationService";
 import { SessionUpdateService } from "./sessions/sessionUpdateService";
 import { SessionDeletionService } from "./sessions/sessionDeletionService";
-import type { SessionWithVarieties } from "./sessions/types";
+import type { SessionWithVarieties, VarietyCount } from "./sessions/types";
 
-export type { SessionWithVarieties };
+export type { SessionWithVarieties, VarietyCount };
 
 export class SessionService {
   // Récupérer toutes les sessions
@@ -17,9 +17,10 @@ export class SessionService {
   static async createSession(
     name: string, 
     startDate: Date, 
-    selectedVarieties?: string[]
+    selectedVarieties?: string[],
+    varietyCounts?: VarietyCount[]
   ): Promise<string> {
-    return SessionCreationService.createSession(name, startDate, selectedVarieties);
+    return SessionCreationService.createSession(name, startDate, selectedVarieties, varietyCounts);
   }
 
   // Mettre à jour une session existante

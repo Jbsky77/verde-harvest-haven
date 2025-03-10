@@ -1,6 +1,7 @@
 
 import { SessionService } from '@/services/SessionService';
 import { CultivationSession } from '../types';
+import { VarietyCount } from '@/services/sessions/types';
 
 export const getSessionCreationOperations = (
   sessions: CultivationSession[],
@@ -8,10 +9,15 @@ export const getSessionCreationOperations = (
   setCurrentSessionState: React.Dispatch<React.SetStateAction<CultivationSession | null>>,
   addAlert: (alert: { type: string; message: string }) => void
 ) => {
-  const startCultivationSession = async (name: string, startDate: Date, selectedVarieties?: string[]): Promise<string> => {
+  const startCultivationSession = async (
+    name: string, 
+    startDate: Date, 
+    selectedVarieties?: string[],
+    varietyCounts?: VarietyCount[]
+  ): Promise<string> => {
     try {
-      console.log("Creating cultivation session:", { name, startDate, selectedVarieties });
-      const sessionId = await SessionService.createSession(name, startDate, selectedVarieties);
+      console.log("Creating cultivation session:", { name, startDate, selectedVarieties, varietyCounts });
+      const sessionId = await SessionService.createSession(name, startDate, selectedVarieties, varietyCounts);
       
       if (!sessionId) {
         throw new Error("Aucun ID de session retourné");
@@ -24,7 +30,8 @@ export const getSessionCreationOperations = (
         name,
         startDate,
         isActive: true,
-        selectedVarieties
+        selectedVarieties,
+        varietyCounts
       };
       
       setSessions(prev => [...prev, newSession]);
