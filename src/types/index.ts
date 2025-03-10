@@ -6,6 +6,7 @@ export type PlantVariety = {
   germinationTime?: number; // en jours
   growthTime?: number; // en jours
   floweringTime?: number; // en jours
+  dryWeight?: number; // poids sec par plant en grammes
 };
 
 export type PlantState = 

@@ -16,7 +16,8 @@ export const getVarietyOperations = (
       id: `var-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       germinationTime: variety.germinationTime ? Number(variety.germinationTime) : undefined,
       growthTime: variety.growthTime ? Number(variety.growthTime) : undefined,
-      floweringTime: variety.floweringTime ? Number(variety.floweringTime) : undefined
+      floweringTime: variety.floweringTime ? Number(variety.floweringTime) : undefined,
+      dryWeight: variety.dryWeight ? Number(variety.dryWeight) : undefined
     };
     
     setVarieties(prev => [...prev, newVariety]);
@@ -32,7 +33,8 @@ export const getVarietyOperations = (
       ...updatedVariety,
       germinationTime: updatedVariety.germinationTime ? Number(updatedVariety.germinationTime) : undefined,
       growthTime: updatedVariety.growthTime ? Number(updatedVariety.growthTime) : undefined,
-      floweringTime: updatedVariety.floweringTime ? Number(updatedVariety.floweringTime) : undefined
+      floweringTime: updatedVariety.floweringTime ? Number(updatedVariety.floweringTime) : undefined,
+      dryWeight: updatedVariety.dryWeight ? Number(updatedVariety.dryWeight) : undefined
     };
     
     setVarieties(prev => 
