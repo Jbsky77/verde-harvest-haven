@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { Alert, Plant, PlantState, PlantVariety, RoomType, CultivationSpace } from '@/types';
 import { SessionService } from '@/services/SessionService';
@@ -44,7 +43,9 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
     updatePlantPH, 
     updatePlantsInSpace,
     updatePlantsInRow,
-    transferPlantToFlowering
+    transferPlantToFlowering,
+    deleteRow,
+    addRow
   } = plantOps;
 
   const fertilizerOps = getFertilizerOperations(fertilizers, setFertilizers, addAlert);
@@ -275,6 +276,8 @@ export const CultivationProvider = ({ children }: { children: ReactNode }) => {
         getEstimatedHarvestDateForVariety,
         getMaxHarvestDateForSession,
         transferPlantToFlowering,
+        deleteRow,
+        addRow
       }}
     >
       {children}
