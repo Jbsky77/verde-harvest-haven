@@ -10,6 +10,8 @@ import { useState, useEffect } from "react";
 import { CultivationSpace, PlantState } from "@/types";
 import { toast } from "@/components/ui/use-toast";
 import { useTranslation } from "react-i18next";
+import { PlusCircle, Trash2 } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from "@/components/ui/dialog";
 
 interface BatchActionsProps {
   space: CultivationSpace;
@@ -25,7 +27,10 @@ const BatchActions = ({ space }: BatchActionsProps) => {
     setSelectedPlantIds,
     selectedPlantIds,
     updatePlantsBatchState,
-    varieties
+    updatePlantBatch,
+    varieties,
+    deleteRow,
+    addRow
   } = useCultivation();
   
   const [selectedRow, setSelectedRow] = useState<number>(1);
@@ -34,6 +39,11 @@ const BatchActions = ({ space }: BatchActionsProps) => {
   const [state, setState] = useState<PlantState>("germination");
   const [varietyId, setVarietyId] = useState<string>("");
   const [rowVarietyId, setRowVarietyId] = useState<string>("");
+  
+  // New state for adding row
+  const [newRowVarietyId, setNewRowVarietyId] = useState<string>("");
+  const [showAddRowDialog, setShowAddRowDialog] = useState(false);
+  const [showDeleteRowDialog, setShowDeleteRowDialog] = useState(false);
   
   // Update selected row when space changes to make sure it's valid
   useEffect(() => {
@@ -49,16 +59,17 @@ const BatchActions = ({ space }: BatchActionsProps) => {
     setState("germination");
     setVarietyId("");
     setRowVarietyId("");
+    setNewRowVarietyId("");
   }, [selectedSpaceId]);
   
   if (!selectedSpaceId) return null;
   
   const stateOptions: { value: PlantState; label: string }[] = [
-    { value: "germination", label: t('tasks.states.germination') },
-    { value: "growth", label: t('tasks.states.growth') },
-    { value: "flowering", label: t('tasks.states.flowering') },
-    { value: "drying", label: t('tasks.states.drying') },
-    { value: "harvested", label: t('tasks.states.harvested') }
+    { value: "germination", label: t('plantState.states.germination') },
+    { value: "growth", label: t('plantState.states.growth') },
+    { value: "flowering", label: t('plantState.states.flowering') },
+    { value: "drying", label: t('plantState.states.drying') },
+    { value: "harvested", label: t('plantState.states.harvested') }
   ];
   
   const handleApplyToSpace = () => {
@@ -158,6 +169,62 @@ const BatchActions = ({ space }: BatchActionsProps) => {
     setVarietyId("");
   };
   
+  const handleDeleteRow = () => {
+    if (!selectedRow) return;
+    
+    deleteRow(selectedSpaceId, selectedRow);
+    
+    addAlert({
+      type: "success",
+      message: t('plants.alerts.rowDeleted', { row: selectedRow, spaceId: selectedSpaceId }),
+      spaceId: selectedSpaceId
+    });
+    
+    toast({
+      title: t('plants.rowDeleted'),
+      description: t('plants.alerts.rowDeleted', { row: selectedRow, spaceId: selectedSpaceId }),
+      variant: "success"
+    });
+    
+    setShowDeleteRowDialog(false);
+    
+    // Select the first row if the current one was deleted
+    if (space.rows > 0 && selectedRow > space.rows - 1) {
+      setSelectedRow(1);
+    }
+  };
+  
+  const handleAddRow = () => {
+    if (!newRowVarietyId) {
+      toast({
+        title: t('plants.errors.noVariety'),
+        description: t('plants.errors.selectVariety'),
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    const selectedVariety = varieties.find(v => v.id === newRowVarietyId);
+    if (!selectedVariety) return;
+    
+    addRow(selectedSpaceId, selectedVariety);
+    
+    addAlert({
+      type: "success",
+      message: t('plants.alerts.rowAdded', { spaceId: selectedSpaceId }),
+      spaceId: selectedSpaceId
+    });
+    
+    toast({
+      title: t('plants.rowAdded'),
+      description: t('plants.alerts.rowAdded', { spaceId: selectedSpaceId }),
+      variant: "success"
+    });
+    
+    setShowAddRowDialog(false);
+    setNewRowVarietyId("");
+  };
+  
   const rowOptions = Array.from({ length: space.rows }, (_, i) => i + 1);
   
   return (
@@ -166,11 +233,12 @@ const BatchActions = ({ space }: BatchActionsProps) => {
       
       <Tabs defaultValue="space">
         <TabsList className="grid grid-cols-3 mb-4">
-          <TabsTrigger value="space">{t('space.entireSpace')}</TabsTrigger>
+          <TabsTrigger value="space">{t('common.space')}</TabsTrigger>
           <TabsTrigger value="row">{t('plants.byRow')}</TabsTrigger>
           <TabsTrigger value="selected">{t('plants.selection')}</TabsTrigger>
         </TabsList>
         
+        {/* Space tab content */}
         <TabsContent value="space" className="space-y-4">
           <div>
             <div className="flex justify-between items-center mb-2">
@@ -207,6 +275,7 @@ const BatchActions = ({ space }: BatchActionsProps) => {
           </Button>
         </TabsContent>
         
+        {/* Row tab content */}
         <TabsContent value="row" className="space-y-4">
           <div>
             <Label htmlFor="row-select" className="mb-2 block">{t('plants.row')}</Label>
@@ -288,11 +357,86 @@ const BatchActions = ({ space }: BatchActionsProps) => {
             />
           </div>
           
-          <Button onClick={handleApplyToRow} className="w-full">
+          <Button onClick={handleApplyToRow} className="w-full mb-2">
             {t('plants.applyToRow', { row: selectedRow })}
           </Button>
+          
+          <div className="flex gap-2 mt-4">
+            <Dialog open={showDeleteRowDialog} onOpenChange={setShowDeleteRowDialog}>
+              <DialogTrigger asChild>
+                <Button variant="destructive" className="flex-1">
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  {t('plants.deleteRow')}
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>{t('plants.confirmDeleteRow')}</DialogTitle>
+                </DialogHeader>
+                <p>{t('plants.deleteRowWarning', { row: selectedRow })}</p>
+                <DialogFooter>
+                  <DialogClose asChild>
+                    <Button variant="outline">{t('common.cancel')}</Button>
+                  </DialogClose>
+                  <Button variant="destructive" onClick={handleDeleteRow}>
+                    {t('common.delete')}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+            
+            <Dialog open={showAddRowDialog} onOpenChange={setShowAddRowDialog}>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="flex-1">
+                  <PlusCircle className="h-4 w-4 mr-2" />
+                  {t('plants.addRow')}
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>{t('plants.addNewRow')}</DialogTitle>
+                </DialogHeader>
+                <div className="py-4">
+                  <Label htmlFor="new-row-variety" className="mb-2 block">
+                    {t('plants.selectVarietyForRow')}
+                  </Label>
+                  <Select
+                    value={newRowVarietyId}
+                    onValueChange={setNewRowVarietyId}
+                  >
+                    <SelectTrigger id="new-row-variety">
+                      <SelectValue placeholder={t('plants.selectVariety')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {varieties.map(variety => (
+                        <SelectItem 
+                          key={variety.id} 
+                          value={variety.id}
+                        >
+                          <div className="flex items-center gap-2">
+                            <div 
+                              className="w-3 h-3 rounded-full" 
+                              style={{ backgroundColor: variety.color }} 
+                            />
+                            <span>{variety.name}</span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <DialogFooter>
+                  <DialogClose asChild>
+                    <Button variant="outline">{t('common.cancel')}</Button>
+                  </DialogClose>
+                  <Button onClick={handleAddRow}>{t('common.add')}</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </div>
         </TabsContent>
         
+        {/* Selected plants tab content */}
         <TabsContent value="selected" className="space-y-4">
           <div>
             <Label className="mb-2 block">

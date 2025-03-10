@@ -1,3 +1,4 @@
+
 {
   "common": {
     "dashboard": "Dashboard",
@@ -19,7 +20,12 @@
     "previous": "Previous",
     "space": "Space",
     "plants": "Plants",
-    "tasks": "Tasks"
+    "tasks": "Tasks",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "add": "Add",
+    "details": "Details",
+    "updateApplied": "Update applied"
   },
   "dashboard": {
     "tabs": {
@@ -56,7 +62,12 @@
     "plantsList": "Plants list",
     "totalPlants": "plants in total",
     "prevSpace": "Previous space",
-    "nextSpace": "Next space"
+    "nextSpace": "Next space",
+    "filters": "Filters",
+    "previousSpace": "Previous space",
+    "entireSpace": "Entire Space",
+    "growthRoom": "Growth Room",
+    "floweringRoom": "Flowering Room"
   },
   "metrics": {
     "averages": "EC & pH Averages",
@@ -140,6 +151,13 @@
     },
     "column": {
       "title": "Column Title"
+    },
+    "states": {
+      "germination": "Germination",
+      "growth": "Growth",
+      "flowering": "Flowering",
+      "drying": "Drying",
+      "harvested": "Harvested"
     }
   },
   "plants": {
@@ -163,13 +181,25 @@
     "details": "Plant Details",
     "errors": {
       "noSelection": "No plants selected",
-      "selectPlants": "Please select plants first"
+      "selectPlants": "Please select plants first",
+      "noVariety": "No variety selected",
+      "selectVariety": "Please select a variety first"
     },
     "alerts": {
       "spaceUpdated": "All plants in Space {spaceId} updated",
       "rowUpdated": "Plants in Row {row} of Space {spaceId} updated",
-      "selectionUpdated": "{count} plants updated"
+      "selectionUpdated": "{count} plants updated",
+      "rowDeleted": "Row {row} of Space {spaceId} deleted",
+      "rowAdded": "New row added to Space {spaceId}"
     },
-    "keepCurrentVariety": "Keep current variety"
+    "keepCurrentVariety": "Keep current variety",
+    "deleteRow": "Delete Row",
+    "addRow": "Add Row",
+    "confirmDeleteRow": "Confirm Delete Row",
+    "deleteRowWarning": "Are you sure you want to delete Row {row}? This action cannot be undone.",
+    "addNewRow": "Add New Row",
+    "selectVarietyForRow": "Select a variety for the new row",
+    "rowDeleted": "Row Deleted",
+    "rowAdded": "Row Added"
   }
 }

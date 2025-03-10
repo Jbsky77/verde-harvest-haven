@@ -1,5 +1,5 @@
 
-import { Plant, PlantState, CultivationSpace } from '@/types';
+import { Plant, PlantState, CultivationSpace, PlantVariety } from '@/types';
 import { CultivationContextType } from '@/context/types';
 import { getPlantRetrievalOperations } from './plantRetrievalOperations';
 import { getPlantUpdateOperations } from './plantUpdateOperations';
@@ -30,7 +30,9 @@ export const getPlantOperations = (
     updatePlantsBatchState, 
     updatePlantsInSpace, 
     updatePlantsInRow,
-    transferPlantToFlowering
+    transferPlantToFlowering,
+    deleteRow,
+    addRow
   } = batchOps;
 
   return {
@@ -49,6 +51,8 @@ export const getPlantOperations = (
     updatePlantsBatchState,
     updatePlantsInSpace,
     updatePlantsInRow,
-    transferPlantToFlowering
+    transferPlantToFlowering,
+    deleteRow,
+    addRow
   };
 };

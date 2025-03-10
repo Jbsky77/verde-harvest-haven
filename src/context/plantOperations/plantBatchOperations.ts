@@ -1,5 +1,6 @@
 
-import { Plant, PlantState, CultivationSpace } from '@/types';
+import { Plant, PlantState, CultivationSpace, PlantVariety } from '@/types';
+import { v4 as uuidv4 } from 'uuid';
 
 export const getPlantBatchOperations = (
   spaces: CultivationSpace[],
@@ -66,6 +67,78 @@ export const getPlantBatchOperations = (
     );
   };
 
+  // Function to delete a row of plants
+  const deleteRow = (spaceId: number, rowToDelete: number) => {
+    setSpaces(prevSpaces => 
+      prevSpaces.map(space => {
+        if (space.id === spaceId) {
+          // Remove plants in the selected row
+          const filteredPlants = space.plants.filter(plant => 
+            plant.position.row !== rowToDelete
+          );
+          
+          // Reposition remaining plants' row numbers if needed
+          const repositionedPlants = filteredPlants.map(plant => {
+            if (plant.position.row > rowToDelete) {
+              return {
+                ...plant,
+                position: {
+                  ...plant.position,
+                  row: plant.position.row - 1
+                },
+                lastUpdated: new Date()
+              };
+            }
+            return plant;
+          });
+          
+          return {
+            ...space,
+            plants: repositionedPlants,
+            rows: space.rows > 0 ? space.rows - 1 : 0
+          };
+        }
+        return space;
+      })
+    );
+  };
+
+  // Function to add a new row of plants with a specific variety
+  const addRow = (spaceId: number, variety: PlantVariety) => {
+    setSpaces(prevSpaces => 
+      prevSpaces.map(space => {
+        if (space.id === spaceId) {
+          const newRowNumber = space.rows + 1;
+          const newPlants: Plant[] = [];
+          
+          // Create new plants for the row
+          for (let column = 1; column <= space.plantsPerRow; column++) {
+            newPlants.push({
+              id: uuidv4(),
+              position: {
+                space: spaceId,
+                row: newRowNumber,
+                column
+              },
+              variety,
+              state: space.roomType === "growth" ? "germination" : "flowering",
+              ec: 1.2,
+              ph: 6.0,
+              lastUpdated: new Date()
+            });
+          }
+          
+          return {
+            ...space,
+            plants: [...space.plants, ...newPlants],
+            rows: newRowNumber
+          };
+        }
+        return space;
+      })
+    );
+  };
+
   // New function to transfer a plant from growth to flowering room
   const transferPlantToFlowering = (plantId: string, targetSpaceId: number) => {
     setSpaces(prevSpaces => {
@@ -125,6 +198,8 @@ export const getPlantBatchOperations = (
     updatePlantsBatchState,
     updatePlantsInSpace,
     updatePlantsInRow,
-    transferPlantToFlowering
+    transferPlantToFlowering,
+    deleteRow,
+    addRow
   };
 };
