@@ -5,6 +5,7 @@ import { useCultivation } from "@/context/CultivationContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Leaf, Filter, Sprout, Flower } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import PlantDetails from "@/components/PlantDetails";
 import PlantRow from "./PlantRow";
 import SpaceNavigation from "./SpaceNavigation";
@@ -19,7 +20,26 @@ const PlantsList = ({ space }: PlantsListProps) => {
   const { t } = useTranslation();
   const [selectedPlant, setSelectedPlant] = useState<Plant | null>(null);
   const [expandedRows, setExpandedRows] = useState<number[]>([]);
-  const { updatePlant, spaces, setSelectedSpaceId } = useCultivation();
+  const { updatePlant, spaces, setSelectedSpaceId, currentSession } = useCultivation();
+  
+  // Return early if there's no active session
+  if (!currentSession || !currentSession.isActive) {
+    return (
+      <Card className="w-full text-center p-8 bg-gradient-to-br from-gray-50 to-gray-100">
+        <CardHeader>
+          <CardTitle>Aucune session active</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground mb-4">
+            Vous devez démarrer une session de culture pour voir les plantes et gérer les espaces.
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Utilisez le bouton "Nouvelle session" dans le tableau de bord pour commencer.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
   
   const handlePlantClick = (plant: Plant) => {
     setSelectedPlant(plant);

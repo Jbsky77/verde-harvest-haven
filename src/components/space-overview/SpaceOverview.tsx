@@ -14,9 +14,37 @@ interface SpaceOverviewProps {
 }
 
 const SpaceOverview = ({ showAllSpaces = false }: SpaceOverviewProps) => {
-  const { selectedSpaceId, getSpaceById, spaces, selectedRoomType, getSpacesByRoomType } = useCultivation();
+  const { 
+    selectedSpaceId, 
+    getSpaceById, 
+    spaces, 
+    selectedRoomType, 
+    getSpacesByRoomType, 
+    currentSession
+  } = useCultivation();
   const location = useLocation();
   const currentPath = location.pathname;
+  
+  // Return early if there's no active session
+  if (!currentSession || !currentSession.isActive) {
+    return (
+      <div className="flex items-center justify-center h-full p-8">
+        <Card className="w-full max-w-lg text-center p-8 bg-gradient-to-br from-gray-50 to-gray-100">
+          <CardHeader>
+            <CardTitle>Aucune session active</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground mb-4">
+              Vous devez démarrer une session de culture pour voir les statistiques et gérer vos espaces.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Utilisez le bouton "Nouvelle session" dans le tableau de bord pour commencer.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
   
   const getAllPlants = () => {
     return spaces.flatMap(space => space.plants);
