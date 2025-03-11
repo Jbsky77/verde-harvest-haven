@@ -1,173 +1,186 @@
 
-import { useCultivation } from "@/context/CultivationContext";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { PlantState, RoomType } from "@/types";
-import { PlantStateChart } from "./PlantStateChart";
-import { MetricsChart } from "./MetricsChart";
-import { VarietyDistributionChart } from "./VarietyDistributionChart";
-import { SpaceContent } from "./SpaceContent";
-import { RoomInfo } from "./RoomInfo";
-import { useLocation } from "react-router-dom";
+import { useState, useMemo } from "react";
+import { useCultivation } from "@/context/cultivationContext";
+import { CultivationSpace, Plant, PlantState } from "@/types";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Separator } from "@/components/ui/separator";
+import RoomInfo from "./RoomInfo";
+import PlantStateChart from "./PlantStateChart";
+import VarietyDistributionChart from "./VarietyDistributionChart";
+import MetricsChart from "./MetricsChart";
+import { countPlantsByState, countPlantsByVariety } from "./utils";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-interface SpaceOverviewProps {
-  showAllSpaces?: boolean;
-}
-
-const SpaceOverview = ({ showAllSpaces = false }: SpaceOverviewProps) => {
-  const { 
-    selectedSpaceId, 
-    getSpaceById, 
-    spaces, 
-    selectedRoomType, 
-    getSpacesByRoomType, 
-    currentSession
-  } = useCultivation();
-  const location = useLocation();
-  const currentPath = location.pathname;
+const SpaceOverview = () => {
+  const { spaces, selectedSpaceId, getSpaceById } = useCultivation();
+  const [selectedTab, setSelectedTab] = useState<string>("overview");
   
-  // Return early if there's no active session
-  if (!currentSession || !currentSession.isActive) {
+  const selectedSpace = useMemo(() => {
+    return getSpaceById(selectedSpaceId || 0);
+  }, [getSpaceById, selectedSpaceId]);
+  
+  if (!selectedSpace) {
     return (
-      <div className="flex items-center justify-center h-full p-8">
-        <Card className="w-full max-w-lg text-center p-8 bg-gradient-to-br from-gray-50 to-gray-100">
-          <CardHeader>
-            <CardTitle>Aucune session active</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground mb-4">
-              Vous devez démarrer une session de culture pour voir les statistiques et gérer vos espaces.
-            </p>
-            <p className="text-sm text-muted-foreground">
-              Utilisez le bouton "Nouvelle session" dans le tableau de bord pour commencer.
-            </p>
-          </CardContent>
-        </Card>
+      <div className="flex items-center justify-center h-full">
+        <p className="text-muted-foreground">Sélectionnez un espace pour voir les détails</p>
       </div>
     );
   }
   
-  const getAllPlants = () => {
-    return spaces.flatMap(space => space.plants);
+  const totalPlants = selectedSpace.plants.length;
+  
+  // Calculate plant state counts
+  const plantStateCounts = countPlantsByState(selectedSpace.plants);
+  
+  // Calculate variety distribution
+  const varietyDistribution = countPlantsByVariety(selectedSpace.plants);
+  
+  // Calculate average pH and EC
+  const calculateAverages = (plants: Plant[]) => {
+    if (plants.length === 0) return { avgPH: 0, avgEC: 0 };
+    
+    const totalPH = plants.reduce((sum, plant) => sum + plant.ph, 0);
+    const totalEC = plants.reduce((sum, plant) => sum + plant.ec, 0);
+    
+    return {
+      avgPH: Number((totalPH / plants.length).toFixed(2)),
+      avgEC: Number((totalEC / plants.length).toFixed(2))
+    };
   };
   
-  const getAllPlantsByRoomType = (roomType: RoomType) => {
-    return getSpacesByRoomType(roomType).flatMap(space => space.plants);
+  const { avgPH, avgEC } = calculateAverages(selectedSpace.plants);
+  
+  // Group plants by growth state for chart data
+  const getStateData = () => {
+    return Object.entries(plantStateCounts).map(([state, count]) => ({
+      name: state,
+      value: count,
+    }));
   };
   
-  const getSpaceData = () => {
-    if (showAllSpaces) {
-      const roomSpaces = getSpacesByRoomType(selectedRoomType);
-      const roomPlants = getAllPlantsByRoomType(selectedRoomType);
+  // Calculate historical data for metrics (mock data for now)
+  const getHistoricalData = () => {
+    // In a real app, this would come from a database or API
+    // For now, we'll generate some mock data
+    const mockData = [];
+    const today = new Date();
+    
+    for (let i = 30; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
       
-      return {
-        id: 0,
-        name: selectedRoomType === "growth" ? "Salle de Croissance" : "Salle de Floraison",
-        plants: roomPlants,
-        rows: roomSpaces.reduce((sum, space) => sum + space.rows, 0),
-        plantsPerRow: Math.round(roomPlants.length / roomSpaces.reduce((sum, space) => sum + space.rows, 0)) || 0,
-        roomType: selectedRoomType
-      };
-    } else if (selectedSpaceId) {
-      return getSpaceById(selectedSpaceId);
+      mockData.push({
+        date: date.toISOString().split('T')[0],
+        ph: (6 + Math.random() * 0.5).toFixed(2),
+        ec: (1.2 + Math.random() * 0.6).toFixed(2)
+      });
     }
-    return null;
+    
+    return mockData;
   };
   
-  const spaceData = getSpaceData();
+  const historicalData = getHistoricalData();
   
-  if (!spaceData) {
-    return (
-      <div className="flex items-center justify-center h-full p-8">
-        <Card className="w-full max-w-md text-center p-8 bg-gradient-to-br from-gray-50 to-gray-100">
-          <CardHeader>
-            <CardTitle>Aucun espace sélectionné</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">Sélectionnez un espace dans le menu latéral pour voir les détails</p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-  
-  const plantsByState = spaceData.plants.reduce((acc, plant) => {
-    acc[plant.state] = (acc[plant.state] || 0) + 1;
-    return acc;
-  }, {} as Record<PlantState, number>);
-  
-  const averageEC = spaceData.plants.reduce((sum, plant) => sum + plant.ec, 0) / spaceData.plants.length;
-  const averagePH = spaceData.plants.reduce((sum, plant) => sum + plant.ph, 0) / spaceData.plants.length;
-  
-  const varietiesData = spaceData.plants.reduce((acc, plant) => {
-    const variety = plant.variety.name;
-    acc[variety] = (acc[variety] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
-  
-  const varietyDistributionData = Object.entries(varietiesData)
-    .map(([name, count]) => ({
+  // Generate variety distribution data for chart
+  const getVarietyData = () => {
+    return Object.entries(varietyDistribution).map(([name, count]) => ({
       name,
-      count
-    }))
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 7);
+      count: Number(count) // Convert to number to fix the type issue
+    }));
+  };
   
-  // Get data for both room types
-  const growthRoomSpaces = getSpacesByRoomType("growth");
-  const floweringRoomSpaces = getSpacesByRoomType("flowering");
-  const growthRoomPlants = getAllPlantsByRoomType("growth");
-  const floweringRoomPlants = getAllPlantsByRoomType("flowering");
+  // Calculate metrics for room analytics
+  const calculateMetrics = (space: CultivationSpace) => {
+    // Count plants in different states
+    const stateCounts: Record<PlantState, number> = {
+      germination: 0,
+      growth: 0,
+      flowering: 0,
+      drying: 0,
+      harvested: 0
+    };
+    
+    space.plants.forEach(plant => {
+      stateCounts[plant.state]++;
+    });
+    
+    // Calculate metrics
+    const totalPlantCapacity = space.rows * space.columns;
+    const occupancy = totalPlants / totalPlantCapacity;
+    const readyForHarvest = stateCounts.flowering;
+    
+    return {
+      totalCapacity: totalPlantCapacity,
+      occupancy: Math.round(occupancy * 100),
+      readyForHarvest,
+      avgPH,
+      avgEC
+    };
+  };
+  
+  const metrics = calculateMetrics(selectedSpace);
   
   return (
-    <div className="p-6 animate-fade-in bg-gradient-to-b from-gray-50 to-white">
-      <div className="mb-6 pb-4 border-b">
-        <h2 className="text-3xl font-bold text-gray-800">
-          {showAllSpaces ? spaceData.name : spaceData.name}
-          {showAllSpaces && (
-            <span className="text-sm font-normal text-gray-500 ml-2">
-              ({getSpacesByRoomType(selectedRoomType).length} espaces)
-            </span>
-          )}
-        </h2>
-        <p className="text-muted-foreground mt-1">
-          {spaceData.plants.length} plantes
-          {!showAllSpaces && ` • ${spaceData.rows} rangées`}
+    <div className="p-6 space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold">{selectedSpace.name}</h2>
+        <p className="text-muted-foreground">
+          {selectedSpace.roomType === "flowering" ? "Salle de floraison" : "Salle de croissance"} - 
+          {totalPlants} plantes sur {metrics.totalCapacity} emplacements
         </p>
       </div>
       
-      {/* Room summary cards - only shown on the main dashboard */}
-      {showAllSpaces && currentPath === "/" && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <RoomInfo 
-            roomType="growth" 
-            spaceCount={growthRoomSpaces.length}
-            plantCount={growthRoomPlants.length}
-          />
-          <RoomInfo 
-            roomType="flowering" 
-            spaceCount={floweringRoomSpaces.length}
-            plantCount={floweringRoomPlants.length}
-          />
-        </div>
-      )}
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-        <PlantStateChart plantsByState={plantsByState} />
-        <MetricsChart 
-          averageEC={averageEC} 
-          averagePH={averagePH} 
-          showAllSpaces={showAllSpaces} 
-        />
-        <VarietyDistributionChart 
-          varietyDistributionData={varietyDistributionData} 
-          showAllSpaces={showAllSpaces} 
-        />
-      </div>
-      
-      <SpaceContent 
-        spaceData={spaceData} 
-        showAllSpaces={showAllSpaces} 
-      />
+      <Tabs value={selectedTab} onValueChange={setSelectedTab}>
+        <TabsList>
+          <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
+          <TabsTrigger value="metrics">Métriques</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="overview" className="space-y-6 pt-4">
+          <RoomInfo space={selectedSpace} metrics={metrics} />
+          
+          <Separator />
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Distribution des états</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <PlantStateChart data={getStateData()} />
+                <div className="grid grid-cols-2 gap-4 mt-4">
+                  {Object.entries(plantStateCounts).map(([state, count]) => (
+                    <div key={state} className="flex justify-between">
+                      <span className="text-sm capitalize">{state}</span>
+                      <span className="text-sm font-medium">{count} plantes</span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle>Distribution des variétés</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <VarietyDistributionChart data={getVarietyData()} />
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="metrics" className="space-y-6 pt-4">
+          <div>
+            <h3 className="text-lg font-medium mb-4">Évolution des métriques</h3>
+            <Card>
+              <CardContent className="pt-6">
+                <MetricsChart data={historicalData} />
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
