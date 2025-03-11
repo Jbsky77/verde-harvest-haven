@@ -79,6 +79,7 @@ export type Database = {
         Row: {
           color: string
           created_at: string
+          dry_weight: number | null
           flowering_time: number | null
           germination_time: number | null
           growth_time: number | null
@@ -89,6 +90,7 @@ export type Database = {
         Insert: {
           color: string
           created_at?: string
+          dry_weight?: number | null
           flowering_time?: number | null
           germination_time?: number | null
           growth_time?: number | null
@@ -99,6 +101,7 @@ export type Database = {
         Update: {
           color?: string
           created_at?: string
+          dry_weight?: number | null
           flowering_time?: number | null
           germination_time?: number | null
           growth_time?: number | null
