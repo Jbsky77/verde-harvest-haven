@@ -1,5 +1,5 @@
 
-import { useCultivation } from "@/context/CultivationContext";
+import { useCultivation } from "@/context/cultivationContext";
 import { useState } from "react";
 import {
   Table,
