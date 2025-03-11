@@ -2,7 +2,7 @@
 import { useMemo, useEffect } from "react";
 import SideNavigation from "@/components/SideNavigation";
 import Dashboard from "@/components/Dashboard";
-import { useCultivation } from "@/context/cultivationContext";
+import { useCultivation } from "@/context/CultivationContext";
 import AlertPanel from "@/components/AlertPanel";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
