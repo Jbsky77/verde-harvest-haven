@@ -1,7 +1,7 @@
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import { useCultivation } from "@/context/CultivationContext";
+import { useCultivation } from "@/context/cultivationContext";
 import { Alert as AlertType } from "@/types";
 import { format } from "date-fns";
 import { AlertCircle, AlertTriangle, CheckCircle, Info, Trash2, X } from "lucide-react";

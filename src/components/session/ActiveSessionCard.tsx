@@ -1,4 +1,5 @@
-import { useCultivation } from "@/context/CultivationContext";
+
+import { useCultivation } from "@/context/cultivationContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { InfoIcon, CalendarIcon, Edit, Trash2 } from "lucide-react";

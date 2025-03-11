@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { useCultivation } from "@/context/CultivationContext";
+import { useCultivation } from "@/context/cultivationContext";
 import { VarietySelector } from "./VarietySelector";
 import { VarietyCountInput } from "./VarietyCountInput";
 import { VarietyCount } from "@/services/sessions/types";

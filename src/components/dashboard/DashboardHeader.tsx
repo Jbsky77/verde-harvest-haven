@@ -3,7 +3,7 @@ import { Building, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { useCultivation } from "@/context/CultivationContext";
+import { useCultivation } from "@/context/cultivationContext";
 import { useTranslation } from "react-i18next";
 
 interface DashboardHeaderProps {
