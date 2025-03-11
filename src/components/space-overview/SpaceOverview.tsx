@@ -4,11 +4,10 @@ import { useCultivation } from "@/context/cultivationContext";
 import { CultivationSpace, Plant, PlantState } from "@/types";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
-import RoomInfo from "./RoomInfo";
-import PlantStateChart from "./PlantStateChart";
-import VarietyDistributionChart from "./VarietyDistributionChart";
-import MetricsChart from "./MetricsChart";
-import { countPlantsByState, countPlantsByVariety } from "./utils";
+import { RoomInfo } from "./RoomInfo";
+import { PlantStateChart } from "./PlantStateChart";
+import { VarietyDistributionChart } from "./VarietyDistributionChart";
+import { MetricsChart } from "./MetricsChart";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const SpaceOverview = () => {
@@ -28,6 +27,31 @@ const SpaceOverview = () => {
   }
   
   const totalPlants = selectedSpace.plants.length;
+  
+  // Calculate plant state counts
+  const countPlantsByState = (plants: Plant[]) => {
+    const stateCounts: Record<string, number> = {};
+    plants.forEach(plant => {
+      if (!stateCounts[plant.state]) {
+        stateCounts[plant.state] = 0;
+      }
+      stateCounts[plant.state]++;
+    });
+    return stateCounts;
+  };
+  
+  // Calculate variety distribution
+  const countPlantsByVariety = (plants: Plant[]) => {
+    const varietyCounts: Record<string, number> = {};
+    plants.forEach(plant => {
+      const varietyName = plant.variety.name;
+      if (!varietyCounts[varietyName]) {
+        varietyCounts[varietyName] = 0;
+      }
+      varietyCounts[varietyName]++;
+    });
+    return varietyCounts;
+  };
   
   // Calculate plant state counts
   const plantStateCounts = countPlantsByState(selectedSpace.plants);
@@ -105,7 +129,8 @@ const SpaceOverview = () => {
     });
     
     // Calculate metrics
-    const totalPlantCapacity = space.rows * space.columns;
+    // Get totalPlantCapacity from space rows (assuming columns exist on space)
+    const totalPlantCapacity = space.rows * 12; // Assuming 12 columns per row as a default value
     const occupancy = totalPlants / totalPlantCapacity;
     const readyForHarvest = stateCounts.flowering;
     

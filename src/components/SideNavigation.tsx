@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useCultivation } from "@/context/CultivationContext";
+import { useCultivation } from "@/context/cultivationContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
