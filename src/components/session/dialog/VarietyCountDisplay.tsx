@@ -32,7 +32,7 @@ export const VarietyCountDisplay = ({ varietyCounts, varieties }: VarietyCountDi
           <Badge variant="outline">Total: {totalPlants} plantes</Badge>
           {totalDryWeight > 0 && (
             <Badge variant="outline" className="bg-green-50">
-              Récolte estimée: {totalDryWeight.toFixed(1)} g
+              Récolte estimée: {(totalDryWeight / 1000).toFixed(2)} kg
             </Badge>
           )}
         </div>
@@ -42,7 +42,7 @@ export const VarietyCountDisplay = ({ varietyCounts, varieties }: VarietyCountDi
           const variety = varieties.find(v => v.id === vc.varietyId);
           if (!variety) return null;
           
-          const dryWeightTotal = variety.dryWeight ? (variety.dryWeight * vc.count).toFixed(1) : null;
+          const dryWeightTotal = variety.dryWeight ? (variety.dryWeight * vc.count) : null;
           
           return (
             <div key={vc.varietyId} className="flex items-center justify-between">
@@ -56,7 +56,9 @@ export const VarietyCountDisplay = ({ varietyCounts, varieties }: VarietyCountDi
               <div className="flex items-center gap-2">
                 {dryWeightTotal && (
                   <span className="text-xs text-muted-foreground">
-                    {dryWeightTotal} g
+                    {dryWeightTotal >= 1000 
+                      ? `${(dryWeightTotal / 1000).toFixed(2)} kg` 
+                      : `${dryWeightTotal.toFixed(1)} g`}
                   </span>
                 )}
                 <Badge variant="outline">{vc.count} plantes</Badge>

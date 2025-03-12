@@ -1,3 +1,4 @@
+
 import { useCultivation } from "@/context/CultivationContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -41,6 +42,20 @@ const ActiveSessionCard = ({ formatDateToLocale }: ActiveSessionCardProps) => {
   
   const elapsedDays = (today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24);
   const progressPercent = Math.min(Math.max(Math.round((elapsedDays / totalDuration) * 100), 0), 100);
+
+  // Calculer le poids total estimé de récolte
+  const calculateTotalEstimatedYield = () => {
+    if (!currentSession.varietyCounts) return 0;
+    
+    return currentSession.varietyCounts.reduce((total, vc) => {
+      const variety = varieties.find(v => v.id === vc.varietyId);
+      if (!variety || !variety.dryWeight) return total;
+      return total + (variety.dryWeight * vc.count);
+    }, 0);
+  };
+  
+  const totalEstimatedYield = calculateTotalEstimatedYield();
+  const totalEstimatedYieldInKg = totalEstimatedYield / 1000;
   
   const generateChartData = () => {
     if (!currentSession.selectedVarieties) return [];
@@ -247,6 +262,18 @@ const ActiveSessionCard = ({ formatDateToLocale }: ActiveSessionCardProps) => {
                 );
               })}
             </div>
+            
+            {totalEstimatedYield > 0 && (
+              <div className="flex items-center justify-between py-3 px-4 bg-green-100 rounded-md border border-green-200">
+                <div className="flex items-center gap-2">
+                  <InfoIcon className="h-4 w-4 text-green-700" />
+                  <span className="font-medium text-green-800">Récolte totale estimée</span>
+                </div>
+                <Badge className="bg-green-700">
+                  {totalEstimatedYieldInKg.toFixed(2)} kg
+                </Badge>
+              </div>
+            )}
             
             <div className="mt-4 pt-4 border-t border-green-200">
               <VarietyCountDisplay 
