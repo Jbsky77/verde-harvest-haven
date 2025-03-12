@@ -22,6 +22,7 @@ const VarietiesPage = () => {
   const [newGerminationTime, setNewGerminationTime] = useState<number | undefined>(undefined);
   const [newGrowthTime, setNewGrowthTime] = useState<number | undefined>(undefined);
   const [newFloweringTime, setNewFloweringTime] = useState<number | undefined>(undefined);
+  const [newDryWeight, setNewDryWeight] = useState<number | undefined>(undefined);
   const { t } = useTranslation();
 
   const resetForm = () => {
@@ -30,6 +31,7 @@ const VarietiesPage = () => {
     setNewGerminationTime(undefined);
     setNewGrowthTime(undefined);
     setNewFloweringTime(undefined);
+    setNewDryWeight(undefined);
     setCurrentVariety(null);
     setIsEditing(false);
   };
@@ -44,6 +46,7 @@ const VarietiesPage = () => {
       setNewGerminationTime(variety.germinationTime);
       setNewGrowthTime(variety.growthTime);
       setNewFloweringTime(variety.floweringTime);
+      setNewDryWeight(variety.dryWeight);
       setIsEditing(true);
     }
     
@@ -62,7 +65,8 @@ const VarietiesPage = () => {
         color: newColor,
         germinationTime: newGerminationTime,
         growthTime: newGrowthTime,
-        floweringTime: newFloweringTime
+        floweringTime: newFloweringTime,
+        dryWeight: newDryWeight
       };
 
       if (isEditing && currentVariety) {
@@ -112,13 +116,14 @@ const VarietiesPage = () => {
                 <TableHead className="text-right">{t('varieties.germinationTime')}</TableHead>
                 <TableHead className="text-right">{t('varieties.growthTime')}</TableHead>
                 <TableHead className="text-right">{t('varieties.floweringTime')}</TableHead>
+                <TableHead className="text-right">{t('varieties.dryWeight')}</TableHead>
                 <TableHead style={{ width: "100px" }}>{t('common.actions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {varieties.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-4 text-muted-foreground">
+                  <TableCell colSpan={7} className="text-center py-4 text-muted-foreground">
                     {t('varieties.empty')}
                   </TableCell>
                 </TableRow>
@@ -135,6 +140,7 @@ const VarietiesPage = () => {
                     <TableCell className="text-right">{variety.germinationTime || "-"}</TableCell>
                     <TableCell className="text-right">{variety.growthTime || "-"}</TableCell>
                     <TableCell className="text-right">{variety.floweringTime || "-"}</TableCell>
+                    <TableCell className="text-right">{variety.dryWeight ? `${variety.dryWeight} g` : "-"}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <Button 
@@ -233,6 +239,21 @@ const VarietiesPage = () => {
                 onChange={(e) => setNewFloweringTime(e.target.value ? Number(e.target.value) : undefined)}
                 placeholder={t('varieties.daysPlaceholder')}
               />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="dryWeight">{t('varieties.dryWeight')}</Label>
+              <Input
+                id="dryWeight"
+                type="number"
+                min="1"
+                value={newDryWeight || ""}
+                onChange={(e) => setNewDryWeight(e.target.value ? Number(e.target.value) : undefined)}
+                placeholder="g par plant"
+              />
+              <p className="text-xs text-muted-foreground">
+                Poids sec moyen en grammes par plant
+              </p>
             </div>
           </div>
           
