@@ -4,7 +4,7 @@ import SessionDialog from "@/components/session/SessionDialog";
 import ActiveSessionCard from "@/components/session/ActiveSessionCard";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import SessionsTable from "@/components/session/SessionsTable";
-import { useCultivation } from "@/context/cultivationContext";
+import { useCultivation } from "@/context/CultivationContext";
 import { Separator } from "@/components/ui/separator";
 
 const Dashboard = () => {
