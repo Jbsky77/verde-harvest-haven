@@ -1,291 +1,263 @@
 
-import { useState } from "react";
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from "@/components/ui/table";
+import { useState, useEffect } from "react";
+import { useCultivation } from "@/context/CultivationContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useCultivation } from "@/context/CultivationContext";
-import { 
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle
-} from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
-import { Fertilizer } from "@/types";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { PlusCircle, Edit, Trash2 } from "lucide-react";
+import { toast } from "sonner";
+import { FertilizerType, Fertilizer } from "@/types";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useTranslation } from "react-i18next";
-import { Trash, Edit, Plus } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
 
-const Fertilizers = () => {
+const FertilizerPage = () => {
   const { fertilizers, addFertilizer, updateFertilizer, deleteFertilizer } = useCultivation();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [selectedFertilizer, setSelectedFertilizer] = useState<Fertilizer | null>(null);
-  const [name, setName] = useState("");
-  const [type, setType] = useState("nutrient");
-  const [unitType, setUnitType] = useState("ml");
-  const [recommendedDosage, setRecommendedDosage] = useState("1.00");
-  const [color, setColor] = useState("#3B82F6");
-  const { toast } = useToast();
+  const [isEditing, setIsEditing] = useState(false);
+  const [currentFertilizer, setCurrentFertilizer] = useState<Fertilizer | null>(null);
+  const [newName, setNewName] = useState("");
+  const [newType, setNewType] = useState<FertilizerType>("base");
+  const [newUnitType, setNewUnitType] = useState<"ml/L" | "g/L">("ml/L");
+  const [newDosage, setNewDosage] = useState<number>(0);
+  const [newColor, setNewColor] = useState("#00A3FF");
   const { t } = useTranslation();
 
-  const handleOpenAddDialog = () => {
-    setIsEditMode(false);
-    setSelectedFertilizer(null);
-    setName("");
-    setType("nutrient");
-    setUnitType("ml");
-    setRecommendedDosage("1.00");
-    setColor("#3B82F6");
-    setIsDialogOpen(true);
+  const resetForm = () => {
+    setNewName("");
+    setNewType("base");
+    setNewUnitType("ml/L");
+    setNewDosage(0);
+    setNewColor("#00A3FF");
+    setCurrentFertilizer(null);
+    setIsEditing(false);
   };
 
-  const handleOpenEditDialog = (fertilizer: Fertilizer) => {
-    setIsEditMode(true);
-    setSelectedFertilizer(fertilizer);
-    setName(fertilizer.name);
-    setType(fertilizer.type);
-    setUnitType(fertilizer.unitType);
-    setRecommendedDosage(fertilizer.recommendedDosage.toFixed(2));
-    setColor(fertilizer.color);
-    setIsDialogOpen(true);
-  };
-
-  const handleSaveFertilizer = () => {
-    const dosage = parseFloat(recommendedDosage);
+  const openDialog = (fertilizer?: Fertilizer) => {
+    resetForm();
     
-    if (name.trim() === "" || isNaN(dosage)) {
-      toast({
-        title: t('common.error'),
-        description: t('fertilizers.invalidFormData'),
-        variant: "destructive"
-      });
+    if (fertilizer) {
+      setCurrentFertilizer(fertilizer);
+      setNewName(fertilizer.name);
+      setNewType(fertilizer.type);
+      setNewUnitType(fertilizer.unitType);
+      setNewDosage(fertilizer.recommendedDosage);
+      setNewColor(fertilizer.color || "#00A3FF");
+      setIsEditing(true);
+    }
+    
+    setIsDialogOpen(true);
+  };
+
+  const handleSubmit = () => {
+    if (!newName) {
+      toast.error(t('fertilizers.nameRequired'));
       return;
     }
 
     try {
-      if (isEditMode && selectedFertilizer) {
+      const fertilizerData = {
+        name: newName,
+        type: newType,
+        unitType: newUnitType,
+        recommendedDosage: newDosage,
+        color: newColor
+      };
+
+      if (isEditing && currentFertilizer) {
         updateFertilizer({
-          ...selectedFertilizer,
-          name,
-          type,
-          unitType,
-          recommendedDosage: dosage,
-          color
+          ...currentFertilizer,
+          ...fertilizerData
         });
-        
-        toast({
-          title: t('common.success'),
-          description: t('fertilizers.updateSuccess'),
-        });
+        toast.success(t('fertilizers.updated', { name: newName }));
       } else {
-        addFertilizer({
-          name,
-          type,
-          unitType,
-          recommendedDosage: dosage,
-          color
-        });
-        
-        toast({
-          title: t('common.success'),
-          description: t('fertilizers.addSuccess'),
-        });
+        addFertilizer(fertilizerData);
+        toast.success(t('fertilizers.created', { name: newName }));
       }
-      
+
       setIsDialogOpen(false);
+      resetForm();
     } catch (error) {
-      toast({
-        title: t('common.error'),
-        description: String(error),
-        variant: "destructive"
-      });
+      console.error("Error saving fertilizer:", error);
+      toast.error(t('fertilizers.error'));
     }
   };
 
-  const handleDeleteFertilizer = (id: string) => {
-    deleteFertilizer(id);
-    toast({
-      title: t('common.success'),
-      description: t('fertilizers.deleteSuccess'),
-    });
+  const handleDelete = (fertilizerId: string, name: string) => {
+    if (confirm(t('fertilizers.confirmDelete', { name }))) {
+      deleteFertilizer(fertilizerId);
+      toast.success(t('fertilizers.deleted', { name }));
+    }
   };
 
   return (
-    <div className="container mx-auto py-8">
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-2xl font-bold">{t('fertilizers.title')}</h1>
-          <p className="text-muted-foreground">{t('fertilizers.subtitle')}</p>
-        </div>
-        <Button onClick={handleOpenAddDialog}>
-          <Plus className="h-4 w-4 mr-2" />
-          {t('fertilizers.addNew')}
-        </Button>
-      </div>
-      
-      <Separator className="my-6" />
-      
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>{t('fertilizers.color')}</TableHead>
-              <TableHead>{t('fertilizers.name')}</TableHead>
-              <TableHead>{t('fertilizers.type')}</TableHead>
-              <TableHead>{t('fertilizers.dosage')}</TableHead>
-              <TableHead className="text-right">{t('common.actions')}</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {fertilizers.length === 0 ? (
+    <div className="container mx-auto py-6 px-4 max-w-6xl">
+      <Card className="shadow-md">
+        <CardHeader className="pb-4 border-b">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-2xl font-bold text-primary">{t('common.fertilizers')}</CardTitle>
+            <Button onClick={() => openDialog()} className="bg-primary hover:bg-primary/90">
+              <PlusCircle className="mr-2 h-4 w-4" />
+              {t('fertilizers.add')}
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="pt-6">
+          <Table>
+            <TableHeader>
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                  {t('fertilizers.noFertilizers')}
-                </TableCell>
+                <TableHead style={{ width: "50px" }}></TableHead>
+                <TableHead>{t('fertilizers.name')}</TableHead>
+                <TableHead>{t('fertilizers.type')}</TableHead>
+                <TableHead>{t('fertilizers.unitType')}</TableHead>
+                <TableHead>{t('fertilizers.dosage')}</TableHead>
+                <TableHead style={{ width: "100px" }}>{t('common.actions')}</TableHead>
               </TableRow>
-            ) : (
-              fertilizers.map((fertilizer) => (
-                <TableRow key={fertilizer.id}>
-                  <TableCell>
-                    <div 
-                      className="w-6 h-6 rounded-full" 
-                      style={{ backgroundColor: fertilizer.color }} 
-                    />
-                  </TableCell>
-                  <TableCell className="font-medium">{fertilizer.name}</TableCell>
-                  <TableCell>{t(`fertilizers.types.${fertilizer.type}`)}</TableCell>
-                  <TableCell>
-                    {fertilizer.recommendedDosage.toFixed(2)} {fertilizer.unitType}/L
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        onClick={() => handleOpenEditDialog(fertilizer)}
-                      >
-                        <Edit className="h-4 w-4" />
-                        <span className="sr-only">{t('common.edit')}</span>
-                      </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        onClick={() => handleDeleteFertilizer(fertilizer.id)}
-                        className="text-destructive hover:text-destructive/90"
-                      >
-                        <Trash className="h-4 w-4" />
-                        <span className="sr-only">{t('common.delete')}</span>
-                      </Button>
-                    </div>
+            </TableHeader>
+            <TableBody>
+              {fertilizers.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center py-4 text-muted-foreground">
+                    {t('fertilizers.empty')}
                   </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </div>
-      
+              ) : (
+                fertilizers.map((fertilizer) => (
+                  <TableRow key={fertilizer.id}>
+                    <TableCell>
+                      <div 
+                        className="w-4 h-4 rounded-full" 
+                        style={{ backgroundColor: fertilizer.color || "#00A3FF" }} 
+                      />
+                    </TableCell>
+                    <TableCell className="font-medium">{fertilizer.name}</TableCell>
+                    <TableCell>{t(`fertilizers.types.${fertilizer.type}`)}</TableCell>
+                    <TableCell>{fertilizer.unitType}</TableCell>
+                    <TableCell>{fertilizer.recommendedDosage.toFixed(2)}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Button 
+                          variant="ghost" 
+                          size="icon"
+                          onClick={() => openDialog(fertilizer)}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="icon"
+                          onClick={() => handleDelete(fertilizer.id, fertilizer.name)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {isEditMode ? t('fertilizers.editFertilizer') : t('fertilizers.addFertilizer')}
+              {isEditing 
+                ? t('fertilizers.edit', { name: currentFertilizer?.name }) 
+                : t('fertilizers.create')}
             </DialogTitle>
-            <DialogDescription>
-              {t('fertilizers.formDescription')}
-            </DialogDescription>
           </DialogHeader>
           
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="name" className="text-right">
-                {t('fertilizers.name')}
-              </Label>
-              <Input 
-                id="name" 
-                value={name} 
-                onChange={(e) => setName(e.target.value)} 
-                className="col-span-3" 
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">{t('fertilizers.name')}</Label>
+              <Input
+                id="name"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                placeholder={t('fertilizers.namePlaceholder')}
               />
             </div>
             
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="type" className="text-right">
-                {t('fertilizers.type')}
-              </Label>
-              <Select value={type} onValueChange={setType}>
-                <SelectTrigger className="col-span-3">
+            <div className="space-y-2">
+              <Label htmlFor="type">{t('fertilizers.type')}</Label>
+              <Select 
+                value={newType} 
+                onValueChange={(value: FertilizerType) => setNewType(value)}
+              >
+                <SelectTrigger>
                   <SelectValue placeholder={t('fertilizers.selectType')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="nutrient">{t('fertilizers.types.nutrient')}</SelectItem>
-                  <SelectItem value="supplement">{t('fertilizers.types.supplement')}</SelectItem>
-                  <SelectItem value="stimulant">{t('fertilizers.types.stimulant')}</SelectItem>
-                  <SelectItem value="ph">{t('fertilizers.types.ph')}</SelectItem>
+                  <SelectItem value="base">{t('fertilizers.types.base')}</SelectItem>
+                  <SelectItem value="growth">{t('fertilizers.types.growth')}</SelectItem>
+                  <SelectItem value="bloom">{t('fertilizers.types.bloom')}</SelectItem>
+                  <SelectItem value="booster">{t('fertilizers.types.booster')}</SelectItem>
+                  <SelectItem value="custom">{t('fertilizers.types.custom')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="dosage" className="text-right">
-                {t('fertilizers.dosage')}
-              </Label>
-              <div className="col-span-3 flex items-center gap-2">
-                <Input 
-                  id="dosage" 
-                  type="number" 
-                  step="0.01"
-                  min="0" 
-                  value={recommendedDosage} 
-                  onChange={(e) => setRecommendedDosage(e.target.value)}
-                  className="flex-1" 
-                />
-                <Select value={unitType} onValueChange={setUnitType}>
-                  <SelectTrigger className="w-24">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="ml">ml/L</SelectItem>
-                    <SelectItem value="g">g/L</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="unitType">{t('fertilizers.unitType')}</Label>
+              <Select 
+                value={newUnitType} 
+                onValueChange={(value: "ml/L" | "g/L") => setNewUnitType(value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={t('fertilizers.selectUnitType')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ml/L">ml/L</SelectItem>
+                  <SelectItem value="g/L">g/L</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="color" className="text-right">
-                {t('fertilizers.color')}
-              </Label>
-              <div className="col-span-3">
-                <input 
-                  type="color" 
-                  id="color" 
-                  value={color} 
-                  onChange={(e) => setColor(e.target.value)} 
-                  className="w-full h-10" 
+            <div className="space-y-2">
+              <Label htmlFor="dosage">{t('fertilizers.dosage')}</Label>
+              <Input
+                id="dosage"
+                type="number"
+                min="0"
+                step="0.01"
+                value={newDosage}
+                onChange={(e) => setNewDosage(parseFloat(e.target.value) || 0)}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="color">{t('common.color')}</Label>
+              <div className="flex items-center gap-3">
+                <div 
+                  className="w-8 h-8 rounded-full border border-gray-200" 
+                  style={{ backgroundColor: newColor }} 
+                />
+                <Input
+                  id="color"
+                  type="color"
+                  value={newColor}
+                  onChange={(e) => setNewColor(e.target.value)}
+                  className="w-16 h-10 p-1"
                 />
               </div>
             </div>
           </div>
           
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+            <Button 
+              variant="outline" 
+              onClick={() => setIsDialogOpen(false)}
+            >
               {t('common.cancel')}
             </Button>
-            <Button onClick={handleSaveFertilizer}>
-              {isEditMode ? t('common.save') : t('common.add')}
+            <Button onClick={handleSubmit}>
+              {isEditing ? t('common.update') : t('common.create')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -294,4 +266,4 @@ const Fertilizers = () => {
   );
 };
 
-export default Fertilizers;
+export default FertilizerPage;
