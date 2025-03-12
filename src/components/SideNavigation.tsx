@@ -1,4 +1,3 @@
-
 import { 
   Home, 
   Grid3X3, 
@@ -12,7 +11,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useCultivation } from "@/context/CultivationContext";
+import { useCultivation } from "@/context/cultivationContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -113,7 +112,6 @@ const SideNavigation = () => {
     }
   };
 
-  // When a space is selected, ensure we're on the spaces page
   const handleSpaceSelect = (spaceId: number) => {
     setSelectedSpaceId(spaceId);
     if (currentPath !== "/spaces") {
@@ -121,7 +119,6 @@ const SideNavigation = () => {
     }
   };
 
-  // Update space selection when filtered spaces change
   useEffect(() => {
     if (filteredSpaces.length > 0 && !selectedSpaceId) {
       setSelectedSpaceId(filteredSpaces[0].id);

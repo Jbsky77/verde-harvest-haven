@@ -1,3 +1,4 @@
+
 {
   "common": {
     "dashboard": "Panel de control",
@@ -19,7 +20,13 @@
     "previous": "Anterior",
     "space": "Espacio",
     "plants": "Plantas",
-    "tasks": "Tareas"
+    "tasks": "Tareas",
+    "delete": "Eliminar",
+    "cancel": "Cancelar",
+    "add": "Añadir",
+    "update": "Actualizar",
+    "save": "Guardar",
+    "details": "Detalles"
   },
   "dashboard": {
     "tabs": {
@@ -141,5 +148,47 @@
     "column": {
       "title": "Título de la columna"
     }
+  },
+  "fertilizers": {
+    "title": "Fertilizantes",
+    "addFertilizer": "Añadir Fertilizante",
+    "editFertilizer": "Editar Fertilizante",
+    "list": "Lista de Fertilizantes",
+    "listDescription": "Gestiona tus fertilizantes y su dosis recomendada",
+    "addDescription": "Añadir un nuevo fertilizante a tu colección",
+    "editDescription": "Editar información de un fertilizante existente",
+    "name": "Nombre",
+    "namePlaceholder": "Introduce el nombre del fertilizante",
+    "type": "Tipo",
+    "types": {
+      "base": "Base",
+      "growth": "Crecimiento",
+      "bloom": "Floración",
+      "booster": "Potenciador",
+      "custom": "Personalizado"
+    },
+    "selectType": "Seleccionar un tipo",
+    "unit": "Unidad",
+    "units": {
+      "ml": "Mililitros (ml/L)",
+      "g": "Gramos (g/L)"
+    },
+    "selectUnit": "Seleccionar una unidad",
+    "dosage": "Dosis Recomendada",
+    "color": "Color",
+    "npk": "NPK",
+    "description": "Descripción",
+    "createdAt": "Creado el",
+    "actions": "Acciones",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "confirmDelete": "Confirmar Eliminación",
+    "confirmDeleteDescription": "¿Estás seguro de que quieres eliminar el fertilizante {name}? Esta acción no se puede deshacer.",
+    "nameRequired": "El nombre del fertilizante es obligatorio",
+    "dosageRequired": "La dosis debe ser un número válido",
+    "addSuccess": "Fertilizante {name} añadido con éxito",
+    "updateSuccess": "Fertilizante {name} actualizado con éxito",
+    "deleteSuccess": "Fertilizante {name} eliminado con éxito",
+    "noFertilizers": "No se encontraron fertilizantes. Añade uno para empezar."
   }
 }

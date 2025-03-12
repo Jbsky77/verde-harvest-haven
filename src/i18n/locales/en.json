@@ -24,8 +24,10 @@
     "delete": "Delete",
     "cancel": "Cancel",
     "add": "Add",
+    "update": "Update",
     "details": "Details",
-    "updateApplied": "Update applied"
+    "updateApplied": "Update applied",
+    "save": "Save"
   },
   "dashboard": {
     "tabs": {
@@ -201,5 +203,47 @@
     "selectVarietyForRow": "Select a variety for the new row",
     "rowDeleted": "Row Deleted",
     "rowAdded": "Row Added"
+  },
+  "fertilizers": {
+    "title": "Fertilizers",
+    "addFertilizer": "Add Fertilizer",
+    "editFertilizer": "Edit Fertilizer",
+    "list": "Fertilizer List",
+    "listDescription": "Manage your fertilizers and their recommended dosage",
+    "addDescription": "Add a new fertilizer to your collection",
+    "editDescription": "Edit information for an existing fertilizer",
+    "name": "Name",
+    "namePlaceholder": "Enter fertilizer name",
+    "type": "Type",
+    "types": {
+      "base": "Base",
+      "growth": "Growth",
+      "bloom": "Bloom",
+      "booster": "Booster",
+      "custom": "Custom"
+    },
+    "selectType": "Select a type",
+    "unit": "Unit",
+    "units": {
+      "ml": "Milliliters (ml/L)",
+      "g": "Grams (g/L)"
+    },
+    "selectUnit": "Select a unit",
+    "dosage": "Recommended Dosage",
+    "color": "Color",
+    "npk": "NPK",
+    "description": "Description",
+    "createdAt": "Created At",
+    "actions": "Actions",
+    "edit": "Edit",
+    "delete": "Delete",
+    "confirmDelete": "Confirm Delete",
+    "confirmDeleteDescription": "Are you sure you want to delete the fertilizer {name}? This action cannot be undone.",
+    "nameRequired": "Fertilizer name is required",
+    "dosageRequired": "Dosage must be a valid number",
+    "addSuccess": "Fertilizer {name} added successfully",
+    "updateSuccess": "Fertilizer {name} updated successfully",
+    "deleteSuccess": "Fertilizer {name} deleted successfully",
+    "noFertilizers": "No fertilizers found. Add one to get started."
   }
 }

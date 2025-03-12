@@ -1,3 +1,4 @@
+
 {
   "header": {
     "search": "Recherche",
@@ -62,15 +63,44 @@
   "fertilizers": {
     "title": "Engrais",
     "addFertilizer": "Ajouter un engrais",
+    "editFertilizer": "Modifier l'engrais",
+    "list": "Liste des engrais",
+    "listDescription": "Gérez vos engrais et leur dosage recommandé",
+    "addDescription": "Ajoutez un nouvel engrais à votre collection",
+    "editDescription": "Modifiez les informations d'un engrais existant",
     "name": "Nom",
+    "namePlaceholder": "Entrez le nom de l'engrais",
+    "type": "Type",
+    "types": {
+      "base": "Base",
+      "growth": "Croissance",
+      "bloom": "Floraison",
+      "booster": "Booster",
+      "custom": "Personnalisé"
+    },
+    "selectType": "Sélectionnez un type",
+    "unit": "Unité",
+    "units": {
+      "ml": "Millilitres (ml/L)",
+      "g": "Grammes (g/L)"
+    },
+    "selectUnit": "Sélectionnez une unité",
+    "dosage": "Dosage recommandé",
+    "color": "Couleur",
     "npk": "NPK",
     "description": "Description",
     "createdAt": "Créé le",
     "actions": "Actions",
     "edit": "Modifier",
     "delete": "Supprimer",
-    "editFertilizer": "Modifier l'engrais",
-    "createFertilizer": "Créer un engrais"
+    "confirmDelete": "Confirmer la suppression",
+    "confirmDeleteDescription": "Êtes-vous sûr de vouloir supprimer l'engrais {name}? Cette action ne peut pas être annulée.",
+    "nameRequired": "Le nom de l'engrais est requis",
+    "dosageRequired": "Le dosage doit être un nombre valide",
+    "addSuccess": "Engrais {name} ajouté avec succès",
+    "updateSuccess": "Engrais {name} mis à jour avec succès",
+    "deleteSuccess": "Engrais {name} supprimé avec succès",
+    "noFertilizers": "Aucun engrais trouvé. Ajoutez-en un pour commencer."
   },
   "varieties": {
     "title": "Variétés",
@@ -145,5 +175,22 @@
     "column": {
       "title": "Titre de la colonne"
     }
+  },
+  "common": {
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "add": "Ajouter",
+    "update": "Mettre à jour",
+    "delete": "Supprimer",
+    "actions": "Actions",
+    "home": "Accueil",
+    "spaces": "Espaces",
+    "analytics": "Analyses",
+    "fertilizers": "Engrais",
+    "varieties": "Variétés",
+    "tasks": "Tâches",
+    "settings": "Paramètres",
+    "dashboard": "Tableau de bord",
+    "management": "Gestion de votre culture aéroponique"
   }
 }
