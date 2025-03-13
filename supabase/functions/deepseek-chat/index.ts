@@ -21,6 +21,11 @@ serve(async (req) => {
     console.log("Received request with message:", message);
     console.log("Chat history length:", chatHistory?.length || 0);
 
+    if (!deepseekApiKey) {
+      console.error("Missing DEEPSEEK_API_KEY environment variable");
+      throw new Error("API configuration error");
+    }
+
     // Format the chat history for Deepseek
     const messages = [
       {
@@ -60,6 +65,12 @@ serve(async (req) => {
         max_tokens: 1000,
       }),
     });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`Deepseek API responded with status ${response.status}:`, errorText);
+      throw new Error(`API responded with status ${response.status}`);
+    }
 
     const data = await response.json();
     console.log("Received response from Deepseek API");

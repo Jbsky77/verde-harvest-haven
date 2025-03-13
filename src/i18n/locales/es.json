@@ -29,7 +29,7 @@
     "you": "Tú",
     "assistant": "Asistente",
     "error": "Error al obtener respuesta",
-    "errorResponse": "Lo siento, no pude procesar tu solicitud en este momento. Por favor, inténtalo de nuevo más tarde."
+    "errorResponse": "Lo siento, no pude procesar tu solicitud en este momento. Por favor, verifica tu conexión a internet e inténtalo de nuevo. Si el problema persiste, es posible que el servicio esté temporalmente no disponible."
   },
   "varieties": {
     "add": "Añadir Variedad",

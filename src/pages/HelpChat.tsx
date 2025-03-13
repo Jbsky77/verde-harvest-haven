@@ -4,10 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Send, Bot, User, Loader2 } from "lucide-react";
+import { Send, Bot, User, Loader2, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
 interface ChatMessage {
   id: string;
@@ -21,6 +22,7 @@ const HelpChat = () => {
   const [message, setMessage] = useState("");
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [hasError, setHasError] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Scroll to bottom whenever messages change
@@ -48,6 +50,7 @@ const HelpChat = () => {
     setChatHistory(prev => [...prev, userMessage]);
     setMessage("");
     setIsLoading(true);
+    setHasError(false);
     
     try {
       const { data, error } = await supabase.functions.invoke('deepseek-chat', {
@@ -61,13 +64,18 @@ const HelpChat = () => {
       });
       
       if (error) {
-        throw new Error(error.message);
+        console.error("Supabase function error:", error);
+        throw new Error("Failed to send a request to the Edge Function");
+      }
+      
+      if (!data || !data.response) {
+        throw new Error("Invalid response from assistant");
       }
       
       // Add AI response to chat
       const aiMessage: ChatMessage = {
         id: Date.now().toString(),
-        content: data.response || t('helpChat.errorResponse'),
+        content: data.response,
         isUser: false,
         timestamp: new Date(),
       };
@@ -75,6 +83,7 @@ const HelpChat = () => {
       setChatHistory(prev => [...prev, aiMessage]);
     } catch (error) {
       console.error("Error sending message:", error);
+      setHasError(true);
       toast.error(t('helpChat.error'));
       
       // Add error message to chat
@@ -102,6 +111,16 @@ const HelpChat = () => {
         </CardHeader>
         
         <CardContent className="flex-1 overflow-hidden flex flex-col p-0">
+          {hasError && (
+            <Alert variant="destructive" className="m-4">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>{t('helpChat.error')}</AlertTitle>
+              <AlertDescription>
+                {t('helpChat.errorResponse')}
+              </AlertDescription>
+            </Alert>
+          )}
+          
           <div className="flex-1 overflow-y-auto p-6">
             {chatHistory.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-muted-foreground">
