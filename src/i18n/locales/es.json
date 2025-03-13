@@ -1,194 +1,62 @@
 
 {
   "common": {
-    "dashboard": "Panel de control",
-    "management": "Gestión de su cultivo aeropónico",
     "home": "Inicio",
     "spaces": "Espacios",
     "analytics": "Análisis",
     "fertilizers": "Fertilizantes",
     "varieties": "Variedades",
-    "settings": "Ajustes",
-    "growth": "Crecimiento",
-    "flowering": "Floración",
+    "tasks": "Tareas",
+    "help": "Ayuda",
+    "settings": "Configuración",
+    "actions": "Acciones",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "add": "Añadir",
     "growthRoom": "Sala de Crecimiento",
     "floweringRoom": "Sala de Floración",
-    "showAllSpaces": "Mostrar todos los espacios",
-    "newSession": "Nueva sesión",
-    "actions": "Acciones",
-    "next": "Siguiente",
-    "previous": "Anterior",
-    "space": "Espacio",
-    "plants": "Plantas",
-    "tasks": "Tareas",
-    "delete": "Eliminar",
-    "cancel": "Cancelar",
-    "add": "Añadir",
-    "update": "Actualizar",
-    "save": "Guardar",
-    "details": "Detalles"
+    "growth": "Crecimiento",
+    "flowering": "Floración",
+    "color": "Color"
   },
-  "dashboard": {
-    "tabs": {
-      "batch": "Acciones",
-      "fertilizers": "Fertilizantes",
-      "varieties": "Variedades",
-      "settings": "Ajustes"
-    }
-  },
-  "rooms": {
-    "growth": {
-      "title": "Sala de Crecimiento",
-      "spaces": "Espacios",
-      "plants": "Plantas",
-      "configuration": "3 espacios de 12 bandejas (100 plantas/bandeja)"
-    },
-    "flowering": {
-      "title": "Sala de Floración",
-      "spaces": "Espacios",
-      "plants": "Plantas",
-      "configuration": "6 espacios de 4 filas (143 plantas/fila)"
-    }
-  },
-  "space": {
-    "overview": "Vista general",
-    "selectSpecific": "Seleccione un espacio específico para ver su cuadrícula y lista de plantas",
-    "allSpacesMode": "En el modo \"Todos los espacios\", solo se muestran las estadísticas globales.",
-    "accessInstructions": "Para acceder a la cuadrícula o lista de plantas, desactive la opción \"Mostrar todos los espacios\" o seleccione un espacio específico.",
-    "grid": "Cuadrícula",
-    "list": "Lista",
-    "gridView": "Vista de cuadrícula",
-    "rowsOf": "filas de",
-    "plantsPerRow": "plantas",
-    "plantsList": "Lista de plantas",
-    "totalPlants": "plantas en total",
-    "prevSpace": "Espacio anterior",
-    "nextSpace": "Espacio siguiente"
-  },
-  "metrics": {
-    "averages": "Promedios de EC y pH",
-    "globalValues": "Valores medios globales",
-    "spaceValues": "Valores medios para este espacio"
-  },
-  "plantState": {
-    "title": "Estado de las plantas",
-    "distribution": "Distribución por estado",
-    "states": {
-      "germination": "Germinación",
-      "growth": "Crecimiento",
-      "flowering": "Floración",
-      "drying": "Secado",
-      "harvested": "Cosechado"
-    }
+  "helpChat": {
+    "title": "Asistente de Ayuda",
+    "startPrompt": "¡Pregúntame cualquier cosa sobre el cultivo de plantas o el uso de la aplicación!",
+    "messagePlaceholder": "Escribe tu mensaje...",
+    "send": "Enviar",
+    "you": "Tú",
+    "assistant": "Asistente",
+    "error": "Error al obtener respuesta",
+    "errorResponse": "Lo siento, no pude procesar tu solicitud en este momento. Por favor, inténtalo de nuevo más tarde."
   },
   "varieties": {
-    "distribution": "Distribución de variedades",
-    "topVarieties": "Principales variedades",
-    "allSpaces": "en todos los espacios"
-  },
-  "plant": {
-    "details": "Detalles de la planta",
-    "back": "Volver",
-    "notFound": "Planta no encontrada",
-    "notFoundDesc": "La planta que está buscando no se ha encontrado. Compruebe la URL o vuelva a la página anterior.",
-    "automation": "Transiciones automáticas",
-    "automationDesc": "Los estados de la planta pasarán automáticamente de germinación a crecimiento y luego a floración según los tiempos definidos para esta variedad.",
-    "position": "Posición",
-    "variety": "Variedad",
-    "state": "Estado",
-    "selectVariety": "Seleccionar una variedad",
-    "selectState": "Seleccionar un estado",
-    "notes": "Notas",
-    "estimatedFlowering": "Floración estimada",
-    "estimatedHarvest": "Cosecha estimada",
-    "notAvailable": "No disponible",
-    "save": "Guardar",
-    "qrCode": "Código QR"
-  },
-  "language": {
-    "fr": "Français",
-    "en": "English",
-    "es": "Español"
-  },
-  "tasks": {
-    "title": "Tareas",
-    "addTask": "Añadir tarea",
-    "editTask": "Editar tarea",
-    "deleteTask": "Eliminar tarea",
-    "addColumn": "Añadir columna",
-    "editColumn": "Editar columna",
-    "deleteColumn": "Eliminar columna",
-    "emptyBoard": "No hay columnas. Añade una para empezar.",
-    "emptyColumn": "No hay tareas. Añade una para empezar.",
-    "taskUpdated": "Tarea actualizada con éxito",
-    "taskAdded": "Nueva tarea añadida",
-    "taskDeleted": "Tarea eliminada",
-    "taskMoved": "Tarea movida",
-    "columnUpdated": "Columna actualizada",
-    "columnAdded": "Nueva columna añadida",
-    "columnDeleted": "Columna eliminada",
-    "columns": {
-      "todo": "Por hacer",
-      "inProgress": "En progreso",
-      "done": "Terminado"
-    },
-    "priorities": {
-      "low": "Baja",
-      "medium": "Media",
-      "high": "Alta"
-    },
-    "newTask": {
-      "title": "Título de la tarea",
-      "description": "Descripción",
-      "priority": "Prioridad",
-      "dueDate": "Fecha límite",
-      "labels": "Etiquetas",
-      "addLabel": "Añadir etiqueta"
-    },
-    "column": {
-      "title": "Título de la columna"
-    }
-  },
-  "fertilizers": {
-    "title": "Fertilizantes",
-    "addFertilizer": "Añadir Fertilizante",
-    "editFertilizer": "Editar Fertilizante",
-    "list": "Lista de Fertilizantes",
-    "listDescription": "Gestiona tus fertilizantes y su dosis recomendada",
-    "addDescription": "Añadir un nuevo fertilizante a tu colección",
-    "editDescription": "Editar información de un fertilizante existente",
+    "add": "Añadir Variedad",
+    "edit": "Editar Variedad",
     "name": "Nombre",
-    "namePlaceholder": "Introduce el nombre del fertilizante",
-    "type": "Tipo",
-    "types": {
-      "base": "Base",
-      "growth": "Crecimiento",
-      "bloom": "Floración",
-      "booster": "Potenciador",
-      "custom": "Personalizado"
-    },
-    "selectType": "Seleccionar un tipo",
-    "unit": "Unidad",
-    "units": {
-      "ml": "Mililitros (ml/L)",
-      "g": "Gramos (g/L)"
-    },
-    "selectUnit": "Seleccionar una unidad",
-    "dosage": "Dosis Recomendada",
-    "color": "Color",
-    "npk": "NPK",
     "description": "Descripción",
-    "createdAt": "Creado el",
-    "actions": "Acciones",
-    "edit": "Editar",
+    "germinationTime": "Germinación (días)",
+    "growthTime": "Crecimiento (días)",
+    "floweringTime": "Floración (días)",
+    "dryWeight": "Peso seco (g)",
+    "save": "Guardar",
+    "cancel": "Cancelar",
     "delete": "Eliminar",
-    "confirmDelete": "Confirmar Eliminación",
-    "confirmDeleteDescription": "¿Estás seguro de que quieres eliminar el fertilizante {name}? Esta acción no se puede deshacer.",
-    "nameRequired": "El nombre del fertilizante es obligatorio",
-    "dosageRequired": "La dosis debe ser un número válido",
-    "addSuccess": "Fertilizante {name} añadido con éxito",
-    "updateSuccess": "Fertilizante {name} actualizado con éxito",
-    "deleteSuccess": "Fertilizante {name} eliminado con éxito",
-    "noFertilizers": "No se encontraron fertilizantes. Añade uno para empezar."
+    "search": "Buscar variedades",
+    "empty": "Aún no se han añadido variedades. ¡Añade tu primera variedad!",
+    "created": "Variedad {{ name }} creada con éxito",
+    "updated": "Variedad {{ name }} actualizada con éxito",
+    "deleted": "Variedad {{ name }} eliminada con éxito",
+    "error": "Se produjo un error al guardar la variedad",
+    "confirmDelete": "¿Estás seguro de que quieres eliminar {{ name }}?",
+    "addFromSeedfinder": "Añadir desde Seedfinder",
+    "searchSeedfinder": "Buscar en Seedfinder",
+    "searchResults": "Resultados de búsqueda",
+    "importVariety": "Importar",
+    "breed": "Raza",
+    "addNew": "Añadir nueva variedad",
+    "selectColor": "Seleccionar color",
+    "requiredField": "Este campo es obligatorio"
   }
 }

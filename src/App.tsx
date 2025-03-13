@@ -14,6 +14,7 @@ import PlantDetails from "@/components/PlantDetails";
 import Tasks from "@/pages/Tasks";
 import Fertilizers from "@/pages/Fertilizers";
 import Varieties from "@/pages/Varieties";
+import HelpChat from "@/pages/HelpChat";
 
 // Optimize by creating the query client outside of component render
 const queryClient = new QueryClient({
@@ -74,6 +75,12 @@ const App = () => (
             <Route path="/tasks" element={
               <ProtectedRoute>
                 <Tasks />
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/help" element={
+              <ProtectedRoute>
+                <HelpChat />
               </ProtectedRoute>
             } />
             

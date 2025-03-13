@@ -1,3 +1,4 @@
+
 import { 
   Home, 
   Grid3X3, 
@@ -7,7 +8,8 @@ import {
   Settings,
   ChevronDown,
   Flower,
-  ListChecks
+  ListChecks,
+  MessageCircleQuestion
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -95,6 +97,7 @@ const SideNavigation = () => {
     if (currentPath === "/plants" || currentPath.startsWith("/plants")) return "plants";
     if (currentPath === "/settings" || currentPath.startsWith("/settings")) return "settings";
     if (currentPath === "/tasks" || currentPath.startsWith("/tasks")) return "tasks";
+    if (currentPath === "/help" || currentPath.startsWith("/help")) return "help";
     return "spaces"; // default
   };
 
@@ -165,6 +168,12 @@ const SideNavigation = () => {
               label={t('common.tasks')}
               to="/tasks"
               active={page === "tasks"}
+            />
+            <NavItem
+              icon={<MessageCircleQuestion className="h-4 w-4" />}
+              label={t('common.help')}
+              to="/help"
+              active={page === "help"}
             />
             <NavItem
               icon={<Settings className="h-4 w-4" />}

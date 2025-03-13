@@ -1,249 +1,62 @@
 
 {
   "common": {
-    "dashboard": "Dashboard",
-    "management": "Managing your aeroponic cultivation",
     "home": "Home",
     "spaces": "Spaces",
     "analytics": "Analytics",
     "fertilizers": "Fertilizers",
     "varieties": "Varieties",
+    "tasks": "Tasks",
+    "help": "Help",
     "settings": "Settings",
-    "growth": "Growth",
-    "flowering": "Flowering",
+    "actions": "Actions",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
     "growthRoom": "Growth Room",
     "floweringRoom": "Flowering Room",
-    "showAllSpaces": "Show all spaces",
-    "newSession": "New session",
-    "actions": "Actions",
-    "next": "Next",
-    "previous": "Previous",
-    "space": "Space",
-    "plants": "Plants",
-    "tasks": "Tasks",
-    "delete": "Delete",
-    "cancel": "Cancel",
-    "add": "Add",
-    "update": "Update",
-    "details": "Details",
-    "updateApplied": "Update applied",
-    "save": "Save"
+    "growth": "Growth",
+    "flowering": "Flowering",
+    "color": "Color"
   },
-  "dashboard": {
-    "tabs": {
-      "batch": "Actions",
-      "fertilizers": "Fertilizers",
-      "varieties": "Varieties",
-      "settings": "Settings"
-    }
-  },
-  "rooms": {
-    "growth": {
-      "title": "Growth Room",
-      "spaces": "Spaces",
-      "plants": "Plants",
-      "configuration": "3 spaces of 12 trays (100 plants/tray)"
-    },
-    "flowering": {
-      "title": "Flowering Room",
-      "spaces": "Spaces",
-      "plants": "Plants",
-      "configuration": "6 spaces of 4 rows (143 plants/row)"
-    }
-  },
-  "space": {
-    "overview": "Overview",
-    "selectSpecific": "Select a specific space to view its grid and plant list",
-    "allSpacesMode": "In \"All spaces\" mode, only global statistics are displayed.",
-    "accessInstructions": "To access the grid or plant list, please disable the \"Show all spaces\" option or select a specific space.",
-    "grid": "Grid",
-    "list": "List",
-    "gridView": "Grid view",
-    "rowsOf": "rows of",
-    "plantsPerRow": "plants",
-    "plantsList": "Plants list",
-    "totalPlants": "plants in total",
-    "prevSpace": "Previous space",
-    "nextSpace": "Next space",
-    "filters": "Filters",
-    "previousSpace": "Previous space",
-    "entireSpace": "Entire Space",
-    "growthRoom": "Growth Room",
-    "floweringRoom": "Flowering Room"
-  },
-  "metrics": {
-    "averages": "EC & pH Averages",
-    "globalValues": "Global average values",
-    "spaceValues": "Average values for this space"
-  },
-  "plantState": {
-    "title": "Plant states",
-    "distribution": "Distribution by state",
-    "states": {
-      "germination": "Germination",
-      "growth": "Growth",
-      "flowering": "Flowering",
-      "drying": "Drying",
-      "harvested": "Harvested"
-    }
+  "helpChat": {
+    "title": "Help Assistant",
+    "startPrompt": "Ask me anything about plant cultivation or using the app!",
+    "messagePlaceholder": "Type your message...",
+    "send": "Send",
+    "you": "You",
+    "assistant": "Assistant",
+    "error": "Failed to get response",
+    "errorResponse": "Sorry, I couldn't process your request at the moment. Please try again later."
   },
   "varieties": {
-    "distribution": "Variety distribution",
-    "topVarieties": "Top varieties",
-    "allSpaces": "across all spaces"
-  },
-  "plant": {
-    "details": "Plant details",
-    "back": "Back",
-    "notFound": "Plant not found",
-    "notFoundDesc": "The plant you are looking for was not found. Check the URL or return to the previous page.",
-    "automation": "Automatic transitions",
-    "automationDesc": "Plant states will automatically transition from germination to growth and then to flowering based on the times defined for this variety.",
-    "position": "Position",
-    "variety": "Variety",
-    "state": "State",
-    "selectVariety": "Select a variety",
-    "selectState": "Select a state",
-    "notes": "Notes",
-    "estimatedFlowering": "Estimated flowering",
-    "estimatedHarvest": "Estimated harvest",
-    "notAvailable": "Not available",
-    "save": "Save",
-    "qrCode": "QR Code"
-  },
-  "language": {
-    "fr": "Français",
-    "en": "English",
-    "es": "Español"
-  },
-  "tasks": {
-    "title": "Tasks",
-    "addTask": "Add Task",
-    "editTask": "Edit Task",
-    "deleteTask": "Delete Task",
-    "addColumn": "Add Column",
-    "editColumn": "Edit Column",
-    "deleteColumn": "Delete Column",
-    "emptyBoard": "No columns. Add one to get started.",
-    "emptyColumn": "No tasks. Add one to get started.",
-    "taskUpdated": "Task updated successfully",
-    "taskAdded": "New task added",
-    "taskDeleted": "Task deleted",
-    "taskMoved": "Task moved",
-    "columnUpdated": "Column updated",
-    "columnAdded": "New column added",
-    "columnDeleted": "Column deleted",
-    "columns": {
-      "todo": "To Do",
-      "inProgress": "In Progress",
-      "done": "Done"
-    },
-    "priorities": {
-      "low": "Low",
-      "medium": "Medium",
-      "high": "High"
-    },
-    "newTask": {
-      "title": "Task Title",
-      "description": "Description",
-      "priority": "Priority",
-      "dueDate": "Due Date",
-      "labels": "Labels",
-      "addLabel": "Add Label"
-    },
-    "column": {
-      "title": "Column Title"
-    },
-    "states": {
-      "germination": "Germination",
-      "growth": "Growth",
-      "flowering": "Flowering",
-      "drying": "Drying",
-      "harvested": "Harvested"
-    }
-  },
-  "plants": {
-    "title": "Plants",
-    "list": "Plant List",
-    "row": "Row",
-    "column": "Column",
-    "variety": "Variety",
-    "state": "State",
-    "selectedCount": "Selected plants: {count}",
-    "selectRow": "Select row",
-    "selectVariety": "Select variety",
-    "selectState": "Select state",
-    "byRow": "By Row",
-    "selection": "Selection",
-    "applyToRow": "Apply to Row {row}",
-    "applyToSpace": "Apply to Entire Space",
-    "applyToSelected": "Apply to Selected Plants",
-    "rowNumber": "Row {number}",
-    "batchActions": "Batch Actions",
-    "details": "Plant Details",
-    "errors": {
-      "noSelection": "No plants selected",
-      "selectPlants": "Please select plants first",
-      "noVariety": "No variety selected",
-      "selectVariety": "Please select a variety first"
-    },
-    "alerts": {
-      "spaceUpdated": "All plants in Space {spaceId} updated",
-      "rowUpdated": "Plants in Row {row} of Space {spaceId} updated",
-      "selectionUpdated": "{count} plants updated",
-      "rowDeleted": "Row {row} of Space {spaceId} deleted",
-      "rowAdded": "New row added to Space {spaceId}"
-    },
-    "keepCurrentVariety": "Keep current variety",
-    "deleteRow": "Delete Row",
-    "addRow": "Add Row",
-    "confirmDeleteRow": "Confirm Delete Row",
-    "deleteRowWarning": "Are you sure you want to delete Row {row}? This action cannot be undone.",
-    "addNewRow": "Add New Row",
-    "selectVarietyForRow": "Select a variety for the new row",
-    "rowDeleted": "Row Deleted",
-    "rowAdded": "Row Added"
-  },
-  "fertilizers": {
-    "title": "Fertilizers",
-    "addFertilizer": "Add Fertilizer",
-    "editFertilizer": "Edit Fertilizer",
-    "list": "Fertilizer List",
-    "listDescription": "Manage your fertilizers and their recommended dosage",
-    "addDescription": "Add a new fertilizer to your collection",
-    "editDescription": "Edit information for an existing fertilizer",
+    "add": "Add Variety",
+    "edit": "Edit Variety",
     "name": "Name",
-    "namePlaceholder": "Enter fertilizer name",
-    "type": "Type",
-    "types": {
-      "base": "Base",
-      "growth": "Growth",
-      "bloom": "Bloom",
-      "booster": "Booster",
-      "custom": "Custom"
-    },
-    "selectType": "Select a type",
-    "unit": "Unit",
-    "units": {
-      "ml": "Milliliters (ml/L)",
-      "g": "Grams (g/L)"
-    },
-    "selectUnit": "Select a unit",
-    "dosage": "Recommended Dosage",
-    "color": "Color",
-    "npk": "NPK",
     "description": "Description",
-    "createdAt": "Created At",
-    "actions": "Actions",
-    "edit": "Edit",
+    "germinationTime": "Germination (days)",
+    "growthTime": "Growth (days)",
+    "floweringTime": "Flowering (days)",
+    "dryWeight": "Dry Weight (g)",
+    "save": "Save",
+    "cancel": "Cancel",
     "delete": "Delete",
-    "confirmDelete": "Confirm Delete",
-    "confirmDeleteDescription": "Are you sure you want to delete the fertilizer {name}? This action cannot be undone.",
-    "nameRequired": "Fertilizer name is required",
-    "dosageRequired": "Dosage must be a valid number",
-    "addSuccess": "Fertilizer {name} added successfully",
-    "updateSuccess": "Fertilizer {name} updated successfully",
-    "deleteSuccess": "Fertilizer {name} deleted successfully",
-    "noFertilizers": "No fertilizers found. Add one to get started."
+    "search": "Search varieties",
+    "empty": "No varieties added yet. Add your first variety!",
+    "created": "Variety {{ name }} created successfully",
+    "updated": "Variety {{ name }} updated successfully",
+    "deleted": "Variety {{ name }} deleted successfully",
+    "error": "An error occurred while saving variety",
+    "confirmDelete": "Are you sure you want to delete {{ name }}?",
+    "addFromSeedfinder": "Add from Seedfinder",
+    "searchSeedfinder": "Search in Seedfinder",
+    "searchResults": "Search Results",
+    "importVariety": "Import",
+    "breed": "Breed",
+    "addNew": "Add New Variety",
+    "selectColor": "Select Color",
+    "requiredField": "This field is required"
   }
 }
