@@ -48,18 +48,6 @@ const App = () => (
               </ProtectedRoute>
             } />
             
-            <Route path="/spaces" element={
-              <ProtectedRoute>
-                <Index />
-              </ProtectedRoute>
-            } />
-            
-            <Route path="/analytics" element={
-              <ProtectedRoute>
-                <Index />
-              </ProtectedRoute>
-            } />
-            
             <Route path="/fertilizers" element={
               <ProtectedRoute>
                 <Fertilizers />

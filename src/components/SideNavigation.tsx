@@ -1,25 +1,16 @@
 
 import { 
   Home, 
-  Grid3X3, 
   BarChart3, 
   Droplet, 
   Sprout, 
   Settings,
-  ChevronDown,
-  Flower,
   ListChecks,
   MessageCircleQuestion
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useCultivation } from "@/context/CultivationContext";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { RoomType } from "@/types";
-import { useEffect } from "react";
+import { useLocation, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "./LanguageSwitcher";
 
@@ -48,85 +39,23 @@ const NavItem = ({ icon, label, to, active }: NavItemProps) => {
   );
 };
 
-type SpaceItemProps = {
-  spaceId: number;
-  label: string;
-  onClick: () => void;
-  active: boolean;
-};
-
-const SpaceItem = ({ spaceId, label, onClick, active }: SpaceItemProps) => {
-  return (
-    <Button
-      variant={active ? "secondary" : "ghost"}
-      className={cn(
-        "h-9 gap-2 mb-1 w-full justify-start",
-        active ? "bg-gray-100" : ""
-      )}
-      onClick={onClick}
-    >
-      <div className="flex items-center justify-center w-5 h-5">
-        <span className="text-xs font-medium">{spaceId}</span>
-      </div>
-      <span>{label}</span>
-    </Button>
-  );
-};
-
 const SideNavigation = () => {
-  const { 
-    selectedSpaceId, 
-    setSelectedSpaceId, 
-    spaces, 
-    selectedRoomType, 
-    setSelectedRoomType,
-    getSpacesByRoomType
-  } = useCultivation();
-  
   const { t } = useTranslation();
-  const isMobile = useIsMobile();
   const location = useLocation();
-  const navigate = useNavigate();
   const currentPath = location.pathname;
   
   const getActivePage = () => {
     if (currentPath === "/") return "home";
-    if (currentPath === "/spaces" || currentPath.startsWith("/spaces")) return "spaces";
     if (currentPath === "/analytics" || currentPath.startsWith("/analytics")) return "analytics";
     if (currentPath === "/fertilizers" || currentPath.startsWith("/fertilizers")) return "fertilizers";
     if (currentPath === "/plants" || currentPath.startsWith("/plants")) return "plants";
     if (currentPath === "/settings" || currentPath.startsWith("/settings")) return "settings";
     if (currentPath === "/tasks" || currentPath.startsWith("/tasks")) return "tasks";
     if (currentPath === "/help" || currentPath.startsWith("/help")) return "help";
-    return "spaces"; // default
+    return "home"; // default
   };
 
   const page = getActivePage();
-  
-  const filteredSpaces = getSpacesByRoomType(selectedRoomType);
-
-  const handleRoomTypeChange = (value: string) => {
-    const roomType = value as RoomType;
-    setSelectedRoomType(roomType);
-    
-    const firstSpace = getSpacesByRoomType(roomType)[0];
-    if (firstSpace) {
-      setSelectedSpaceId(firstSpace.id);
-    }
-  };
-
-  const handleSpaceSelect = (spaceId: number) => {
-    setSelectedSpaceId(spaceId);
-    if (currentPath !== "/spaces") {
-      navigate("/spaces");
-    }
-  };
-
-  useEffect(() => {
-    if (filteredSpaces.length > 0 && !selectedSpaceId) {
-      setSelectedSpaceId(filteredSpaces[0].id);
-    }
-  }, [filteredSpaces, selectedSpaceId, setSelectedSpaceId]);
 
   return (
     <header className="w-full bg-white border-b shadow-sm z-40 sticky top-0">
@@ -138,12 +67,6 @@ const SideNavigation = () => {
               label={t('common.home')}
               to="/"
               active={page === "home"}
-            />
-            <NavItem
-              icon={<Grid3X3 className="h-4 w-4" />}
-              label={t('common.spaces')}
-              to="/spaces"
-              active={page === "spaces"}
             />
             <NavItem
               icon={<BarChart3 className="h-4 w-4" />}
@@ -185,55 +108,6 @@ const SideNavigation = () => {
 
           <div className="ml-auto flex items-center gap-2">
             <LanguageSwitcher />
-            
-            {(page === "spaces" || page === "analytics") && (
-              <div className="flex items-center gap-4">
-                <Tabs 
-                  value={selectedRoomType} 
-                  onValueChange={handleRoomTypeChange}
-                  className="bg-gray-100 rounded-md p-1"
-                >
-                  <TabsList>
-                    <TabsTrigger value="growth" className="flex items-center gap-2">
-                      <Sprout className="h-4 w-4" />
-                      <span className="hidden sm:inline">{t('common.growthRoom')}</span>
-                      <span className="sm:hidden">{t('common.growth')}</span>
-                    </TabsTrigger>
-                    <TabsTrigger value="flowering" className="flex items-center gap-2">
-                      <Flower className="h-4 w-4" />
-                      <span className="hidden sm:inline">{t('common.floweringRoom')}</span>
-                      <span className="sm:hidden">{t('common.flowering')}</span>
-                    </TabsTrigger>
-                  </TabsList>
-                </Tabs>
-                
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="flex items-center gap-1"
-                    >
-                      {t('common.spaces')}
-                      <ChevronDown className="h-4 w-4" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent align="end" className="w-48 p-2">
-                    <div className="space-y-1">
-                      {filteredSpaces.map((space) => (
-                        <SpaceItem
-                          key={space.id}
-                          spaceId={space.id}
-                          label={space.name}
-                          onClick={() => handleSpaceSelect(space.id)}
-                          active={selectedSpaceId === space.id}
-                        />
-                      ))}
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              </div>
-            )}
           </div>
         </div>
       </div>
