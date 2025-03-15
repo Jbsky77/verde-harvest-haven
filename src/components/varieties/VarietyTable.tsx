@@ -3,14 +3,16 @@ import { PlantVariety } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Edit, Trash2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 interface VarietyTableProps {
   varieties: PlantVariety[];
+  currentSessionVarieties: string[];
   onEdit: (variety: PlantVariety) => void;
   onDelete: (variety: PlantVariety) => void;
 }
 
-const VarietyTable = ({ varieties, onEdit, onDelete }: VarietyTableProps) => {
+const VarietyTable = ({ varieties, currentSessionVarieties, onEdit, onDelete }: VarietyTableProps) => {
   return (
     <Table>
       <TableHeader>
@@ -40,7 +42,14 @@ const VarietyTable = ({ varieties, onEdit, onDelete }: VarietyTableProps) => {
                   style={{ backgroundColor: variety.color }} 
                 />
               </TableCell>
-              <TableCell>{variety.name}</TableCell>
+              <TableCell>
+                {variety.name}
+                {currentSessionVarieties.includes(variety.id) && (
+                  <Badge className="ml-2 bg-green-100 text-green-800 text-xs">
+                    Session en cours
+                  </Badge>
+                )}
+              </TableCell>
               <TableCell className="text-right">{variety.germinationTime || "-"}</TableCell>
               <TableCell className="text-right">{variety.growthTime || "-"}</TableCell>
               <TableCell className="text-right">{variety.floweringTime || "-"}</TableCell>
