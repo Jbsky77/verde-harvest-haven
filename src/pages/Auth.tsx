@@ -1,7 +1,12 @@
 
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { auth } from "@/integrations/firebase/config";
+import { 
+  signInWithEmailAndPassword, 
+  createUserWithEmailAndPassword,
+  updateProfile 
+} from "firebase/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,13 +24,15 @@ const Auth = () => {
   const [authError, setAuthError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  // Vérifier si l'utilisateur est déjà connecté
+  // Check if user is already logged in
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
         navigate("/");
       }
     });
+    
+    return () => unsubscribe();
   }, [navigate]);
 
   const handleAuth = async (e: React.FormEvent) => {
@@ -36,42 +43,49 @@ const Auth = () => {
     try {
       if (isLogin) {
         // Login
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-
-        if (error) {
-          throw error;
-        }
-
+        await signInWithEmailAndPassword(auth, email, password);
         toast.success("Connexion réussie");
         navigate("/");
       } else {
         // Signup
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: {
-              username: username || email.split('@')[0],
-            }
-          }
-        });
-
-        if (error) {
-          // Check if error is related to disabled email signups
-          if (error.message.includes("Email signups are disabled")) {
-            setAuthError("Les inscriptions par email sont désactivées. Veuillez contacter l'administrateur.");
-          } else {
-            throw error;
-          }
-        } else {
-          toast.success("Inscription réussie! Veuillez vérifier votre email.");
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        
+        // Set display name if username is provided
+        if (username && userCredential.user) {
+          await updateProfile(userCredential.user, {
+            displayName: username
+          });
         }
+        
+        toast.success("Inscription réussie!");
+        navigate("/");
       }
     } catch (error: any) {
-      const errorMessage = error.message || "Une erreur est survenue";
+      const errorCode = error.code;
+      let errorMessage = "Une erreur est survenue";
+      
+      // Translate common Firebase auth errors
+      switch(errorCode) {
+        case 'auth/invalid-email':
+          errorMessage = "L'adresse email est invalide.";
+          break;
+        case 'auth/user-disabled':
+          errorMessage = "Ce compte utilisateur a été désactivé.";
+          break;
+        case 'auth/user-not-found':
+        case 'auth/wrong-password':
+          errorMessage = "Email ou mot de passe incorrect.";
+          break;
+        case 'auth/email-already-in-use':
+          errorMessage = "Cette adresse email est déjà utilisée par un autre compte.";
+          break;
+        case 'auth/weak-password':
+          errorMessage = "Le mot de passe est trop faible. Utilisez au moins 6 caractères.";
+          break;
+        default:
+          errorMessage = error.message || "Une erreur est survenue";
+      }
+      
       setAuthError(errorMessage);
       toast.error(errorMessage);
     } finally {

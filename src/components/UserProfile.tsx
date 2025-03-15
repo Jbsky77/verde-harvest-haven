@@ -1,10 +1,11 @@
 
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { LogOut, UserCircle } from "lucide-react";
 import { toast } from "sonner";
+import { auth } from "@/integrations/firebase/config";
+import { signOut } from "firebase/auth";
 
 const UserProfile = () => {
   const [loading, setLoading] = useState(false);
@@ -12,34 +13,17 @@ const UserProfile = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchUserProfile = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-          const { data } = await supabase
-            .from("profiles")
-            .select("username")
-            .eq("id", user.id)
-            .single();
-          
-          if (data) {
-            setUsername(data.username);
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching user profile:", error);
-      }
-    };
-    
-    fetchUserProfile();
+    // Get current user's display name
+    const currentUser = auth.currentUser;
+    if (currentUser) {
+      setUsername(currentUser.displayName || currentUser.email?.split('@')[0] || "");
+    }
   }, []);
 
   const handleLogout = async () => {
     setLoading(true);
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      
+      await signOut(auth);
       toast.success("Déconnexion réussie");
       navigate("/auth");
     } catch (error: any) {

@@ -1,7 +1,8 @@
 
 import { ReactNode, useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "@/integrations/firebase/config";
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -12,30 +13,14 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const { data } = await supabase.auth.getSession();
-        setIsAuthenticated(!!data.session);
-      } catch (error) {
-        console.error("Erreur lors de la vérification de l'authentification:", error);
-        setIsAuthenticated(false);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    // Vérifier la session au chargement
-    checkAuth();
-
-    // Écouter les changements d'état d'authentification
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setIsAuthenticated(!!session);
+    // Subscribe to auth state changes
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setIsAuthenticated(!!user);
       setLoading(false);
     });
 
-    return () => {
-      subscription.unsubscribe();
-    };
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
   }, []);
 
   if (loading) {
