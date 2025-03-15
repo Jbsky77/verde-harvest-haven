@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { useTranslation } from "react-i18next";
 
 interface VarietyDialogProps {
   isOpen: boolean;
@@ -29,7 +28,6 @@ const VarietyDialog = ({
   const [newGrowthTime, setNewGrowthTime] = useState<number | undefined>(undefined);
   const [newFloweringTime, setNewFloweringTime] = useState<number | undefined>(undefined);
   const [newDryWeight, setNewDryWeight] = useState<number | undefined>(undefined);
-  const { t } = useTranslation();
 
   useEffect(() => {
     if (currentVariety) {
@@ -51,7 +49,7 @@ const VarietyDialog = ({
 
   const handleSubmit = () => {
     if (!newName.trim()) {
-      toast.error(t('varieties.nameRequired'));
+      toast.error("Le nom de la variété est requis");
       return;
     }
 
@@ -72,25 +70,23 @@ const VarietyDialog = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            {isEditing 
-              ? t('varieties.edit', { name: currentVariety?.name }) 
-              : t('varieties.create')}
+            {isEditing ? `Modifier ${currentVariety?.name}` : "Nouvelle variété"}
           </DialogTitle>
         </DialogHeader>
         
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label htmlFor="name">{t('varieties.name')}</Label>
+            <Label htmlFor="name">Nom</Label>
             <Input
               id="name"
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
-              placeholder={t('varieties.namePlaceholder')}
+              placeholder="Nom de la variété"
             />
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="color">{t('common.color')}</Label>
+            <Label htmlFor="color">Couleur</Label>
             <div className="flex items-center gap-3">
               <div 
                 className="w-8 h-8 rounded-full border border-gray-200" 
@@ -107,54 +103,52 @@ const VarietyDialog = ({
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="germinationTime">{t('varieties.germinationTime')}</Label>
+            <Label htmlFor="germinationTime">Temps de germination (jours)</Label>
             <Input
               id="germinationTime"
               type="number"
               min="1"
               value={newGerminationTime || ""}
               onChange={(e) => setNewGerminationTime(e.target.value ? Number(e.target.value) : undefined)}
-              placeholder={t('varieties.daysPlaceholder')}
+              placeholder="Ex: 5"
             />
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="growthTime">{t('varieties.growthTime')}</Label>
+            <Label htmlFor="growthTime">Temps de croissance (jours)</Label>
             <Input
               id="growthTime"
               type="number"
               min="1"
               value={newGrowthTime || ""}
               onChange={(e) => setNewGrowthTime(e.target.value ? Number(e.target.value) : undefined)}
-              placeholder={t('varieties.daysPlaceholder')}
+              placeholder="Ex: 30"
             />
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="floweringTime">{t('varieties.floweringTime')}</Label>
+            <Label htmlFor="floweringTime">Temps de floraison (jours)</Label>
             <Input
               id="floweringTime"
               type="number"
               min="1"
               value={newFloweringTime || ""}
               onChange={(e) => setNewFloweringTime(e.target.value ? Number(e.target.value) : undefined)}
-              placeholder={t('varieties.daysPlaceholder')}
+              placeholder="Ex: 60"
             />
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="dryWeight">{t('varieties.dryWeight')}</Label>
+            <Label htmlFor="dryWeight">Poids sec par plant (grammes)</Label>
             <Input
               id="dryWeight"
               type="number"
-              min="1"
+              step="0.1"
+              min="0"
               value={newDryWeight || ""}
               onChange={(e) => setNewDryWeight(e.target.value ? Number(e.target.value) : undefined)}
-              placeholder="g par plant"
+              placeholder="Ex: 120.5"
             />
-            <p className="text-xs text-muted-foreground">
-              Poids sec moyen en grammes par plant
-            </p>
           </div>
         </div>
         
@@ -163,10 +157,10 @@ const VarietyDialog = ({
             variant="outline" 
             onClick={onClose}
           >
-            {t('common.cancel')}
+            Annuler
           </Button>
           <Button onClick={handleSubmit}>
-            {isEditing ? t('common.update') : t('common.create')}
+            {isEditing ? "Mettre à jour" : "Créer"}
           </Button>
         </DialogFooter>
       </DialogContent>

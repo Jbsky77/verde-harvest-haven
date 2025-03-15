@@ -1,38 +1,34 @@
 
-import { useState } from "react";
 import { PlantVariety } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Edit, Trash2 } from "lucide-react";
-import { useTranslation } from "react-i18next";
 
 interface VarietyTableProps {
   varieties: PlantVariety[];
   onEdit: (variety: PlantVariety) => void;
-  onDelete: (varietyId: string, name: string) => void;
+  onDelete: (variety: PlantVariety) => void;
 }
 
 const VarietyTable = ({ varieties, onEdit, onDelete }: VarietyTableProps) => {
-  const { t } = useTranslation();
-  
   return (
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead style={{ width: "50px" }}>{t('common.color')}</TableHead>
-          <TableHead>{t('varieties.name')}</TableHead>
-          <TableHead className="text-right">{t('varieties.germinationTime')}</TableHead>
-          <TableHead className="text-right">{t('varieties.growthTime')}</TableHead>
-          <TableHead className="text-right">{t('varieties.floweringTime')}</TableHead>
-          <TableHead className="text-right">{t('varieties.dryWeight')}</TableHead>
-          <TableHead style={{ width: "100px" }}>{t('common.actions')}</TableHead>
+          <TableHead>Couleur</TableHead>
+          <TableHead>Nom</TableHead>
+          <TableHead className="text-right">Germination (j)</TableHead>
+          <TableHead className="text-right">Croissance (j)</TableHead>
+          <TableHead className="text-right">Floraison (j)</TableHead>
+          <TableHead className="text-right">Poids sec (g)</TableHead>
+          <TableHead className="w-[100px]">Actions</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {varieties.length === 0 ? (
           <TableRow>
             <TableCell colSpan={7} className="text-center py-4 text-muted-foreground">
-              {t('varieties.empty')}
+              Aucune variété trouvée
             </TableCell>
           </TableRow>
         ) : (
@@ -44,11 +40,11 @@ const VarietyTable = ({ varieties, onEdit, onDelete }: VarietyTableProps) => {
                   style={{ backgroundColor: variety.color }} 
                 />
               </TableCell>
-              <TableCell className="font-medium">{variety.name}</TableCell>
+              <TableCell>{variety.name}</TableCell>
               <TableCell className="text-right">{variety.germinationTime || "-"}</TableCell>
               <TableCell className="text-right">{variety.growthTime || "-"}</TableCell>
               <TableCell className="text-right">{variety.floweringTime || "-"}</TableCell>
-              <TableCell className="text-right">{variety.dryWeight ? `${variety.dryWeight} g` : "-"}</TableCell>
+              <TableCell className="text-right">{variety.dryWeight || "-"}</TableCell>
               <TableCell>
                 <div className="flex items-center gap-2">
                   <Button 
@@ -61,7 +57,7 @@ const VarietyTable = ({ varieties, onEdit, onDelete }: VarietyTableProps) => {
                   <Button 
                     variant="ghost" 
                     size="icon"
-                    onClick={() => onDelete(variety.id, variety.name)}
+                    onClick={() => onDelete(variety)}
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
