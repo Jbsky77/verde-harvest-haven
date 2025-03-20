@@ -8,7 +8,7 @@ import { PlantVariety } from "@/types";
 import { Badge } from "@/components/ui/badge";
 import VarietyTable from "./VarietyTable";
 import VarietyFormDialog from "./VarietyFormDialog";
-import { addVariety, updateVariety, deleteVariety, getVarieties } from "@/integrations/firebase/firestore";
+import { supabase } from "@/integrations/supabase/client";
 
 const VarietyList = () => {
   const { currentSession } = useCultivation();
@@ -28,15 +28,33 @@ const VarietyList = () => {
     try {
       setIsLoading(true);
       
-      // Try to get varieties from Firebase
-      const fetchedVarieties = await getVarieties();
-      setVarieties(fetchedVarieties);
+      // Try to get varieties from Supabase
+      const { data, error } = await supabase
+        .from('plant_varieties')
+        .select('*');
+      
+      if (error) {
+        throw error;
+      }
+      
+      // Transform database data to match our PlantVariety type
+      const transformedVarieties: PlantVariety[] = data.map(item => ({
+        id: item.id,
+        name: item.name,
+        color: item.color,
+        germinationTime: item.germination_time,
+        growthTime: item.growth_time,
+        floweringTime: item.flowering_time,
+        dryWeight: item.dry_weight
+      }));
+      
+      setVarieties(transformedVarieties);
       setUseLocalStorage(false);
 
     } catch (error) {
       console.error("Error fetching varieties:", error);
       
-      // If Firebase error, check if we have varieties in localStorage
+      // If Supabase error, check if we have varieties in localStorage
       try {
         const localVarieties = localStorage.getItem('varieties');
         if (localVarieties) {
@@ -45,7 +63,7 @@ const VarietyList = () => {
         setUseLocalStorage(true);
         toast({
           title: "Mode local activé",
-          description: "Firebase n'est pas accessible, les variétés sont stockées localement",
+          description: "Supabase n'est pas accessible, les variétés sont stockées localement",
           variant: "default",
         });
       } catch (localError) {
@@ -108,10 +126,23 @@ const VarietyList = () => {
         return;
       }
       
-      // Firebase mode
+      // Supabase mode
       if (editingVariety) {
         // Update existing variety
-        await updateVariety(editingVariety.id, varietyData);
+        const { error } = await supabase
+          .from('plant_varieties')
+          .update({
+            name: varietyData.name,
+            color: varietyData.color,
+            germination_time: varietyData.germinationTime,
+            growth_time: varietyData.growthTime,
+            flowering_time: varietyData.floweringTime,
+            dry_weight: varietyData.dryWeight
+          })
+          .eq('id', editingVariety.id);
+          
+        if (error) throw error;
+        
         toast({
           title: "Variété mise à jour",
           description: `La variété "${varietyData.name}" a été mise à jour`,
@@ -119,7 +150,19 @@ const VarietyList = () => {
         });
       } else {
         // Create new variety
-        await addVariety(varietyData);
+        const { error } = await supabase
+          .from('plant_varieties')
+          .insert({
+            name: varietyData.name,
+            color: varietyData.color,
+            germination_time: varietyData.germinationTime,
+            growth_time: varietyData.growthTime,
+            flowering_time: varietyData.floweringTime,
+            dry_weight: varietyData.dryWeight
+          });
+          
+        if (error) throw error;
+        
         toast({
           title: "Variété créée",
           description: `La nouvelle variété "${varietyData.name}" a été créée`,
@@ -132,12 +175,12 @@ const VarietyList = () => {
     } catch (error) {
       console.error("Error saving variety:", error);
       
-      // If Firebase error, switch to local storage
+      // If Supabase error, switch to local storage
       setUseLocalStorage(true);
       toast({
         title: "Passage au mode local",
-        description: "Impossible de se connecter à Firebase, les données sont maintenant stockées localement",
-        variant: "warning",
+        description: "Impossible de se connecter à Supabase, les données sont maintenant stockées localement",
+        variant: "default",
       });
       
       // Retry with local storage
@@ -162,8 +205,13 @@ const VarietyList = () => {
           return;
         }
         
-        // Firebase mode
-        await deleteVariety(variety.id);
+        // Supabase mode
+        const { error } = await supabase
+          .from('plant_varieties')
+          .delete()
+          .eq('id', variety.id);
+          
+        if (error) throw error;
         
         toast({
           title: "Variété supprimée",
@@ -175,12 +223,12 @@ const VarietyList = () => {
       } catch (error) {
         console.error("Error deleting variety:", error);
         
-        // If Firebase error, switch to local storage
+        // If Supabase error, switch to local storage
         setUseLocalStorage(true);
         toast({
           title: "Passage au mode local",
-          description: "Impossible de se connecter à Firebase, les données sont maintenant stockées localement",
-          variant: "warning",
+          description: "Impossible de se connecter à Supabase, les données sont maintenant stockées localement",
+          variant: "default",
         });
         
         // Retry with local storage
