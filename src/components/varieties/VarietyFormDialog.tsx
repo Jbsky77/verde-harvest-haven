@@ -30,6 +30,7 @@ const VarietyFormDialog = ({
   const [germinationTime, setGerminationTime] = useState<number | undefined>(undefined);
   const [growthTime, setGrowthTime] = useState<number | undefined>(undefined);
   const [floweringTime, setFloweringTime] = useState<number | undefined>(undefined);
+  const [dryWeight, setDryWeight] = useState<number | undefined>(undefined);
 
   // Initialize form with variety data if editing
   useEffect(() => {
@@ -39,6 +40,7 @@ const VarietyFormDialog = ({
       setGerminationTime(variety.germinationTime);
       setGrowthTime(variety.growthTime);
       setFloweringTime(variety.floweringTime);
+      setDryWeight(variety.dryWeight);
     } else {
       resetForm();
     }
@@ -50,6 +52,7 @@ const VarietyFormDialog = ({
     setGerminationTime(undefined);
     setGrowthTime(undefined);
     setFloweringTime(undefined);
+    setDryWeight(undefined);
   };
 
   const handleSubmit = () => {
@@ -63,6 +66,7 @@ const VarietyFormDialog = ({
       germinationTime,
       growthTime,
       floweringTime,
+      dryWeight
     });
   };
 
@@ -136,6 +140,19 @@ const VarietyFormDialog = ({
               value={floweringTime || ""}
               onChange={(e) => setFloweringTime(e.target.value ? Number(e.target.value) : undefined)}
               placeholder="Ex: 60"
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="dryWeight">Poids sec par plant (grammes)</Label>
+            <Input
+              id="dryWeight"
+              type="number"
+              step="0.1"
+              min="0"
+              value={dryWeight || ""}
+              onChange={(e) => setDryWeight(e.target.value ? Number(e.target.value) : undefined)}
+              placeholder="Ex: 120.5"
             />
           </div>
         </div>
