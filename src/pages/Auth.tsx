@@ -5,14 +5,15 @@ import { auth } from "@/integrations/firebase/config";
 import { 
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword,
-  updateProfile 
+  updateProfile,
+  sendPasswordResetEmail
 } from "firebase/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Mail, Lock, User, LogIn, AlertCircle, Info } from "lucide-react";
+import { Mail, Lock, User, LogIn, AlertCircle, Info, ArrowLeft } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const Auth = () => {
@@ -22,6 +23,7 @@ const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [username, setUsername] = useState("");
   const [authError, setAuthError] = useState<string | null>(null);
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
   const navigate = useNavigate();
 
   // Check if user is already logged in
@@ -93,6 +95,238 @@ const Auth = () => {
     }
   };
 
+  const handlePasswordReset = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setAuthError(null);
+
+    if (!email) {
+      setAuthError("Veuillez entrer votre adresse email.");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      await sendPasswordResetEmail(auth, email);
+      toast.success("Un email de réinitialisation a été envoyé à votre adresse email.");
+      setIsForgotPassword(false); // Return to login screen after successful reset request
+    } catch (error: any) {
+      const errorCode = error.code;
+      let errorMessage = "Une erreur est survenue";
+      
+      // Translate common Firebase auth errors for password reset
+      switch(errorCode) {
+        case 'auth/invalid-email':
+          errorMessage = "L'adresse email est invalide.";
+          break;
+        case 'auth/user-not-found':
+          errorMessage = "Aucun compte trouvé avec cette adresse email.";
+          break;
+        default:
+          errorMessage = error.message || "Une erreur est survenue";
+      }
+      
+      setAuthError(errorMessage);
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const renderForgotPasswordForm = () => (
+    <>
+      <CardHeader className="space-y-1">
+        <CardTitle className="text-2xl font-bold text-center flex items-center justify-center gap-2">
+          <Mail className="h-6 w-6 text-primary" />
+          Réinitialiser le mot de passe
+        </CardTitle>
+        <CardDescription className="text-center">
+          Entrez votre adresse email pour recevoir un lien de réinitialisation
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        {authError && (
+          <Alert variant="destructive" className="mb-4">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Erreur</AlertTitle>
+            <AlertDescription>{authError}</AlertDescription>
+          </Alert>
+        )}
+        
+        <form onSubmit={handlePasswordReset} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="reset-email" className="flex items-center gap-1">
+              <Mail className="h-4 w-4" /> Email
+            </Label>
+            <div className="relative">
+              <Input
+                id="reset-email"
+                type="email"
+                placeholder="votre@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="pl-10"
+                required
+              />
+              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            </div>
+          </div>
+          
+          <Button 
+            type="submit" 
+            className="w-full bg-primary hover:bg-primary/90" 
+            disabled={loading}
+          >
+            {loading ? "Envoi en cours..." : "Envoyer le lien de réinitialisation"}
+          </Button>
+        </form>
+      </CardContent>
+      <CardFooter className="flex flex-col space-y-2">
+        <Button 
+          variant="link" 
+          onClick={() => {
+            setIsForgotPassword(false);
+            setAuthError(null);
+          }}
+          className="text-primary flex items-center gap-2"
+        >
+          <ArrowLeft className="h-4 w-4" /> Retour à la connexion
+        </Button>
+      </CardFooter>
+    </>
+  );
+
+  const renderAuthForm = () => (
+    <>
+      <CardHeader className="space-y-1">
+        <CardTitle className="text-2xl font-bold text-center flex items-center justify-center gap-2">
+          <LogIn className="h-6 w-6 text-primary" />
+          {isLogin ? "Se connecter" : "S'inscrire"}
+        </CardTitle>
+        <CardDescription className="text-center">
+          {isLogin 
+            ? "Connectez-vous pour gérer vos espaces de culture" 
+            : "Créez un compte pour commencer à gérer vos cultures"}
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        {authError && (
+          <Alert variant="destructive" className="mb-4">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Erreur</AlertTitle>
+            <AlertDescription>{authError}</AlertDescription>
+          </Alert>
+        )}
+        
+        {!isLogin && (
+          <Alert variant="default" className="mb-4 bg-amber-50 border-amber-200">
+            <Info className="h-4 w-4 text-amber-500" />
+            <AlertTitle className="text-amber-700">Information</AlertTitle>
+            <AlertDescription className="text-amber-600">
+              Les inscriptions par email peuvent être désactivées par l'administrateur. 
+              Si vous ne pouvez pas vous inscrire, veuillez contacter l'administrateur.
+            </AlertDescription>
+          </Alert>
+        )}
+        
+        <form onSubmit={handleAuth} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="email" className="flex items-center gap-1">
+              <Mail className="h-4 w-4" /> Email
+            </Label>
+            <div className="relative">
+              <Input
+                id="email"
+                type="email"
+                placeholder="votre@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="pl-10"
+                required
+              />
+              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            </div>
+          </div>
+          
+          {!isLogin && (
+            <div className="space-y-2">
+              <Label htmlFor="username" className="flex items-center gap-1">
+                <User className="h-4 w-4" /> Nom d'utilisateur
+              </Label>
+              <div className="relative">
+                <Input
+                  id="username"
+                  type="text"
+                  placeholder="votre_nom"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="pl-10"
+                />
+                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              </div>
+            </div>
+          )}
+          
+          <div className="space-y-2">
+            <Label htmlFor="password" className="flex items-center gap-1">
+              <Lock className="h-4 w-4" /> Mot de passe
+            </Label>
+            <div className="relative">
+              <Input
+                id="password"
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="pl-10"
+                required
+              />
+              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            </div>
+          </div>
+          
+          <Button 
+            type="submit" 
+            className="w-full bg-primary hover:bg-primary/90" 
+            disabled={loading}
+          >
+            {loading
+              ? "Chargement..." 
+              : isLogin 
+                ? "Se connecter" 
+                : "S'inscrire"}
+          </Button>
+        </form>
+      </CardContent>
+      <CardFooter className="flex flex-col space-y-2">
+        {isLogin && (
+          <Button 
+            variant="link" 
+            onClick={() => {
+              setIsForgotPassword(true);
+              setAuthError(null);
+            }}
+            className="text-primary"
+          >
+            Mot de passe oublié ?
+          </Button>
+        )}
+        <Button 
+          variant="link" 
+          onClick={() => {
+            setIsLogin(!isLogin);
+            setAuthError(null);
+          }}
+          className="text-primary"
+        >
+          {isLogin 
+            ? "Vous n'avez pas de compte ? S'inscrire" 
+            : "Déjà un compte ? Se connecter"}
+        </Button>
+      </CardFooter>
+    </>
+  );
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-purple-50 to-purple-100 p-4">
       <div className="w-full max-w-md mb-8 text-center">
@@ -101,120 +335,7 @@ const Auth = () => {
       </div>
       
       <Card className="w-full max-w-md shadow-lg border-purple-100">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center flex items-center justify-center gap-2">
-            <LogIn className="h-6 w-6 text-primary" />
-            {isLogin ? "Se connecter" : "S'inscrire"}
-          </CardTitle>
-          <CardDescription className="text-center">
-            {isLogin 
-              ? "Connectez-vous pour gérer vos espaces de culture" 
-              : "Créez un compte pour commencer à gérer vos cultures"}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {authError && (
-            <Alert variant="destructive" className="mb-4">
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Erreur</AlertTitle>
-              <AlertDescription>{authError}</AlertDescription>
-            </Alert>
-          )}
-          
-          {!isLogin && (
-            <Alert variant="default" className="mb-4 bg-amber-50 border-amber-200">
-              <Info className="h-4 w-4 text-amber-500" />
-              <AlertTitle className="text-amber-700">Information</AlertTitle>
-              <AlertDescription className="text-amber-600">
-                Les inscriptions par email peuvent être désactivées par l'administrateur. 
-                Si vous ne pouvez pas vous inscrire, veuillez contacter l'administrateur.
-              </AlertDescription>
-            </Alert>
-          )}
-          
-          <form onSubmit={handleAuth} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email" className="flex items-center gap-1">
-                <Mail className="h-4 w-4" /> Email
-              </Label>
-              <div className="relative">
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="votre@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10"
-                  required
-                />
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-              </div>
-            </div>
-            
-            {!isLogin && (
-              <div className="space-y-2">
-                <Label htmlFor="username" className="flex items-center gap-1">
-                  <User className="h-4 w-4" /> Nom d'utilisateur
-                </Label>
-                <div className="relative">
-                  <Input
-                    id="username"
-                    type="text"
-                    placeholder="votre_nom"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    className="pl-10"
-                  />
-                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                </div>
-              </div>
-            )}
-            
-            <div className="space-y-2">
-              <Label htmlFor="password" className="flex items-center gap-1">
-                <Lock className="h-4 w-4" /> Mot de passe
-              </Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10"
-                  required
-                />
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-              </div>
-            </div>
-            
-            <Button 
-              type="submit" 
-              className="w-full bg-primary hover:bg-primary/90" 
-              disabled={loading}
-            >
-              {loading
-                ? "Chargement..." 
-                : isLogin 
-                  ? "Se connecter" 
-                  : "S'inscrire"}
-            </Button>
-          </form>
-        </CardContent>
-        <CardFooter className="flex flex-col space-y-2">
-          <Button 
-            variant="link" 
-            onClick={() => {
-              setIsLogin(!isLogin);
-              setAuthError(null);
-            }}
-            className="text-primary"
-          >
-            {isLogin 
-              ? "Vous n'avez pas de compte ? S'inscrire" 
-              : "Déjà un compte ? Se connecter"}
-          </Button>
-        </CardFooter>
+        {isForgotPassword ? renderForgotPasswordForm() : renderAuthForm()}
       </Card>
     </div>
   );
