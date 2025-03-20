@@ -16,6 +16,7 @@ const VarietyList = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingVariety, setEditingVariety] = useState<PlantVariety | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [useLocalStorage, setUseLocalStorage] = useState(false);
   const { toast } = useToast();
 
   // Fetch varieties on component mount
@@ -26,18 +27,41 @@ const VarietyList = () => {
   const fetchVarieties = async () => {
     try {
       setIsLoading(true);
+      
+      // Try to get varieties from Firebase
       const fetchedVarieties = await getVarieties();
       setVarieties(fetchedVarieties);
+      setUseLocalStorage(false);
+
     } catch (error) {
       console.error("Error fetching varieties:", error);
-      toast({
-        title: "Erreur",
-        description: "Impossible de charger les variétés",
-        variant: "destructive",
-      });
+      
+      // If Firebase error, check if we have varieties in localStorage
+      try {
+        const localVarieties = localStorage.getItem('varieties');
+        if (localVarieties) {
+          setVarieties(JSON.parse(localVarieties));
+        }
+        setUseLocalStorage(true);
+        toast({
+          title: "Mode local activé",
+          description: "Firebase n'est pas accessible, les variétés sont stockées localement",
+          variant: "default",
+        });
+      } catch (localError) {
+        toast({
+          title: "Erreur",
+          description: "Impossible de charger les variétés",
+          variant: "destructive",
+        });
+      }
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const saveToLocalStorage = (updatedVarieties: PlantVariety[]) => {
+    localStorage.setItem('varieties', JSON.stringify(updatedVarieties));
   };
 
   const openCreateDialog = () => {
@@ -52,6 +76,39 @@ const VarietyList = () => {
 
   const handleSaveVariety = async (varietyData: Omit<PlantVariety, "id">) => {
     try {
+      if (useLocalStorage) {
+        // Local storage mode
+        const updatedVarieties = [...varieties];
+        
+        if (editingVariety) {
+          // Update existing variety
+          const index = updatedVarieties.findIndex(v => v.id === editingVariety.id);
+          if (index !== -1) {
+            updatedVarieties[index] = { ...varietyData, id: editingVariety.id };
+          }
+          toast({
+            title: "Variété mise à jour",
+            description: `La variété "${varietyData.name}" a été mise à jour`,
+            variant: "default",
+          });
+        } else {
+          // Create new variety
+          const newId = `var-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+          updatedVarieties.push({ ...varietyData, id: newId });
+          toast({
+            title: "Variété créée",
+            description: `La nouvelle variété "${varietyData.name}" a été créée`,
+            variant: "default",
+          });
+        }
+        
+        setVarieties(updatedVarieties);
+        saveToLocalStorage(updatedVarieties);
+        setIsDialogOpen(false);
+        return;
+      }
+      
+      // Firebase mode
       if (editingVariety) {
         // Update existing variety
         await updateVariety(editingVariety.id, varietyData);
@@ -74,17 +131,38 @@ const VarietyList = () => {
       setIsDialogOpen(false);
     } catch (error) {
       console.error("Error saving variety:", error);
+      
+      // If Firebase error, switch to local storage
+      setUseLocalStorage(true);
       toast({
-        title: "Erreur",
-        description: "Erreur lors de l'enregistrement de la variété",
-        variant: "destructive",
+        title: "Passage au mode local",
+        description: "Impossible de se connecter à Firebase, les données sont maintenant stockées localement",
+        variant: "warning",
       });
+      
+      // Retry with local storage
+      handleSaveVariety(varietyData);
     }
   };
 
   const handleDeleteVariety = async (variety: PlantVariety) => {
     if (confirm(`Êtes-vous sûr de vouloir supprimer la variété "${variety.name}" ?`)) {
       try {
+        if (useLocalStorage) {
+          // Local storage mode
+          const updatedVarieties = varieties.filter(v => v.id !== variety.id);
+          setVarieties(updatedVarieties);
+          saveToLocalStorage(updatedVarieties);
+          
+          toast({
+            title: "Variété supprimée",
+            description: `La variété "${variety.name}" a été supprimée avec succès`,
+            variant: "default",
+          });
+          return;
+        }
+        
+        // Firebase mode
         await deleteVariety(variety.id);
         
         toast({
@@ -96,11 +174,17 @@ const VarietyList = () => {
         fetchVarieties();
       } catch (error) {
         console.error("Error deleting variety:", error);
+        
+        // If Firebase error, switch to local storage
+        setUseLocalStorage(true);
         toast({
-          title: "Erreur",
-          description: "Erreur lors de la suppression de la variété",
-          variant: "destructive",
+          title: "Passage au mode local",
+          description: "Impossible de se connecter à Firebase, les données sont maintenant stockées localement",
+          variant: "warning",
         });
+        
+        // Retry with local storage
+        handleDeleteVariety(variety);
       }
     }
   };
@@ -108,7 +192,14 @@ const VarietyList = () => {
   return (
     <>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-medium">Gestion des variétés</h2>
+        <div>
+          <h2 className="text-lg font-medium">Gestion des variétés</h2>
+          {useLocalStorage && (
+            <Badge variant="outline" className="ml-2 bg-yellow-100 text-yellow-800 border-yellow-300">
+              Mode local
+            </Badge>
+          )}
+        </div>
         <Button onClick={openCreateDialog}>
           <Plus className="mr-2 h-4 w-4" />
           Nouvelle variété
