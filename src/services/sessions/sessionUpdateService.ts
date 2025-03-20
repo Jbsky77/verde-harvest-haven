@@ -15,7 +15,8 @@ export class SessionUpdateService {
           name: session.name,
           start_date: new Date(session.startDate).toISOString(),
           is_active: session.isActive,
-          end_date: session.endDate ? new Date(session.endDate).toISOString() : null
+          end_date: session.endDate ? new Date(session.endDate).toISOString() : null,
+          variety_counts: session.varietyCounts ? JSON.stringify(session.varietyCounts) : null
         })
         .eq('id', session.id);
 

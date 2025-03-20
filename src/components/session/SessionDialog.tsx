@@ -11,6 +11,7 @@ interface SessionDialogProps {
     name: string;
     startDate: Date;
     selectedVarieties?: string[];
+    varietyCounts?: any[];
   } | null;
   onSessionCreated?: (sessionId: string) => void;
 }

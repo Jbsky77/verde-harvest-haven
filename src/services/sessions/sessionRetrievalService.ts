@@ -1,6 +1,6 @@
 
 import { supabase } from "@/integrations/supabase/client";
-import { SessionWithVarieties } from "./types";
+import { SessionWithVarieties, VarietyCount } from "./types";
 
 export class SessionRetrievalService {
   // Récupérer toutes les sessions
@@ -34,7 +34,8 @@ export class SessionRetrievalService {
               startDate: new Date(session.start_date),
               endDate: session.end_date ? new Date(session.end_date) : null,
               isActive: session.is_active,
-              selectedVarieties: []
+              selectedVarieties: [],
+              varietyCounts: session.variety_counts ? JSON.parse(session.variety_counts) : []
             };
           }
 
@@ -44,7 +45,8 @@ export class SessionRetrievalService {
             startDate: new Date(session.start_date),
             endDate: session.end_date ? new Date(session.end_date) : null,
             isActive: session.is_active,
-            selectedVarieties: sessionVarieties.map(sv => sv.variety_id)
+            selectedVarieties: sessionVarieties.map(sv => sv.variety_id),
+            varietyCounts: session.variety_counts ? JSON.parse(session.variety_counts) : []
           };
         })
       );
@@ -87,7 +89,8 @@ export class SessionRetrievalService {
           startDate: new Date(session.start_date),
           endDate: session.end_date ? new Date(session.end_date) : null,
           isActive: session.is_active,
-          selectedVarieties: []
+          selectedVarieties: [],
+          varietyCounts: session.variety_counts ? JSON.parse(session.variety_counts) : []
         };
       }
 
@@ -98,7 +101,8 @@ export class SessionRetrievalService {
         startDate: new Date(session.start_date),
         endDate: session.end_date ? new Date(session.end_date) : null,
         isActive: session.is_active,
-        selectedVarieties: sessionVarieties.map(sv => sv.variety_id)
+        selectedVarieties: sessionVarieties.map(sv => sv.variety_id),
+        varietyCounts: session.variety_counts ? JSON.parse(session.variety_counts) : []
       };
     } catch (error) {
       console.error("Erreur inattendue lors de la récupération de la session:", error);
