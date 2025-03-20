@@ -13,12 +13,14 @@ import {
 } from "@/integrations/firebase/firestore";
 import VarietyDialog from "./VarietyDialog";
 import VarietyTable from "./VarietyTable";
+import { useCultivation } from "@/context/CultivationContext";
 
 export const VarietyForm = () => {
   const [varieties, setVarieties] = useState<PlantVariety[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingVariety, setEditingVariety] = useState<PlantVariety | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const { currentSession } = useCultivation();
 
   useEffect(() => {
     fetchVarieties();
@@ -94,6 +96,7 @@ export const VarietyForm = () => {
         ) : (
           <VarietyTable 
             varieties={varieties} 
+            currentSessionVarieties={currentSession?.selectedVarieties || []}
             onEdit={openDialog} 
             onDelete={handleDelete} 
           />
